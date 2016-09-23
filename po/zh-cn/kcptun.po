@@ -98,7 +98,7 @@ msgid "Client Manage"
 msgstr "客户端管理"
 
 msgid "Server IP"
-msgstr "服务端 IP"
+msgstr "服务端IP"
 
 msgid "Server Port"
 msgstr "服务端端口"
@@ -128,7 +128,7 @@ msgid "conn"
 msgstr "conn"
 
 msgid "Number of UDP connections to server."
-msgstr "连接服务端的 UDP 连接数量"
+msgstr "到服务端的UDP连接数量"
 
 msgid "autoexpire"
 msgstr "autoexpire"
@@ -140,7 +140,7 @@ msgid "mtu"
 msgstr "mtu"
 
 msgid "Maximum transmission unit of UDP packets."
-msgstr "UDP 数据包的最大传输单元"
+msgstr "UDP数据包的最大传输单元"
 
 msgid "sndwnd"
 msgstr "sndwnd"
@@ -152,7 +152,7 @@ msgid "rcvwnd"
 msgstr "rcvwnd"
 
 msgid "Receive Window Size(num of packets)."
-msgstr "接受窗口大小 (数据包数量)"
+msgstr "接收窗口大小 (数据包数量)"
 
 msgid "datashard"
 msgstr "datashard"
@@ -190,6 +190,15 @@ msgstr "interval"
 msgid "resend"
 msgstr "resend"
 
+msgid "Off"
+msgstr "关闭"
+
+msgid "On"
+msgstr "开启"
+
+msgid "2nd ACK"
+msgstr "2次ACK跨越重传"
+
 msgid "nc"
 msgstr "nc"
 
@@ -200,7 +209,7 @@ msgid "sockbuf"
 msgstr "sockbuf"
 
 msgid "Send/secv buffer size of udp sockets, default unit is MB."
-msgstr "发送/接受 UDP 数据包的缓冲区大小, 默认单位: MB"
+msgstr "发送/接受UDP数据包的缓冲区大小, 默认单位: MB"
 
 msgid "keepalive"
 msgstr "keepalive"
@@ -208,13 +217,13 @@ msgstr "keepalive"
 msgid ""
 "NAT keepalive interval(in seconds) to prevent your router from "
 "removing port mapping, default unit is seconds."
-msgstr "NAT Keepalive 包间隔时间(秒), 防止路由器删除端口映射, 默认单位: 秒"
+msgstr "NAT Keepalive 包间隔时间, 防止路由器删除端口映射, 默认单位: 秒"
 
 msgid "Server Manage"
 msgstr "服务端管理"
 
 msgid "Target IP"
-msgstr "目标 IP"
+msgstr "目标IP"
 
 msgid "Target Port"
 msgstr "目标端口"

@@ -93,7 +93,7 @@ o.placeholder = "60"
 o.rmempty = true
 
 o = s:option(Value, "mtu", "%s %s" %{translate("mtu"), translate("(optional)")}, translate("Maximum transmission unit of UDP packets."))
-o.datatype = "and('uinteger', max(1500))"
+o.datatype = "and(uinteger, max(1500))"
 o.placeholder = "1350"
 o.rmempty = true
 
@@ -144,7 +144,7 @@ o:depends("mode", "manual")
 o = s:option(ListValue, "resend", translate("resend"))
 o:value("0", translate("Off"))
 o:value("1", translate("On"))
-o:value("2", translate("2ed"))
+o:value("2", translate("2nd ACK"))
 o.default = "2"
 o.rmempty = false
 o:depends("mode", "manual")

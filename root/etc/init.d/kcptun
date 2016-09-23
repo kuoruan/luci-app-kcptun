@@ -78,31 +78,31 @@ write_client_config() {
     [ -n "$mtu" ] && \
         printf ',\n  "mtu": %d' "$mtu" >>$CLIENT_CONFIG
     [ -n "$sndwnd" ] && \
-        printf ',\n  "sndwnd": "%d"' "$sndwnd" >>$CLIENT_CONFIG
+        printf ',\n  "sndwnd": %d' "$sndwnd" >>$CLIENT_CONFIG
     [ -n "$rcvwnd" ] && \
-        printf ',\n  "rcvwnd": "%d"' "$rcvwnd" >>$CLIENT_CONFIG
+        printf ',\n  "rcvwnd": %d' "$rcvwnd" >>$CLIENT_CONFIG
     [ -n "$datashard" ] && \
-        printf ',\n  "datashard": "%d"' "$datashard" >>$CLIENT_CONFIG
+        printf ',\n  "datashard": %d' "$datashard" >>$CLIENT_CONFIG
     [ -n "$parityshard" ] && \
-        printf ',\n  "parityshard": "%d"' "$parityshard" >>$CLIENT_CONFIG
+        printf ',\n  "parityshard": %d' "$parityshard" >>$CLIENT_CONFIG
     [ -n "$dscp" ] && \
-        printf ',\n  "dscp": "%d"' "$dscp" >>$CLIENT_CONFIG
+        printf ',\n  "dscp": %d' "$dscp" >>$CLIENT_CONFIG
     [ -n "$nocomp" ] && \
         printf ',\n  "nocomp": %s' "$nocomp" >>$CLIENT_CONFIG
     [ -n "$nodelay" ] && \
-        printf ',\n  "nodelay": "%d"' "$nodelay" >>$CLIENT_CONFIG
+        printf ',\n  "nodelay": %d' "$nodelay" >>$CLIENT_CONFIG
     [ -n "$interval" ] && \
-        printf ',\n  "interval": "%d"' "$interval" >>$CLIENT_CONFIG
+        printf ',\n  "interval": %d' "$interval" >>$CLIENT_CONFIG
     [ -n "$resend" ] && \
-        printf ',\n  "resend": "%d"' "$resend" >>$CLIENT_CONFIG
+        printf ',\n  "resend": %d' "$resend" >>$CLIENT_CONFIG
     [ -n "$nc" ] && \
-        printf ',\n  "nc": "%d"' "$nc" >>$CLIENT_CONFIG
+        printf ',\n  "nc": %d' "$nc" >>$CLIENT_CONFIG
     [ -n "$acknodelay" ] && \
-        printf ',\n  "acknodelay": "%s"' "$acknodelay" >>$CLIENT_CONFIG
+        printf ',\n  "acknodelay": %s' "$acknodelay" >>$CLIENT_CONFIG
     [ -n "$sockbuf" ] && \
         printf ',\n  "sockbuf": %d' "$sockbuf" >>$CLIENT_CONFIG
     [ -n "$keepalive" ] && \
-        printf ',\n  "keepalive": "%d"' "$keepalive" >>$CLIENT_CONFIG
+        printf ',\n  "keepalive": %d' "$keepalive" >>$CLIENT_CONFIG
     [ -n "$client_log" ] && \
         printf ',\n  "log": "%s"' "$client_log" >>$CLIENT_CONFIG
     echo -e "\n}" >>$CLIENT_CONFIG
@@ -154,31 +154,31 @@ write_server_config() {
     [ -n "$mtu" ] && \
         printf ',\n  "mtu": %d' "$mtu" >>$SERVER_CONFIG
     [ -n "$sndwnd" ] && \
-        printf ',\n  "sndwnd": "%d"' "$sndwnd" >>$SERVER_CONFIG
+        printf ',\n  "sndwnd": %d' "$sndwnd" >>$SERVER_CONFIG
     [ -n "$rcvwnd" ] && \
-        printf ',\n  "rcvwnd": "%d"' "$rcvwnd" >>$SERVER_CONFIG
+        printf ',\n  "rcvwnd": %d' "$rcvwnd" >>$SERVER_CONFIG
     [ -n "$datashard" ] && \
-        printf ',\n  "datashard": "%d"' "$datashard" >>$SERVER_CONFIG
+        printf ',\n  "datashard": %d' "$datashard" >>$SERVER_CONFIG
     [ -n "$parityshard" ] && \
-        printf ',\n  "parityshard": "%d"' "$parityshard" >>$SERVER_CONFIG
+        printf ',\n  "parityshard": %d' "$parityshard" >>$SERVER_CONFIG
     [ -n "$dscp" ] && \
-        printf ',\n  "dscp": "%d"' "$dscp" >>$SERVER_CONFIG
+        printf ',\n  "dscp": %d' "$dscp" >>$SERVER_CONFIG
     [ -n "$nocomp" ] && \
-        printf ',\n  "nocomp": "%s"' $nocomp >>$SERVER_CONFIG
+        printf ',\n  "nocomp": %s' $nocomp >>$SERVER_CONFIG
     [ -n "$nodelay" ] && \
-        printf ',\n  "nodelay": "%d"' "$nodelay" >>$SERVER_CONFIG
+        printf ',\n  "nodelay": %d' "$nodelay" >>$SERVER_CONFIG
     [ -n "$interval" ] && \
-        printf ',\n  "interval": "%d"' "$interval" >>$SERVER_CONFIG
+        printf ',\n  "interval": %d' "$interval" >>$SERVER_CONFIG
     [ -n "$resend" ] && \
-        printf ',\n  "resend": "%d"' "$resend" >>$SERVER_CONFIG
+        printf ',\n  "resend": %d' "$resend" >>$SERVER_CONFIG
     [ -n "$nc" ] && \
-        printf ',\n  "nc": "%d"' "$nc" >>$SERVER_CONFIG
+        printf ',\n  "nc": %d' "$nc" >>$SERVER_CONFIG
     [ -n "$acknodelay" ] && \
         printf ',\n  "acknodelay": %s' "$acknodelay" >>$SERVER_CONFIG
     [ -n "$sockbuf" ] && \
-        printf ',\n  "sockbuf": "%d"' "$sockbuf" >>$SERVER_CONFIG
+        printf ',\n  "sockbuf": %d' "$sockbuf" >>$SERVER_CONFIG
     [ -n "$keepalive" ] && \
-        printf ',\n  "keepalive": "%d"' "$keepalive" >>$SERVER_CONFIG
+        printf ',\n  "keepalive": %d' "$keepalive" >>$SERVER_CONFIG
     [ -n "$client_log" ] && \
         printf ',\n  "log": "%s"' "$client_log" >>$SERVER_CONFIG
     echo -e "\n}" >>$SERVER_CONFIG
