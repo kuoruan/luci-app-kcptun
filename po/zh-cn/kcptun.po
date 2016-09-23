@@ -209,7 +209,7 @@ msgid "sockbuf"
 msgstr "sockbuf"
 
 msgid "Send/secv buffer size of udp sockets, default unit is MB."
-msgstr "发送/接受UDP数据包的缓冲区大小, 默认单位: MB"
+msgstr "发送/接收UDP数据包的缓冲区大小, 默认单位: MB"
 
 msgid "keepalive"
 msgstr "keepalive"
