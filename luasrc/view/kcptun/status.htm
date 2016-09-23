@@ -1,0 +1,45 @@
+<%#
+ Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
+ Licensed to the public under the Apache License 2.0.
+-%>
+
+<script type="text/javascript">//<![CDATA[
+    XHR.poll(10, '<%=url('admin/services/kcptun/status')%>', null,
+            function(x, st)
+            {
+                var tb = document.getElementById('kcptun_status_table');
+                if (tb && st)
+                {
+                    var temp = '';
+
+                    var version = st.client.version || '<%:Unknown%>';
+                    var status = st.client.running ? '<%:Running%>' : '<%:Not Running%>';
+
+                    temp += '<tr><td width="33%"><%:Client Version%></td><td>' + version + '</td></tr>';
+                    temp += '<tr><td width="33%"><%:Client Status%></td><td>' + status + '</td></tr>';
+
+                    if (st.server.enabled) {
+                        version = st.server.version || '<%:Unknown%>';
+                        status = st.server.running ? '<%:Running%>' : '<%:Not Running%>';
+
+                        temp += '<tr><td width="33%"><%:Server Version%></td><td>' + version + '</td></tr>';
+                        temp += '<tr><td width="33%"><%:Server Status%></td><td>' + status + '</td></tr>';
+                    }
+
+                    tb.innerHTML = temp;
+                }
+                else
+                {
+                    tb.innerHTML = '<tr><td><em><%:No data...%></em></td></tr>';
+                }
+            }
+        );
+//]]></script>
+
+<fieldset class="cbi-section">
+    <legend><%:Running Status%></legend>
+
+    <table width="100%" cellspacing="10" id="kcptun_status_table">
+        <tr><td><em><%:Collecting data...%></em></td></tr>
+    </table>
+</fieldset>

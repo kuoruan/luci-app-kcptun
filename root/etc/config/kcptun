@@ -1,0 +1,22 @@
+
+config general
+	option kcptun_client 'nil'
+	option client_file '/usr/bin/kcptun/client'
+	option enable_server '0'
+	option enable_logging '0'
+
+config client
+	option server_ip '0.0.0.0'
+	option server_port '29900'
+	option local_port '12948'
+	option crypt 'aes'
+	option mode 'fast'
+	option nocomp 'false'
+
+config server
+	option listen_port '29900'
+	option target_ip '0.0.0.0'
+	option target_port '12948'
+	option crypt 'aes'
+	option mode 'fast'
+	option nocomp 'false'

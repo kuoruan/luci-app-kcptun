@@ -1,0 +1,286 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (C) 2016 Xingwang Liao <kuoruan@gamil.com>
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+START=99
+STOP=15
+
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+SERVICE_UID=nobody
+SERVICE_GID=nogroup
+
+NAME=kcptun
+LOG_FOLDER=/var/log/$NAME
+PID_FOLDER=/var/run/$NAME
+CONFIG_FOLDER=/var/etc/$NAME
+CLIENT_PID=$PID_FOLDER/client.pid
+SERVER_PID=$PID_FOLDER/server.pid
+CLIENT_CONFIG=$CONFIG_FOLDER/client.json
+SERVER_CONFIG=$CONFIG_FOLDER/server.json
+
+ERROR=1
+SUCCESS=0
+
+write_client_config() {
+    local server_ip server_port local_port key
+    local crypt mode conn autoexpire mtu sndwnd rcvwnd
+    local datashard parityshard dscp nocomp sockbuf keepalive
+    local nodelay interval resend nc acknodelay
+
+    config_get server_ip   $1 server_ip
+    config_get server_port $1 server_port
+    config_get local_port  $1 local_port
+    config_get key         $1 key
+    config_get crypt       $1 crypt
+    config_get mode        $1 mode
+    config_get conn        $1 conn
+    config_get autoexpire  $1 autoexpire
+    config_get mtu         $1 mtu
+    config_get sndwnd      $1 sndwnd
+    config_get rcvwnd      $1 rcvwnd
+    config_get datashard   $1 datashard
+    config_get parityshard $1 parityshard
+    config_get dscp        $1 dscp
+    config_get nocomp      $1 nocomp
+    config_get sockbuf     $1 sockbuf
+    config_get keepalive   $1 keepalive
+
+    if [ "$mode" = "manual" ]; then
+        config_get nodelay    $1 nodelay
+        config_get interval   $1 interval
+        config_get resend     $1 resend
+        config_get nc         $1 nc
+        config_get acknodelay $1 acknodelay
+    fi
+
+    [ -z "$server_ip" -o -z "$server_port" -o -z "$local_port" ] && return $ERROR
+
+    iptables -A "$NAME" -p tcp --dport "$local_port" -m comment --comment "client" -j ACCEPT
+
+    echo -n "{" >$CLIENT_CONFIG
+    printf '\n  "localaddr": ":%s"' "$local_port" >>$CLIENT_CONFIG
+    printf ',\n  "remoteaddr": "%s:%s"' "$server_ip" "$server_port" >>$CLIENT_CONFIG
+    [ -n "$key" ] && \
+        printf ',\n  "key": "%s"' "$key" >>$CLIENT_CONFIG
+    [ -n "$crypt" ] && \
+        printf ',\n  "crypt": "%s"' "$crypt" >>$CLIENT_CONFIG
+    [ -n "$mode" ] && \
+        printf ',\n  "mode": "%s"' "$mode" >>$CLIENT_CONFIG
+    [ -n "$conn" ] && \
+        printf ',\n  "conn": %d' $conn >>$CLIENT_CONFIG
+    [ -n "$autoexpire" ] && \
+        printf ',\n  "autoexpire": %d' $autoexpire >>$CLIENT_CONFIG
+    [ -n "$mtu" ] && \
+        printf ',\n  "mtu": %d' "$mtu" >>$CLIENT_CONFIG
+    [ -n "$sndwnd" ] && \
+        printf ',\n  "sndwnd": "%d"' "$sndwnd" >>$CLIENT_CONFIG
+    [ -n "$rcvwnd" ] && \
+        printf ',\n  "rcvwnd": "%d"' "$rcvwnd" >>$CLIENT_CONFIG
+    [ -n "$datashard" ] && \
+        printf ',\n  "datashard": "%d"' "$datashard" >>$CLIENT_CONFIG
+    [ -n "$parityshard" ] && \
+        printf ',\n  "parityshard": "%d"' "$parityshard" >>$CLIENT_CONFIG
+    [ -n "$dscp" ] && \
+        printf ',\n  "dscp": "%d"' "$dscp" >>$CLIENT_CONFIG
+    [ -n "$nocomp" ] && \
+        printf ',\n  "nocomp": %s' "$nocomp" >>$CLIENT_CONFIG
+    [ -n "$nodelay" ] && \
+        printf ',\n  "nodelay": "%d"' "$nodelay" >>$CLIENT_CONFIG
+    [ -n "$interval" ] && \
+        printf ',\n  "interval": "%d"' "$interval" >>$CLIENT_CONFIG
+    [ -n "$resend" ] && \
+        printf ',\n  "resend": "%d"' "$resend" >>$CLIENT_CONFIG
+    [ -n "$nc" ] && \
+        printf ',\n  "nc": "%d"' "$nc" >>$CLIENT_CONFIG
+    [ -n "$acknodelay" ] && \
+        printf ',\n  "acknodelay": "%s"' "$acknodelay" >>$CLIENT_CONFIG
+    [ -n "$sockbuf" ] && \
+        printf ',\n  "sockbuf": %d' "$sockbuf" >>$CLIENT_CONFIG
+    [ -n "$keepalive" ] && \
+        printf ',\n  "keepalive": "%d"' "$keepalive" >>$CLIENT_CONFIG
+    [ -n "$client_log" ] && \
+        printf ',\n  "log": "%s"' "$client_log" >>$CLIENT_CONFIG
+    echo -e "\n}" >>$CLIENT_CONFIG
+}
+
+write_server_config() {
+    local target_ip target_port listen_port key
+    local crypt mode mtu sndwnd rcvwnd
+    local datashard parityshard dscp nocomp sockbuf keepalive
+    local nodelay interval resend nc acknodelay
+
+    config_get target_ip   $1 target_ip
+    config_get target_port $1 target_port
+    config_get listen_port $1 listen_port
+    config_get key         $1 key
+    config_get crypt       $1 crypt
+    config_get mode        $1 mode
+    config_get mtu         $1 mtu
+    config_get sndwnd      $1 sndwnd
+    config_get rcvwnd      $1 rcvwnd
+    config_get datashard   $1 datashard
+    config_get parityshard $1 parityshard
+    config_get dscp        $1 dscp
+    config_get nocomp      $1 nocomp
+    config_get sockbuf     $1 sockbuf
+    config_get keepalive   $1 keepalive
+
+    if [ "$mode" = "manual" ]; then
+        config_get nodelay    $1 nodelay
+        config_get interval   $1 interval
+        config_get resend     $1 resend
+        config_get nc         $1 nc
+        config_get acknodelay $1 acknodelay
+    fi
+
+    [ -z "$target_ip" -o -z "$target_port" -o -z "$listen_port" ] && return $ERROR
+
+    iptables -A "$NAME" -p udp --dport "$listen_port" -m comment --comment "server" -j ACCEPT
+
+    echo -n "{" >$SERVER_CONFIG
+    printf '\n  "listen": ":%s"' "$listen_port" >>$SERVER_CONFIG
+    printf ',\n  "target": "%s:%s"' "$target_ip" "$target_port" >>$SERVER_CONFIG
+    [ -n "$key" ] && \
+        printf ',\n  "key": "%s"' "$key" >>$SERVER_CONFIG
+    [ -n "$crypt" ] && \
+        printf ',\n  "crypt": "%s"' "$crypt" >>$SERVER_CONFIG
+    [ -n "$mode" ] && \
+        printf ',\n  "mode": "%s"' "$mode" >>$SERVER_CONFIG
+    [ -n "$mtu" ] && \
+        printf ',\n  "mtu": %d' "$mtu" >>$SERVER_CONFIG
+    [ -n "$sndwnd" ] && \
+        printf ',\n  "sndwnd": "%d"' "$sndwnd" >>$SERVER_CONFIG
+    [ -n "$rcvwnd" ] && \
+        printf ',\n  "rcvwnd": "%d"' "$rcvwnd" >>$SERVER_CONFIG
+    [ -n "$datashard" ] && \
+        printf ',\n  "datashard": "%d"' "$datashard" >>$SERVER_CONFIG
+    [ -n "$parityshard" ] && \
+        printf ',\n  "parityshard": "%d"' "$parityshard" >>$SERVER_CONFIG
+    [ -n "$dscp" ] && \
+        printf ',\n  "dscp": "%d"' "$dscp" >>$SERVER_CONFIG
+    [ -n "$nocomp" ] && \
+        printf ',\n  "nocomp": "%s"' $nocomp >>$SERVER_CONFIG
+    [ -n "$nodelay" ] && \
+        printf ',\n  "nodelay": "%d"' "$nodelay" >>$SERVER_CONFIG
+    [ -n "$interval" ] && \
+        printf ',\n  "interval": "%d"' "$interval" >>$SERVER_CONFIG
+    [ -n "$resend" ] && \
+        printf ',\n  "resend": "%d"' "$resend" >>$SERVER_CONFIG
+    [ -n "$nc" ] && \
+        printf ',\n  "nc": "%d"' "$nc" >>$SERVER_CONFIG
+    [ -n "$acknodelay" ] && \
+        printf ',\n  "acknodelay": %s' "$acknodelay" >>$SERVER_CONFIG
+    [ -n "$sockbuf" ] && \
+        printf ',\n  "sockbuf": "%d"' "$sockbuf" >>$SERVER_CONFIG
+    [ -n "$keepalive" ] && \
+        printf ',\n  "keepalive": "%d"' "$keepalive" >>$SERVER_CONFIG
+    [ -n "$client_log" ] && \
+        printf ',\n  "log": "%s"' "$client_log" >>$SERVER_CONFIG
+    echo -e "\n}" >>$SERVER_CONFIG
+}
+
+load_settings() {
+    config_get_bool enable_server  $1 enable_server 0
+    config_get_bool enable_logging $1 enable_logging 0
+
+    config_get kcptun_client $1 kcptun_client
+    config_get kcptun_server $1 kcptun_server
+    config_get client_file   $1 client_file
+    config_get server_file   $1 server_file
+    config_get log_folder    $1 log_folder
+}
+
+create_folder() {
+    [ -d "$CONFIG_FOLDER" ] || mkdir -p "$CONFIG_FOLDER" || return $ERROR
+    [ -d "$PID_FOLDER" ] || mkdir -p "$PID_FOLDER" || return $ERROR
+
+    if [ "$enable_logging" -eq 1 ]; then
+
+        log_folder=${log_folder:-$LOG_FOLDER}
+        [ -d "$log_folder" ] || mkdir -p "$log_folder" && {
+
+            server_log="$log_folder/kcptun-server.log"
+            client_log="$log_folder/kcptun-client.log"
+
+            chown -R $SERVICE_UID:$SERVICE_GID "$log_folder"
+        }
+
+        return $?
+    fi
+}
+
+setup_iptables() {
+    iptables -N "$NAME" 2>/dev/null
+    iptables -F "$NAME" 2>/dev/null
+
+    iptables -C output_rule -j "$NAME" 2>/dev/null || \
+        iptables -A output_rule -j "$NAME"
+    iptables -C input_rule -j "$NAME" 2>/dev/null || \
+        iptables -A input_rule -j "$NAME"
+}
+
+start_instance() {
+    load_settings $1
+    create_folder || return $ERROR
+
+    setup_iptables
+
+    if [ "$kcptun_client" != "nil"  ]; then
+        write_client_config $kcptun_client
+        if [ $? -eq 0 ]; then
+            [ -f "$client_file" ] || return $ERROR
+            [ -x "$client_file" ] || chmod 755 "$client_file"
+
+            SERVICE_PID_FILE="$CLIENT_PID" \
+                service_start "$client_file" -c "$CLIENT_CONFIG"
+        fi
+    fi
+
+    if [ "$enable_server" -eq 1 -a "$enable_server" != "nil" ]; then
+        write_server_config $kcptun_server
+        if [ $? -eq 0 ]; then
+            [ -f "$server_file" ] || return $ERROR
+            [ -x "$server_file" ] || chmod 755 "$server_file"
+
+            SERVICE_PID_FILE="$SERVER_PID" \
+                service_start "$server_file" -c "$SERVER_CONFIG"
+        fi
+    fi
+}
+
+stop_instance() {
+    load_settings $1
+
+    SERVICE_PID_FILE="$CLIENT_PID" service_stop "$client_file"
+    SERVICE_PID_FILE="$SERVER_PID" service_stop "$server_file"
+
+    rm -f "$CLIENT_PID" "$SERVER_PID"
+}
+
+start() {
+    echo -n "Starting $NAME"
+    config_load $NAME
+    config_foreach start_instance 'general'
+    echo "."
+}
+
+stop() {
+    echo -n "Stopping $NAME"
+    config_load $NAME
+    config_foreach stop_instance 'general'
+    echo "."
+}
+
+restart() {
+    stop
+    start
+}
+
+boot() {
+    :
+}
