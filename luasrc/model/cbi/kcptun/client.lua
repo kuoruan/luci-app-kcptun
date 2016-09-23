@@ -30,7 +30,7 @@ local modes = {
     "manual",
 }
 
-m = Map(kcptun, translate("Kcptun"))
+m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Configuration")})
 m.redirect = dsp.build_url("admin/services/kcptun/list")
 
 if m.uci:get(kcptun, sid) ~= "client" then
@@ -42,7 +42,7 @@ s = m:section(NamedSection, sid, "client", translate("Client Manage"))
 s.anonymous = true
 s.addremove = false
 
-o = s:option(Value, "alias", translate("Alias(optional)"))
+o = s:option(Value, "alias", "%s %s" %{translate("Alias"), translate("(optional)")})
 o.rmempty = true
 
 o = s:option(Value, "server_ip", translate("Server IP"))
@@ -63,7 +63,7 @@ o.placeholder = "12948"
 o.default = "12948"
 o.rmempty = false
 
-o = s:option(Value, "key", translate("Key"), translate("Pre-shared secret for client and server."))
+o = s:option(Value, "key", "%s %s" %{translate("Key"), translate("(optional)")}, translate("Pre-shared secret for client and server."))
 o.password = true
 o.placeholder = "it's a secret"
 o.rmempty = true
@@ -82,42 +82,42 @@ end
 o.default = "fast"
 o.rmempty = false
 
-o = s:option(Value, "conn", translate("conn"), translate("Number of UDP connections to server."))
+o = s:option(Value, "conn", "%s %s" %{translate("conn"), translate("(optional)")}, translate("Number of UDP connections to server."))
 o.datatype = "uinteger"
 o.placeholder = "1"
 o.rmempty = true
 
-o = s:option(Value, "autoexpire", translate("autoexpire"), translate("Autoexpire, Default unit is seconds"))
+o = s:option(Value, "autoexpire", "%s %s" %{translate("autoexpire"), translate("(optional)")}, translate("(optional)")}, translate("Autoexpire, Default unit is seconds."))
 o.datatype = "uinteger"
 o.placeholder = "60"
 o.rmempty = true
 
-o = s:option(Value, "mtu", translate("mtu"), translate("Maximum transmission unit of UDP packets."))
+o = s:option(Value, "mtu", "%s %s" %{translate("mtu"), translate("(optional)")}, translate("Maximum transmission unit of UDP packets."))
 o.datatype = "and('uinteger', max(1500))"
 o.placeholder = "1350"
 o.rmempty = true
 
-o = s:option(Value, "sndwnd", translate("sndwnd"), translate("Send Window Size(num of packets)."))
+o = s:option(Value, "sndwnd", "%s %s" %{translate("sndwnd"), translate("(optional)")}, translate("Send Window Size(num of packets)."))
 o.datatype = "uinteger"
 o.placeholder = "128"
 o.rmempty = true
 
-o = s:option(Value, "rcvwnd", translate("rcvwnd"), translate("Receive Window Size(num of packets)."))
+o = s:option(Value, "rcvwnd", "%s %s" %{translate("rcvwnd"), translate("(optional)")}, translate("Receive Window Size(num of packets)."))
 o.datatype = "uinteger"
 o.placeholder = "1024"
 o.rmempty = true
 
-o = s:option(Value, "datashard", translate("datashard"), translate("Reed-solomon Erasure Coding - datashard."))
+o = s:option(Value, "datashard", "%s %s" %{translate("datashard"), translate("(optional)")}, translate("Reed-solomon Erasure Coding - datashard."))
 o.datatype = "uinteger"
 o.placeholder = "10"
 o.rmempty = true
 
-o = s:option(Value, "parityshard", translate("parityshard"), translate("Reed-solomon Erasure Coding - parityshard."))
+o = s:option(Value, "parityshard", "%s %s" %{translate("parityshard"), translate("(optional)")}, translate("Reed-solomon Erasure Coding - parityshard."))
 o.datatype = "uinteger"
 o.placeholder = "3"
 o.rmempty = true
 
-o = s:option(Value, "dscp", translate("dscp"), translate("DSCP(6bit)"))
+o = s:option(Value, "dscp", "%s %s" %{translate("dscp"), translate("(optional)")}, translate("DSCP(6bit)"))
 o.datatype = "uinteger"
 o.placeholder = "0"
 o.rmempty = true
@@ -163,7 +163,7 @@ o.default = o.disabled
 o.rmempty = true
 o:depends("mode", "manual")
 
-o = s:option(Value, "sockbuf", translate("sockbuf"), translate("Send/secv buffer size of udp sockets, default unit is MB"))
+o = s:option(Value, "sockbuf", "%s %s" %{translate("sockbuf"), translate("(optional)")}, translate("Send/secv buffer size of udp sockets, default unit is MB."))
 o.datatype = "uinteger"
 o.placeholder = "4"
 o.rmempty = true
@@ -181,7 +181,7 @@ function o.write(self, section, value)
     end
 end
 
-o = s:option(Value, "keepalive", translate("keepalive"), translate("NAT keepalive interval(in seconds) to prevent your router from removing port mapping, default unit is seconds."))
+o = s:option(Value, "keepalive", "%s %s" %{translate("keepalive"), translate("(optional)")}, translate("NAT keepalive interval(in seconds) to prevent your router from removing port mapping, default unit is seconds."))
 o.datatype = "uinteger"
 o.placeholder = "10"
 o.rmempty = true
