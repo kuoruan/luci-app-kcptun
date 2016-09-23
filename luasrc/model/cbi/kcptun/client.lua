@@ -146,7 +146,7 @@ o:value("0", translate("Off"))
 o:value("1", translate("On"))
 o:value("2", translate("2nd ACK"))
 o.default = "2"
-o.rmempty = false
+o.rmempty = true
 o:depends("mode", "manual")
 
 o = s:option(Flag, "nc", translate("nc"))
