@@ -87,7 +87,7 @@ o.datatype = "uinteger"
 o.placeholder = "1"
 o.rmempty = true
 
-o = s:option(Value, "autoexpire", "%s %s" %{translate("autoexpire"), translate("(optional)")}, translate("(optional)")}, translate("Autoexpire, Default unit is seconds."))
+o = s:option(Value, "autoexpire", "%s %s" %{translate("autoexpire"), translate("(optional)")}, translate("Autoexpire, Default unit is seconds."))
 o.datatype = "uinteger"
 o.placeholder = "60"
 o.rmempty = true

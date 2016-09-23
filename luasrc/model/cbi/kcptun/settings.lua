@@ -44,7 +44,7 @@ s = m:section(TypedSection, "general", translate("General Settings"))
 s.anonymous = true
 s.addremove = false
 
-o = s:option(ListValue, "kcptun_client", "Kcptun Client")
+o = s:option(ListValue, "kcptun_client", translate("Kcptun Client"))
 o:value("nil", translate("Disable"))
 for k, v in pairs(client_table) do
     o:value(k, v)
@@ -52,25 +52,25 @@ end
 o.default = "nil"
 o.rmempty = false
 
-o = s:option(Value, "client_file", "Client Exec File")
+o = s:option(Value, "client_file", translate("Client Exec File"))
 o.datatype = "file"
 o.placeholder = default_client_file
 o.rmempty = false
 function o.validate(self, value, section)
-    if value and not isKcptun(value) then
+    if value and fs.access(value) and not isKcptun(value) then
         return nil, translate("Not a Kcptun executable file.")
     end
 
     return value
 end
 
-enable_server = s:option(Flag, "enable_server", "Enable Server")
+enable_server = s:option(Flag, "enable_server", translate("Enable Server"))
 enable_server.enabled = "1"
 enable_server.disabled = "0"
 enable_server.default = o.disabled
 enable_server.rmempty = false
 
-o = s:option(ListValue, "kcptun_server", "Kcptun Server")
+o = s:option(ListValue, "kcptun_server", translate("Kcptun Server"))
 o:value("nil", translate("Disable"))
 for k, v in pairs(server_table) do
     o:value(k, v)
@@ -78,7 +78,7 @@ end
 o.default = "nil"
 o:depends("enable_server", "1")
 
-o = s:option(Value, "server_file", "Server Exec File")
+o = s:option(Value, "server_file", translate("Server Exec File"))
 o.datatype = "file"
 o.placeholder = default_server_file
 o:depends("enable_server", "1")
@@ -102,20 +102,20 @@ function o.validate(self, value, section)
         return nil, translate("Server exec file required.")
     end
 
-    if value and not isKcptun(value) then
+    if value and fs.access(value) and not isKcptun(value) then
        return nil, translate("Not a Kcptun executable file.")
     end
 
     return value
 end
 
-enable_logging = s:option(Flag, "enable_logging", "Enable Logging")
+enable_logging = s:option(Flag, "enable_logging", translate("Enable Logging"))
 enable_logging.enabled = "1"
 enable_logging.disabled = "0"
 enable_logging.default = o.disabled
 enable_logging.rmempty = false
 
-o = s:option(Value, "log_folder", "Log Folder")
+o = s:option(Value, "log_folder", translate("Log Folder"))
 o.datatype = "directory"
 o.default = default_log_folder
 o.placeholder = default_log_folder

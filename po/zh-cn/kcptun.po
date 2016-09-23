@@ -224,3 +224,9 @@ msgstr "监听端口"
 
 msgid "Server listen port."
 msgstr "服务端监听端口"
+
+msgid "Server exec file required."
+msgstr "请输入服务端可执行文件路径"
+
+msgid "Not a Kcptun executable file."
+msgstr "不是 Kcptun 可执行文件"
