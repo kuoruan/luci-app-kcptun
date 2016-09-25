@@ -1,0 +1,122 @@
+<%#
+ Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
+ Licensed to the public under the Apache License 2.0.
+-%>
+
+<%-
+    local sys  = require "luci.sys"
+    local fs = require "nixio.fs"
+    local uci = require "luci.model.uci".cursor()
+    local ipkg = require "luci.model.ipkg"
+
+    local kcptun = "kcptun"
+    local enable_server = uci:get_first(kcptun, "general", "enable_server") == "1"
+    local enable_logging = uci:get_first(kcptun, "general", "enable_logging") == "1"
+    local client_file = (uci:get_first("kcptun", "general", "client_file") or ""):trim()
+    local server_file = (uci:get_first("kcptun", "general", "server_file") or ""):trim()
+    local package_info = ipkg.info("luci-app-kcptun") or ""
+
+    local client_version, server_version
+
+    if client_file ~= "" and fs.access(client_file, "rwx", "rx", "rx") then
+        client_version = sys.exec(client_file .. " -v | awk '{printf $3}'")
+    end
+    if not client_version or client_version == "" then
+        client_version = translate("Unknown")
+    end
+
+    if enable_server then
+        if server_file ~= "" and fs.access(server_file, "rwx", "rx", "rx") then
+            server_version = sys.exec(server_file .. " -v | awk '{printf $3}'")
+        end
+        if not server_version or server_version == "" then
+            server_version = translate("Unknown")
+        end
+    end
+
+-%>
+
+<script type="text/javascript">//<![CDATA[
+    XHR.poll(5, '<%=url('admin/services/kcptun/info')%>', null,
+            function(x, info)
+            {
+                var client_status_tb = document.getElementById('kcptun_client_status');
+                if (typeof(info.client.running) != "undefined")
+                {
+                    client_status_tb.innerHTML = info.client.running ? '<%:Running%>' : '<%:Not Running%>';
+                }
+                <%- if enable_logging then %>
+                var client_log_ta = document.getElementById('kcptun_client_log');
+                if (typeof(info.client.log) != "undefined")
+                {
+                    if (info.client.log == "error")
+                    {
+                        client_log_ta.innerHTML = '<%:Log file does not exist...%>';
+                    }
+                    else
+                    {
+                        client_log_ta.innerHTML = info.client.log;
+                    }
+                }
+                <%- end -%>
+                <%- if enable_server then %>
+                var server_status_tb = document.getElementById('kcptun_server_status');
+                if (typeof(info.server.running) != "undefined")
+                {
+                    server_status_tb.innerHTML = info.server.running ? '<%:Running%>' : '<%:Not Running%>';
+                }
+                <%- if enable_logging then %>
+                var server_log_ta = document.getElementById('kcptun_server_log');
+                if (typeof(info.server.log) != "undefined")
+                {
+                    if (info.server.log == "error")
+                    {
+                        server_log_ta.innerHTML = '<%:Log file does not exist...%>';
+                    }
+                    else
+                    {
+                        server_log_ta.innerHTML = info.server.log;
+                    }
+                }
+                <%- end -%>
+                <%- end %>
+            }
+        );
+//]]></script>
+
+<fieldset class="cbi-section">
+    <legend><%:Running Status%></legend>
+
+    <table width="100%" cellspacing="10" id="kcptun_status_table">
+        <tr><td width="33%"><%:Client Version%></td><td><%=pcdata(client_version)%></td></tr>
+        <tr><td width="33%"><%:Client Status%></td><td id="kcptun_client_status"><em><%:Collecting data...%></em></td></tr>
+        <% if enable_server then -%>
+        <tr><td width="33%"><%:Server Version%></td><td><%=pcdata(server_version)%></td></tr>
+        <tr><td width="33%"><%:Server Status%></td><td id="kcptun_server_status"><em><%:Collecting data...%></em></td></tr>
+        <%- end -%>
+        <% if package_info ~= "" then -%>
+        <tr><td width="33%"><%:Luci Version%></td><td><%=pcdata(package_info["luci-app-kcptun"]["Version"])%></td></tr>
+        <tr><td width="33%"><%:Luci Installation Time%></td><td><%=pcdata(os.date('%Y-%m-%d %H:%M:%S', package_info["luci-app-kcptun"]["Installed-Time"]))%></td></tr>
+        <%- end %>
+        <tr><td width="33%"><%:Author%></td><td>Index &lt;kuoruan@gmail.com&gt;</td></tr>
+        <tr><td width="33%"><%:Blog%></td><td><a href="https://blog.kuoruan.com" target="_blank">https://blog.kuoruan.com</a></td></tr>
+    </table>
+</fieldset>
+<% if enable_logging then -%>
+<fieldset class="cbi-section">
+    <legend><%:Client Log%></legend>
+
+    <textarea class="cbi-input-textarea" style="width: 100%" id="kcptun_client_log" rows="21" readonly="true">
+    <%-:No log data...-%>
+    </textarea>
+</fieldset>
+<% if enable_server then -%>
+<fieldset class="cbi-section">
+    <legend><%:Server Log%></legend>
+
+    <textarea class="cbi-input-textarea" style="width: 100%" id="kcptun_server_log" rows="21" readonly="true">
+    <%-:No log data...-%>
+    </textarea>
+</fieldset>
+<%- end -%>
+<%- end %>

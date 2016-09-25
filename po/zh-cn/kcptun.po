@@ -25,14 +25,35 @@ msgstr "未运行"
 msgid "Running"
 msgstr "运行中"
 
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Collecting data..."
+msgstr "正在收集数据..."
+
 msgid "Server Version"
 msgstr "服务端版本"
 
 msgid "Server Status"
 msgstr "服务端状态"
 
+msgid "Luci Version"
+msgstr "Lici 版本"
+
+msgid "Luci Installation Time"
+msgstr "Luci 安装时间"
+
+msgid "Author"
+msgstr "作者"
+
+msgid "Blog"
+msgstr "博客"
+
 msgid "Client Log"
 msgstr "客户端日志"
+
+msgid "Log file does not exist..."
+msgstr "日志文件不存在..."
 
 msgid "No log data..."
 msgstr "无日志数据..."
