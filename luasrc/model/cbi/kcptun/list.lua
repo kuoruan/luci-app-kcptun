@@ -30,20 +30,15 @@ end
 
 o = s:option(DummyValue, "_server_address", translate("Server Address"))
 function o.cfgvalue(self, section)
-    local ip = m.uci:get(kcptun, section, "server_ip")
-    local port = m.uci:get(kcptun, section, "server_port")
+    local ip = m.uci:get(kcptun, section, "server_ip") or "?"
+    local port = m.uci:get(kcptun, section, "server_port") or "?"
 
-    if ip and port then
-        return "%s:%s" %{ip, port}
-    end
-
-    return "?"
+    return "%s:%s" %{ip, port}
 end
 
 o = s:option(DummyValue, "local_port", translate("Local Port"))
 function o.cfgvalue(...)
-    local v = Value.cfgvalue(...)
-    return v or "?"
+    return Value.cfgvalue(...) or "?"
 end
 
 o = s:option(DummyValue, "crypt", translate("Encrypt Method"))
@@ -86,20 +81,15 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
 
     o = s:option(DummyValue, "_target_address", translate("Target Address"))
     function o.cfgvalue(self, section)
-        local ip = m.uci:get(kcptun, section, "target_ip")
-        local port = m.uci:get(kcptun, section, "target_port")
+        local ip = m.uci:get(kcptun, section, "target_ip") or "?"
+        local port = m.uci:get(kcptun, section, "target_port") or "?"
 
-        if ip and port then
-            return "%s:%s" %{ip, port}
-        end
-
-        return "?"
+        return "%s:%s" %{ip, port}
     end
 
     o = s:option(DummyValue, "listen_port", translate("Listen Port"))
     function o.cfgvalue(...)
-        local v = Value.cfgvalue(...)
-        return v or "?"
+        return Value.cfgvalue(...) or "?"
     end
 
     o = s:option(DummyValue, "crypt", translate("Encrypt Method"))
