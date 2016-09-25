@@ -112,6 +112,12 @@ msgstr "内置模式"
 msgid "Disable Compression"
 msgstr "禁用压缩"
 
+msgid "Servers List"
+msgstr "服务端列表"
+
+msgid "Target Address"
+msgstr "目标地址"
+
 msgid "Configuration"
 msgstr "配置"
 
@@ -138,9 +144,6 @@ msgstr "客户端和服务端的通信密码"
 
 msgid "crypt"
 msgstr "crypt"
-
-msgid "Encrypt Method"
-msgstr "加密方式"
 
 msgid "mode"
 msgstr "mode"

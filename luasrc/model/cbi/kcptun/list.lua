@@ -23,7 +23,7 @@ function s.create(...)
     end
 end
 
-o = s:option(DummyValue, "alias", "Alias")
+o = s:option(DummyValue, "alias", translate("Alias"))
 function o.cfgvalue(self, section)
     return Value.cfgvalue(self, section) or translate("None")
 end
@@ -74,7 +74,7 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
         end
     end
 
-    o = s:option(DummyValue, "alias", "Alias")
+    o = s:option(DummyValue, "alias", translate("Alias"))
     function o.cfgvalue(self, section)
         return Value.cfgvalue(self, section) or translate("None")
     end
