@@ -84,15 +84,11 @@ o.placeholder = default_server_file
 o:depends("enable_server", "1")
 o.rmempty = true
 function o.formvalue(self, section)
-    local enable = enable_server:formvalue(section)
-    local value = Value.formvalue(self, section)
+    local enable = enable_server:formvalue(section) or enable_server.disabled
+    local value = (Value.formvalue(self, section) or ""):trim()
 
-    if enable == enable_server.enabled then
-        if value and value:trim():len() > 0 then
-            return value
-        else
-            return "-"
-        end
+    if enable == enable_server.enabled and value == "" then
+        return "-"
     end
 
     return value
@@ -102,7 +98,7 @@ function o.validate(self, value, section)
         return nil, translate("Server exec file required.")
     end
 
-    if value and fs.access(value) and not isKcptun(value) then
+    if fs.access(value) and not isKcptun(value) then
        return nil, translate("Not a Kcptun executable file.")
     end
 
@@ -122,22 +118,20 @@ o.placeholder = default_log_folder
 o:depends("enable_logging", "1")
 o.rmempty = true
 function o.formvalue(self, section)
-    local value = Value.formvalue(self, section)
-    if value and value:trim():len() > 0 then
+    local value = (Value.formvalue(self, section) or ""):trim()
+    if value ~= "" then
 
         value = string.gsub(value, "\\", "/")
         if value:sub(1, 1) ~= "/" then
-            return "/" .. value
+            value = "/" .. value
         end
 
         while value:sub(-1) == "/" do
             value = value:sub(1, -2)
         end
-
-        return value
-    else
-        return nil
     end
+
+    return value
 end
 function o.validate(self, value, section)
     if value and not fs.stat(value) then
