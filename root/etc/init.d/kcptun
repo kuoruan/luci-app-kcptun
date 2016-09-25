@@ -179,8 +179,8 @@ write_server_config() {
         printf ',\n  "sockbuf": %d' "$sockbuf" >>$SERVER_CONFIG
     [ -n "$keepalive" ] && \
         printf ',\n  "keepalive": %d' "$keepalive" >>$SERVER_CONFIG
-    [ -n "$client_log" ] && \
-        printf ',\n  "log": "%s"' "$client_log" >>$SERVER_CONFIG
+    [ -n "$server_log" ] && \
+        printf ',\n  "log": "%s"' "$server_log" >>$SERVER_CONFIG
     echo -e "\n}" >>$SERVER_CONFIG
 }
 
@@ -274,13 +274,4 @@ stop() {
     config_load $NAME
     config_foreach stop_instance 'general'
     echo "."
-}
-
-restart() {
-    stop
-    start
-}
-
-boot() {
-    :
 }
