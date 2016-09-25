@@ -5,30 +5,30 @@ local uci = require "luci.model.uci".cursor()
 local dsp = require "luci.dispatcher"
 local http = require "luci.http"
 
-local m, s, o
+local m, clients_list, servers_list, o
 local kcptun = "kcptun"
 
 m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Configuration List")})
 
-s = m:section(TypedSection, "client", translate("Clients List"))
-s.anonymous = true
-s.addremove = true
-s.template = "cbi/tblsection"
-s.extedit = dsp.build_url("admin/services/kcptun/client/%s")
-function s.create(...)
+clients_list = m:section(TypedSection, "client", translate("Clients List"))
+clients_list.anonymous = true
+clients_list.addremove = true
+clients_list.template = "cbi/tblsection"
+clients_list.extedit = dsp.build_url("admin/services/kcptun/client/%s")
+function clients_list.create(...)
     local sid = TypedSection.create(...)
     if sid then
-        http.redirect(s.extedit % sid)
+        http.redirect(clients_list.extedit % sid)
         return
     end
 end
 
-o = s:option(DummyValue, "alias", translate("Alias"))
+o = clients_list:option(DummyValue, "alias", translate("Alias"))
 function o.cfgvalue(self, section)
     return Value.cfgvalue(self, section) or translate("None")
 end
 
-o = s:option(DummyValue, "_server_address", translate("Server Address"))
+o = clients_list:option(DummyValue, "_server_address", translate("Server Address"))
 function o.cfgvalue(self, section)
     local ip = m.uci:get(kcptun, section, "server_ip") or "?"
     local port = m.uci:get(kcptun, section, "server_port") or "?"
@@ -36,24 +36,24 @@ function o.cfgvalue(self, section)
     return "%s:%s" %{ip, port}
 end
 
-o = s:option(DummyValue, "local_port", translate("Local Port"))
+o = clients_list:option(DummyValue, "local_port", translate("Local Port"))
 function o.cfgvalue(...)
     return Value.cfgvalue(...) or "?"
 end
 
-o = s:option(DummyValue, "crypt", translate("Encrypt Method"))
+o = clients_list:option(DummyValue, "crypt", translate("Encrypt Method"))
 function o.cfgvalue(...)
     local v = Value.cfgvalue(...)
     return v and v:upper() or "?"
 end
 
-o = s:option(DummyValue, "mode", translate("Embedded Mode"))
+o = clients_list:option(DummyValue, "mode", translate("Embedded Mode"))
 function o.cfgvalue(...)
     local v = Value.cfgvalue(...)
     return v and v:upper() or "?"
 end
 
-o = s:option(DummyValue, "nocomp", translate("Disable Compression"))
+o = clients_list:option(DummyValue, "nocomp", translate("Disable Compression"))
 function o.cfgvalue(...)
     local v = Value.cfgvalue(...)
     return v and translate(v:gsub("^%l", string.upper)) or translate("False") --First character uppercase
@@ -61,25 +61,25 @@ end
 
 if uci:get_first(kcptun, "general", "enable_server") == "1" then
 
-    s = m:section(TypedSection, "server", translate("Servers List"))
-    s.anonymous = true
-    s.addremove = true
-    s.template = "cbi/tblsection"
-    s.extedit = dsp.build_url("admin/services/kcptun/server/%s")
-    function s.create(...)
+    servers_list = m:section(TypedSection, "server", translate("Servers List"))
+    servers_list.anonymous = true
+    servers_list.addremove = true
+    servers_list.template = "cbi/tblsection"
+    servers_list.extedit = dsp.build_url("admin/services/kcptun/server/%s")
+    function servers_list.create(...)
         local sid = TypedSection.create(...)
         if sid then
-            http.redirect(s.extedit % sid)
+            http.redirect(servers_list.extedit % sid)
             return
         end
     end
 
-    o = s:option(DummyValue, "alias", translate("Alias"))
+    o = servers_list:option(DummyValue, "alias", translate("Alias"))
     function o.cfgvalue(self, section)
         return Value.cfgvalue(self, section) or translate("None")
     end
 
-    o = s:option(DummyValue, "_target_address", translate("Target Address"))
+    o = servers_list:option(DummyValue, "_target_address", translate("Target Address"))
     function o.cfgvalue(self, section)
         local ip = m.uci:get(kcptun, section, "target_ip") or "?"
         local port = m.uci:get(kcptun, section, "target_port") or "?"
@@ -87,24 +87,24 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
         return "%s:%s" %{ip, port}
     end
 
-    o = s:option(DummyValue, "listen_port", translate("Listen Port"))
+    o = servers_list:option(DummyValue, "listen_port", translate("Listen Port"))
     function o.cfgvalue(...)
         return Value.cfgvalue(...) or "?"
     end
 
-    o = s:option(DummyValue, "crypt", translate("Encrypt Method"))
+    o = servers_list:option(DummyValue, "crypt", translate("Encrypt Method"))
     function o.cfgvalue(...)
         local v = Value.cfgvalue(...)
         return v and v:upper() or "?"
     end
 
-    o = s:option(DummyValue, "mode", translate("Embedded Mode"))
+    o = servers_list:option(DummyValue, "mode", translate("Embedded Mode"))
     function o.cfgvalue(...)
         local v = Value.cfgvalue(...)
         return v and v:upper() or "?"
     end
 
-    o = s:option(DummyValue, "nocomp", translate("Disable Compression"))
+    o = servers_list:option(DummyValue, "nocomp", translate("Disable Compression"))
     function o.cfgvalue(...)
         local v = Value.cfgvalue(...)
         return v and translate(v:gsub("^%l", string.upper)) or translate("False")
