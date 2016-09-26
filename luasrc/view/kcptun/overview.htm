@@ -38,50 +38,58 @@
 
 <script type="text/javascript">//<![CDATA[
     XHR.poll(5, '<%=url('admin/services/kcptun/info')%>', null,
-            function(x, info)
+        function(x, info)
+        {
+            var client_status_tb = document.getElementById('kcptun_client_status');
+            if (typeof(info.client.running) != "undefined")
             {
-                var client_status_tb = document.getElementById('kcptun_client_status');
-                if (typeof(info.client.running) != "undefined")
-                {
-                    client_status_tb.innerHTML = info.client.running ? '<%:Running%>' : '<%:Not Running%>';
-                }
-                <%- if enable_logging then %>
-                var client_log_ta = document.getElementById('kcptun_client_log');
-                if (typeof(info.client.log) != "undefined")
-                {
-                    if (info.client.log == "error")
-                    {
-                        client_log_ta.innerHTML = '<%:Log file does not exist...%>';
-                    }
-                    else
-                    {
-                        client_log_ta.innerHTML = info.client.log;
-                    }
-                }
-                <%- end -%>
-                <%- if enable_server then %>
-                var server_status_tb = document.getElementById('kcptun_server_status');
-                if (typeof(info.server.running) != "undefined")
-                {
-                    server_status_tb.innerHTML = info.server.running ? '<%:Running%>' : '<%:Not Running%>';
-                }
-                <%- if enable_logging then %>
-                var server_log_ta = document.getElementById('kcptun_server_log');
-                if (typeof(info.server.log) != "undefined")
-                {
-                    if (info.server.log == "error")
-                    {
-                        server_log_ta.innerHTML = '<%:Log file does not exist...%>';
-                    }
-                    else
-                    {
-                        server_log_ta.innerHTML = info.server.log;
-                    }
-                }
-                <%- end -%>
-                <%- end %>
+                client_status_tb.innerHTML = info.client.running ? '<%:Running%>' : '<%:Not Running%>';
             }
-        );
+            else
+            {
+                client_status_tb.innerHTML = '<em><%:Unknown%></em>'
+            }
+            <% if enable_logging then -%>
+            var client_log_ta = document.getElementById('kcptun_client_log');
+            if (typeof(info.client.log) != "undefined")
+            {
+                if (info.client.log == "error")
+                {
+                    client_log_ta.innerHTML = '<%:Log file does not exist...%>';
+                }
+                else
+                {
+                    client_log_ta.innerHTML = info.client.log;
+                }
+            }
+            <% end -%>
+            <% if enable_server then -%>
+            var server_status_tb = document.getElementById('kcptun_server_status');
+            if (typeof(info.server.running) != "undefined")
+            {
+                server_status_tb.innerHTML = info.server.running ? '<%:Running%>' : '<%:Not Running%>';
+            }
+            else
+            {
+                server_status_tb.innerHTML = '<em><%:Unknown%></em>'
+            }
+            <% if enable_logging then -%>
+            var server_log_ta = document.getElementById('kcptun_server_log');
+            if (typeof(info.server.log) != "undefined")
+            {
+                if (info.server.log == "error")
+                {
+                    server_log_ta.innerHTML = '<%:Log file does not exist...%>';
+                }
+                else
+                {
+                    server_log_ta.innerHTML = info.server.log;
+                }
+            }
+            <%- end %>
+            <%- end %>
+        }
+    );
 //]]></script>
 
 <fieldset class="cbi-section">
