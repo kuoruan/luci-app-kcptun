@@ -52,6 +52,18 @@ msgstr "博客"
 msgid "Client Log"
 msgstr "客户端日志"
 
+msgid "Clear client log"
+msgstr "清理客户端日志"
+
+msgid "Processing..."
+msgstr "正在清理..."
+
+msgid "ID required"
+msgstr "ID 不能为空"
+
+msgid "Error ID"
+msgstr "ID 错误"
+
 msgid "Log file does not exist..."
 msgstr "日志文件不存在..."
 
@@ -60,6 +72,9 @@ msgstr "无日志数据..."
 
 msgid "Server Log"
 msgstr "服务端日志"
+
+msgid "Clear server log"
+msgstr "清理服务端日志"
 
 msgid "General Settings"
 msgstr "基本设置"

@@ -90,41 +90,96 @@
             <%- end %>
         }
     );
+
+    function clear_log(btn, id)
+    {
+        btn.disabled = true;
+        btn.value    = '<%:Processing...%>';
+
+        (new XHR()).post('<%=url('admin/services/kcptun/clear_log')%>/' + id, { token: '<%=token%>' },
+            function(x)
+            {
+                btn.disabled = false;
+                btn.value    = btn.placeholder;
+
+                var log_ta = getNextElement(btn.parentNode).children[0];
+                if (log_ta && x.status == 200) {
+                    switch (parseInt(x.responseText))
+                    {
+                        case 0:
+                            log_ta.innerHTML = '';
+                            break;
+                        case 11:
+                            log_ta.innerHTML = '<%:ID required%>';
+                            break;
+                        case 12:
+                            log_ta.innerHTML = '<%:Error ID%>';
+                            break;
+                        case 13:
+                            log_ta.innerHTML = '<%:Log file does not exist...%>';
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        );
+    }
+
+    function getNextElement(node){
+        var NextElementNode = node.nextSibling;
+        while(NextElementNode.nodeValue != null){
+            NextElementNode = NextElementNode.nextSibling
+        }
+        return NextElementNode;
+    }
 //]]></script>
 
 <fieldset class="cbi-section">
     <legend><%:Running Status%></legend>
 
-    <table width="100%" cellspacing="10" id="kcptun_status_table">
-        <tr><td width="33%"><%:Client Version%></td><td><%=pcdata(client_version)%></td></tr>
-        <tr><td width="33%"><%:Client Status%></td><td id="kcptun_client_status"><em><%:Collecting data...%></em></td></tr>
-        <% if enable_server then -%>
-        <tr><td width="33%"><%:Server Version%></td><td><%=pcdata(server_version)%></td></tr>
-        <tr><td width="33%"><%:Server Status%></td><td id="kcptun_server_status"><em><%:Collecting data...%></em></td></tr>
-        <%- end -%>
-        <% if package_info ~= "" then -%>
-        <tr><td width="33%"><%:Luci Version%></td><td><%=pcdata(package_info["luci-app-kcptun"]["Version"])%></td></tr>
-        <tr><td width="33%"><%:Luci Installation Time%></td><td><%=pcdata(os.date('%Y-%m-%d %H:%M:%S', package_info["luci-app-kcptun"]["Installed-Time"]))%></td></tr>
-        <%- end %>
-        <tr><td width="33%"><%:Author%></td><td>Index &lt;kuoruan@gmail.com&gt;</td></tr>
-        <tr><td width="33%"><%:Blog%></td><td><a href="https://blog.kuoruan.com" target="_blank">https://blog.kuoruan.com</a></td></tr>
-    </table>
+    <fieldset class="cbi-section-node">
+        <table width="100%" cellspacing="10" id="kcptun_status_table">
+            <tr><td width="33%"><%:Client Version%></td><td><%=pcdata(client_version)%></td></tr>
+            <tr><td width="33%"><%:Client Status%></td><td id="kcptun_client_status"><em><%:Collecting data...%></em></td></tr>
+            <% if enable_server then -%>
+            <tr><td width="33%"><%:Server Version%></td><td><%=pcdata(server_version)%></td></tr>
+            <tr><td width="33%"><%:Server Status%></td><td id="kcptun_server_status"><em><%:Collecting data...%></em></td></tr>
+            <% end -%>
+            <% if package_info ~= "" then -%>
+            <tr><td width="33%"><%:Luci Version%></td><td><%=pcdata(package_info["luci-app-kcptun"]["Version"])%></td></tr>
+            <tr><td width="33%"><%:Luci Installation Time%></td><td><%=pcdata(os.date('%Y-%m-%d %H:%M:%S', package_info["luci-app-kcptun"]["Installed-Time"]))%></td></tr>
+            <% end -%>
+            <tr><td width="33%"><%:Author%></td><td>Index &lt;kuoruan@gmail.com&gt;</td></tr>
+            <tr><td width="33%"><%:Blog%></td><td><a href="https://blog.kuoruan.com" target="_blank">https://blog.kuoruan.com</a></td></tr>
+        </table>
+    </fieldset>
 </fieldset>
 <% if enable_logging then -%>
 <fieldset class="cbi-section">
     <legend><%:Client Log%></legend>
+    <div class="cbi-section-descr">
+        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear client log%>" placeholder="<%:Clear client log%>" onclick="clear_log(this, 1)" />
+    </div>
 
-    <textarea class="cbi-input-textarea" style="width: 100%" id="kcptun_client_log" rows="21" readonly="true">
-    <%-:No log data...-%>
-    </textarea>
+    <fieldset class="cbi-section-node">
+        <textarea class="cbi-input-textarea" style="width: 100%; resize: none;" id="kcptun_client_log" rows="21" readonly="true">
+        <%-:No log data...-%>
+        </textarea>
+    </fieldset>
 </fieldset>
 <% if enable_server then -%>
 <fieldset class="cbi-section">
     <legend><%:Server Log%></legend>
+    <div class="cbi-section-descr">
+        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear server log%>" placeholder="<%:Clear server log%>" onclick="clear_log(this, 2)" />
+    </div>
 
-    <textarea class="cbi-input-textarea" style="width: 100%" id="kcptun_server_log" rows="21" readonly="true">
-    <%-:No log data...-%>
-    </textarea>
+    <fieldset class="cbi-section-node">
+        <textarea class="cbi-input-textarea" style="width: 100%; resize: none;" id="kcptun_server_log" rows="21" readonly="true">
+        <%-:No log data...-%>
+        </textarea>
+    </fieldset>
 </fieldset>
 <%- end -%>
 <%- end %>
