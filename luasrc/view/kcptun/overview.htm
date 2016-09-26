@@ -126,9 +126,11 @@
         );
     }
 
-    function getNextElement(node){
+    function getNextElement(node)
+    {
         var NextElementNode = node.nextSibling;
-        while(NextElementNode.nodeValue != null){
+        while(NextElementNode.nodeValue != null)
+        {
             NextElementNode = NextElementNode.nextSibling
         }
         return NextElementNode;
