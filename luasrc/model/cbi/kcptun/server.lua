@@ -121,9 +121,11 @@ o.rmempty = false
 o = s:option(Flag, "nodelay", translate("nodelay"), translate("Enable nodelay Mode."))
 o.enabled = "1"
 o.disabled = "0"
-o.default = o.enabled
 o.rmempty = true
 o:depends("mode", "manual")
+function o.cfgvalue(self, section)
+    return Flag.cfgvalue(self, section) or o.enabled
+end
 
 o = s:option(Value, "interval", translate("interval"))
 o.datatype = "uinteger"
@@ -142,9 +144,11 @@ o:depends("mode", "manual")
 o = s:option(Flag, "nc", translate("nc"))
 o.enabled = "1"
 o.disabled = "0"
-o.default = o.enabled
 o.rmempty = true
 o:depends("mode", "manual")
+function o.cfgvalue(self, section)
+    return Flag.cfgvalue(self, section) or o.enabled
+end
 
 o = s:option(Flag, "acknodelay", translate("acknodelay"))
 o.enabled = "true"
