@@ -7,13 +7,12 @@ OpenWrt 上的 Kcptun Luci 支持界面
 
 ```
 cd openwrt
+git clone https://github.com/kuoruan/luci-app-kcptun.git feeds/luci/applications/luci-app-kcptun
 rm -rf tmp/
-cd feeds/luci/applications
-git clone https://github.com/kuoruan/luci-app-kcptun.git
 
-cd -
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+
 make menuconfig
 make package/luci-app-kcptun/compile
 ```
