@@ -28,6 +28,16 @@ opkg install luci-app-kcptun_*.ipk
 opkg install luci-i18n-kcptun-zh-cn_*.ipk
 ```
 
+安装好 luci 之后需要下载路由器对应版本的 Kcptun 客户端文件, 下载之后上传到路由器上任意目录(如: /usr/bin/kcptun)
+
+之后到 luci 中配置好客户端或路径即可使用, 若提示不是 Kcptun 文件, 说明所下载的客户端文件不适合当前路由器, 请重新下载
+
+## Kcptun 客户端
+
+下载地址: https://github.com/xtaci/kcptun/releases
+
+ar71xx ramips 可以到这里下载 https://github.com/bettermanbao/openwrt-kcptun/releases
+
 ## 卸载说明
 
 卸载时需要先卸载 luci-i18n-kcptun-zh-cn, 再卸载 luci-app-kcptun
