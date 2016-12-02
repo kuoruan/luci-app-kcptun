@@ -214,6 +214,8 @@ load_settings() {
 	config_get server_file   $1 server_file
 	config_get daemon_user   $1 daemon_user
 	config_get log_folder    $1 log_folder
+
+	[ -z "$daemon_user" ] && daemon_user=$DEFAULT_USER
 }
 
 create_folder() {
@@ -228,7 +230,7 @@ create_folder() {
 		server_log="$log_folder/kcptun-server.log"
 		client_log="$log_folder/kcptun-client.log"
 
-		chown -R $SERVICE_UID:$SERVICE_GID "$log_folder"
+		chown -R "$daemon_user" "$log_folder"
 	fi
 }
 
@@ -278,7 +280,6 @@ start_instance() {
 
 	setup_iptables
 	setup_cron
-	[ -z "$daemon_user" ] && daemon_user=$DEFAULT_USER
 
 	if [ "$kcptun_client"x != "nilx"  ]; then
 		write_client_config $kcptun_client
