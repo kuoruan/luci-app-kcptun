@@ -1,5 +1,16 @@
 -- Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
--- Licensed to the public under the Apache License 2.0.
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--    http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local uci = require "luci.model.uci".cursor()
 local dsp = require "luci.dispatcher"
@@ -13,6 +24,7 @@ m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Configuration List")
 clients_list = m:section(TypedSection, "client", translate("Clients List"))
 clients_list.anonymous = true
 clients_list.addremove = true
+clients_list.sortable = true
 clients_list.template = "cbi/tblsection"
 clients_list.extedit = dsp.build_url("admin/services/kcptun/client/%s")
 function clients_list.create(...)
@@ -64,6 +76,7 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
     servers_list = m:section(TypedSection, "server", translate("Servers List"))
     servers_list.anonymous = true
     servers_list.addremove = true
+    servers_list.sortable = true
     servers_list.template = "cbi/tblsection"
     servers_list.extedit = dsp.build_url("admin/services/kcptun/server/%s")
     function servers_list.create(...)

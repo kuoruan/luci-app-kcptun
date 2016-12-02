@@ -52,7 +52,7 @@ msgstr "博客"
 msgid "Client Log"
 msgstr "客户端日志"
 
-msgid "Clear client log"
+msgid "Clear Client Log"
 msgstr "清理客户端日志"
 
 msgid "Processing..."
@@ -73,8 +73,14 @@ msgstr "无日志数据..."
 msgid "Server Log"
 msgstr "服务端日志"
 
-msgid "Clear server log"
+msgid "Clear Server Log"
 msgstr "清理服务端日志"
+
+msgid "Monitor Log"
+msgstr "监控日志"
+
+msgid "Clear Monitor Log"
+msgstr "清理监控日志"
 
 msgid "General Settings"
 msgstr "基本设置"
@@ -96,6 +102,21 @@ msgstr "禁用"
 
 msgid "Server Exec File"
 msgstr "服务端可执行文件"
+
+msgid "Run daemon as user"
+msgstr "以该用户启动"
+
+msgid "Enable Process Monitor"
+msgstr "启用进程监控"
+
+msgid "Check Kcptun process per minute."
+msgstr "每分钟检测进程是否运行"
+
+msgid "Enable Timed Restart Task"
+msgstr "启用定时重启任务"
+
+msgid "Restart Kcptun at 5 in the morning."
+msgstr "每天早上5点重启 Kcptun"
 
 msgid "Enable Logging"
 msgstr "启用日志记录"
@@ -277,4 +298,4 @@ msgid "Server exec file required."
 msgstr "请输入服务端可执行文件路径"
 
 msgid "Not a Kcptun executable file."
-msgstr "不是 Kcptun 可执行文件"
+msgstr "不是 Kcptun 可执行文件, 或文件不匹配"

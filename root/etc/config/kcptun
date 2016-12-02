@@ -3,6 +3,9 @@ config general
 	option kcptun_client 'nil'
 	option client_file '/usr/bin/kcptun/client'
 	option enable_server '0'
+	option daemon_user 'root'
+	option enable_monitor '0'
+	option enable_auto_restart '0'
 	option enable_logging '0'
 
 config client

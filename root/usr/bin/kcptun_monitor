@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+# Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+if ! command -v "uci" >/dev/null 2>&1; then
+	exit 0
+fi
+
+ENABLE_SERVER=$(uci get -q kcptun.@general[0].enable_server)
+ENABLE_LOG=$(uci get -q kcptun.@general[0].enable_logging)
+KCPTUN_CLIENT=$(uci get -q kcptun.@general[0].kcptun_client)
+KCPTUN_SERVER=$(uci get -q kcptun.@general[0].kcptun_server)
+LOG_FOLDER=$(uci get -q kcptun.@general[0].log_folder)
+KCPTUN_SERVICE=/etc/init.d/kcptun
+
+log_to_file () {
+	local msg=$1
+	if [ "$ENABLE_LOG"x = "1x" -a -d "$LOG_FOLDER" ]; then
+		echo "$(date '+%Y/%m/%d %T') $msg" >>"$LOG_FOLDER"/kcptun-monitor.log
+	fi
+}
+
+check_client() {
+	local retval=0
+	local client_file=$(uci get -q kcptun.@general[0].client_file)
+
+	if [ -n "$client_file" ]; then
+		ps -w | grep -v grep | grep -q "$client_file"
+		retval=$?
+		if [ $retval -ne 0 ]; then
+			log_to_file "Client is down."
+		fi
+	fi
+
+	return $retval
+}
+
+check_server() {
+	local retval=0
+	local server_file=$(uci get -q kcptun.@general[0].server_file)
+
+	if [ -n "$server_file" ]; then
+		ps -w | grep -v grep | grep -q "$server_file"
+		retval=$?
+		if [ $retval -ne 0 ]; then
+			log_to_file "Server is down."
+		fi
+	fi
+
+	return $retval
+}
+
+restart_kcptun() {
+	if [ -x "$KCPTUN_SERVICE" ]; then
+		$KCPTUN_SERVICE restart
+		log_to_file "Restart Kcptun."
+	else
+		log_to_file "Can't find serice file!"
+	fi
+}
+
+check_process() {
+	if [ "$KCPTUN_CLIENT"x != "nilx" ]; then
+		flag=$flag"c"
+	fi
+
+	if [ "$ENABLE_SERVER"x = "1x" -a "$KCPTUN_SERVER"x != "nilx" ]; then
+		flag=$flag"s"
+	fi
+
+	if [ "$flag" = "cs" ]; then
+		if ! check_client || ! check_server; then
+			restart_kcptun
+		fi
+	elif [ "$flag" = "c" ]; then
+		if ! check_client; then
+			restart_kcptun
+		fi
+	elif [ "$flag" = "s" ]; then
+		if ! check_server; then
+			restart_kcptun
+		fi
+	fi
+}
+
+check_process
+
+exit 0

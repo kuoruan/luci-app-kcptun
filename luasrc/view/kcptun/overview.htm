@@ -1,6 +1,17 @@
 <%#
  Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
- Licensed to the public under the Apache License 2.0.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 -%>
 
 <%-
@@ -11,9 +22,9 @@
 
     local kcptun = "kcptun"
     local enable_server = uci:get_first(kcptun, "general", "enable_server") == "1"
+    local enable_monitor = uci:get_first(kcptun, "general", "enable_monitor") == "1"
     local enable_logging = uci:get_first(kcptun, "general", "enable_logging") == "1"
     local client_file = (uci:get_first("kcptun", "general", "client_file") or ""):trim()
-    local server_file = (uci:get_first("kcptun", "general", "server_file") or ""):trim()
     local package_info = ipkg.info("luci-app-kcptun") or ""
 
     local client_version, server_version
@@ -26,6 +37,8 @@
     end
 
     if enable_server then
+        local server_file = (uci:get_first("kcptun", "general", "server_file") or ""):trim()
+
         if server_file ~= "" and fs.access(server_file, "rwx", "rx", "rx") then
             server_version = sys.exec(server_file .. " -v | awk '{printf $3}'")
         end
@@ -49,6 +62,17 @@
             {
                 client_status_tb.innerHTML = '<em><%:Unknown%></em>'
             }
+            <% if enable_server then -%>
+            var server_status_tb = document.getElementById('kcptun_server_status');
+            if (typeof(info.server.running) != "undefined")
+            {
+                server_status_tb.innerHTML = info.server.running ? '<%:Running%>' : '<%:Not Running%>';
+            }
+            else
+            {
+                server_status_tb.innerHTML = '<em><%:Unknown%></em>'
+            }
+            <% end -%>
             <% if enable_logging then -%>
             var client_log_ta = document.getElementById('kcptun_client_log');
             if (typeof(info.client.log) != "undefined")
@@ -62,18 +86,7 @@
                     client_log_ta.innerHTML = info.client.log;
                 }
             }
-            <% end -%>
             <% if enable_server then -%>
-            var server_status_tb = document.getElementById('kcptun_server_status');
-            if (typeof(info.server.running) != "undefined")
-            {
-                server_status_tb.innerHTML = info.server.running ? '<%:Running%>' : '<%:Not Running%>';
-            }
-            else
-            {
-                server_status_tb.innerHTML = '<em><%:Unknown%></em>'
-            }
-            <% if enable_logging then -%>
             var server_log_ta = document.getElementById('kcptun_server_log');
             if (typeof(info.server.log) != "undefined")
             {
@@ -84,6 +97,20 @@
                 else
                 {
                     server_log_ta.innerHTML = info.server.log;
+                }
+            }
+            <%- end %>
+            <% if enable_monitor then -%>
+            var monitor_log_ta = document.getElementById('kcptun_monitor_log');
+            if (typeof(info.monitor.log) != "undefined")
+            {
+                if (info.monitor.log == "error")
+                {
+                    monitor_log_ta.innerHTML = '<%:Log file does not exist...%>';
+                }
+                else
+                {
+                    monitor_log_ta.innerHTML = info.monitor.log;
                 }
             }
             <%- end %>
@@ -161,7 +188,7 @@
 <fieldset class="cbi-section">
     <legend><%:Client Log%></legend>
     <div class="cbi-section-descr">
-        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear client log%>" placeholder="<%:Clear client log%>" onclick="clear_log(this, 1)" />
+        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear Client Log%>" placeholder="<%:Clear Client Log%>" onclick="clear_log(this, 1)" />
     </div>
 
     <fieldset class="cbi-section-node">
@@ -174,11 +201,25 @@
 <fieldset class="cbi-section">
     <legend><%:Server Log%></legend>
     <div class="cbi-section-descr">
-        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear server log%>" placeholder="<%:Clear server log%>" onclick="clear_log(this, 2)" />
+        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear Server Log%>" placeholder="<%:Clear Server Log%>" onclick="clear_log(this, 2)" />
     </div>
 
     <fieldset class="cbi-section-node">
         <textarea class="cbi-input-textarea" style="width: 100%; resize: none;" id="kcptun_server_log" rows="21" readonly="true">
+        <%-:No log data...-%>
+        </textarea>
+    </fieldset>
+</fieldset>
+<% end -%>
+<% if enable_monitor then -%>
+<fieldset class="cbi-section">
+    <legend><%:Monitor Log%></legend>
+    <div class="cbi-section-descr">
+        <input type="button" class="cbi-button cbi-button-apply" value="<%:Clear Monitor Log%>" placeholder="<%:Clear Monitor Log%>" onclick="clear_log(this, 3)" />
+    </div>
+
+    <fieldset class="cbi-section-node">
+        <textarea class="cbi-input-textarea" style="width: 100%; resize: none;" id="kcptun_monitor_log" rows="21" readonly="true">
         <%-:No log data...-%>
         </textarea>
     </fieldset>

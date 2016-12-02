@@ -1,7 +1,19 @@
 -- Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
--- Licensed to the public under the Apache License 2.0.
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--    http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 local uci = require "luci.model.uci".cursor()
+local util = require "luci.util"
 local sys = require "luci.sys"
 local fs = require "nixio.fs"
 
@@ -105,10 +117,28 @@ function o.validate(self, value, section)
     return value
 end
 
+o = s:option(ListValue, "daemon_user", translate("Run daemon as user"))
+local p_user
+for _, p_user in util.vspairs(util.split(sys.exec("cat /etc/passwd | cut -f 1 -d :"))) do
+    o:value(p_user)
+end
+
+o = s:option(Flag, "enable_monitor", translate("Enable Process Monitor"), translate("Check Kcptun process per minute."))
+o.enabled = "1"
+o.disabled = "0"
+o.default = o.disabled
+o.rmempty = false
+
+o = s:option(Flag, "enable_auto_restart", translate("Enable Timed Restart Task"), translate("Restart Kcptun at 5 in the morning."))
+o.enabled = "1"
+o.disabled = "0"
+o.default = o.disabled
+o.rmempty = false
+
 enable_logging = s:option(Flag, "enable_logging", translate("Enable Logging"))
 enable_logging.enabled = "1"
 enable_logging.disabled = "0"
-enable_logging.default = o.disabled
+enable_logging.default = enable_logging.disabled
 enable_logging.rmempty = false
 
 o = s:option(Value, "log_folder", translate("Log Folder"))
