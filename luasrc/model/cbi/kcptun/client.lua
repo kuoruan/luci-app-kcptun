@@ -56,8 +56,8 @@ s.addremove = false
 o = s:option(Value, "alias", "%s %s" %{translate("Alias"), translate("(optional)")})
 o.rmempty = true
 
-o = s:option(Value, "server_ip", translate("Server IP"))
-o.datatype = "ipaddr"
+o = s:option(Value, "server", translate("Server"))
+o.datatype = "host"
 o.placeholder = "0.0.0.0"
 o.default = "0.0.0.0"
 o.rmempty = false

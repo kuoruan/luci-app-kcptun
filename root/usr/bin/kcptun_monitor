@@ -16,7 +16,7 @@
 #
 
 if ! command -v "uci" >/dev/null 2>&1; then
-	exit 0
+	exit 1
 fi
 
 ENABLE_SERVER=$(uci get -q kcptun.@general[0].enable_server)

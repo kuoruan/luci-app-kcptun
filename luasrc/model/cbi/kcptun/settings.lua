@@ -28,16 +28,16 @@ local server_table = {}
 uci:foreach(kcptun, "client", function(c)
     if c.alias then
         client_table[c[".name"]] = c.alias
-    elseif c.server_ip and c.server_port then
-        client_table[c[".name"]] = "%s:%s" %{c.server_ip, c.server_port}
+    elseif c.server and c.server_port then
+        client_table[c[".name"]] = "%s:%s" %{c.server, c.server_port}
     end
 end)
 
 uci:foreach(kcptun, "server", function(s)
     if s.alias then
         server_table[s[".name"]] = s.alias
-    elseif s.target_ip and s.target_port then
-        server_table[s[".name"]] = "%s:%s" %{s.target_ip, s.target_port}
+    elseif s.target and s.target_port then
+        server_table[s[".name"]] = "%s:%s" %{s.target, s.target_port}
     end
 end)
 

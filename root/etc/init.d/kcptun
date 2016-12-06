@@ -18,6 +18,9 @@
 START=99
 STOP=15
 
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+
 NAME=kcptun
 LOG_FOLDER=/var/log/$NAME
 PID_FOLDER=/var/run/$NAME
@@ -26,7 +29,7 @@ CLIENT_PID=$PID_FOLDER/client.pid
 SERVER_PID=$PID_FOLDER/server.pid
 CLIENT_CONFIG=$CONFIG_FOLDER/client.json
 SERVER_CONFIG=$CONFIG_FOLDER/server.json
-CRON_FILE=/etc/cron/root
+CRON_FILE=/etc/crontabs/root
 DEFAULT_USER=root
 
 ERROR=1
@@ -36,13 +39,12 @@ write_client_config() {
 	if [ $# != 1 ]; then
 		return $ERROR
 	fi
-
-	local server_ip server_port local_port key
+	local server server_port local_port key
 	local crypt mode conn autoexpire mtu sndwnd rcvwnd
 	local datashard parityshard dscp nocomp sockbuf keepalive
 	local nodelay interval resend nc acknodelay
 
-	config_get server_ip   $1 server_ip
+	config_get server      $1 server
 	config_get server_port $1 server_port
 	config_get local_port  $1 local_port
 	config_get key         $1 key
@@ -68,13 +70,13 @@ write_client_config() {
 		config_get acknodelay $1 acknodelay
 	fi
 
-	[ -z "$server_ip" -o -z "$server_port" -o -z "$local_port" ] && return $ERROR
+	[ -z "$server" -o -z "$server_port" -o -z "$local_port" ] && return $ERROR
 
 	add_iptables_rule $local_port "client"
 
 	echo -n "{" >$CLIENT_CONFIG
 	printf '\n  "localaddr": ":%s"' "$local_port" >>$CLIENT_CONFIG
-	printf ',\n  "remoteaddr": "%s:%s"' "$server_ip" "$server_port" >>$CLIENT_CONFIG
+	printf ',\n  "remoteaddr": "%s:%s"' "$server" "$server_port" >>$CLIENT_CONFIG
 	[ -n "$key" ] && \
 		printf ',\n  "key": "%s"' "$key" >>$CLIENT_CONFIG
 	[ -n "$crypt" ] && \
@@ -124,13 +126,12 @@ write_server_config() {
 	if [ $# != 1 ]; then
 		return $ERROR
 	fi
-
-	local target_ip target_port listen_port key
+	local target target_port listen_port key
 	local crypt mode mtu sndwnd rcvwnd
 	local datashard parityshard dscp nocomp sockbuf keepalive
 	local nodelay interval resend nc acknodelay
 
-	config_get target_ip   $1 target_ip
+	config_get target      $1 target
 	config_get target_port $1 target_port
 	config_get listen_port $1 listen_port
 	config_get key         $1 key
@@ -154,13 +155,13 @@ write_server_config() {
 		config_get acknodelay $1 acknodelay
 	fi
 
-	[ -z "$target_ip" -o -z "$target_port" -o -z "$listen_port" ] && return $ERROR
+	[ -z "$target" -o -z "$target_port" -o -z "$listen_port" ] && return $ERROR
 
 	add_iptables_rule $listen_port "server"
 
 	echo -n "{" >$SERVER_CONFIG
 	printf '\n  "listen": ":%s"' "$listen_port" >>$SERVER_CONFIG
-	printf ',\n  "target": "%s:%s"' "$target_ip" "$target_port" >>$SERVER_CONFIG
+	printf ',\n  "target": "%s:%s"' "$target" "$target_port" >>$SERVER_CONFIG
 	[ -n "$key" ] && \
 		printf ',\n  "key": "%s"' "$key" >>$SERVER_CONFIG
 	[ -n "$crypt" ] && \
@@ -203,10 +204,10 @@ write_server_config() {
 }
 
 load_settings() {
-	config_get_bool enable_server       $1 enable_server  0
-	config_get_bool enable_logging      $1 enable_logging 0
-	config_get_bool enable_monitor      $1 enable_monitor 0
-	config_get_bool enable_auto_restart $1 enable_cron    0
+	config_get_bool enable_server       $1 enable_server       0
+	config_get_bool enable_logging      $1 enable_logging      0
+	config_get_bool enable_monitor      $1 enable_monitor      0
+	config_get_bool enable_auto_restart $1 enable_auto_restart 0
 
 	config_get kcptun_client $1 kcptun_client
 	config_get kcptun_server $1 kcptun_server
@@ -224,7 +225,7 @@ create_folder() {
 
 	if [ "$enable_logging" -eq 1 ]; then
 
-		log_folder=${log_folder:-$LOG_FOLDER}
+		local log_folder=${log_folder:-$LOG_FOLDER}
 		[ -d "$log_folder" ] || mkdir -p "$log_folder"
 
 		server_log="$log_folder/kcptun-server.log"
@@ -245,9 +246,11 @@ setup_iptables() {
 }
 
 setup_cron() {
+	[ -f "$CRON_FILE" ] || touch "$CRON_FILE"
+
 	if [ "$enable_monitor" -eq 1 ]; then
 		if ! grep -q '/usr/bin/kcptun_monitor' "$CRON_FILE"; then
-			echo '*/1 * * * * /usr/bin/kcptun_monitor' >>"$CRON_FILE"
+			sed -i '$a */1 * * * * /usr/bin/kcptun_monitor' "$CRON_FILE"
 		fi
 	else
 		sed -i '/^\*\/1 \* \* \* \* \/usr\/bin\/kcptun_monitor$/d' "$CRON_FILE"
@@ -255,10 +258,16 @@ setup_cron() {
 
 	if [ "$enable_auto_restart" -eq 1 ]; then
 		if ! grep -q '/etc/init.d/kcptun' "$CRON_FILE"; then
-			echo '0 5 * * * /etc/init.d/kcptun restart' >>"$CRON_FILE"
+			sed -i '$a 0 5 * * * /etc/init.d/kcptun restart' "$CRON_FILE"
 		fi
 	else
 		sed -i '/^0 5 \* \* \* \/etc\/init.d\/kcptun restart$/d' "$CRON_FILE"
+	fi
+
+	if [ "$enable_monitor" -eq 1 -o "$enable_auto_restart" -eq 1 ]; then
+		if ! ps -w | grep -v grep | grep -q crond; then
+			/etc/init.d/cron restart
+		fi
 	fi
 }
 
@@ -290,7 +299,8 @@ start_instance() {
 			SERVICE_UID="$daemon_user" \
 			SERVICE_PID_FILE="$CLIENT_PID" \
 				service_start "$client_file" -c "$CLIENT_CONFIG"
-			sleep 1
+
+			logger -t "$NAME" "Client started."
 		fi
 	fi
 
@@ -303,7 +313,8 @@ start_instance() {
 			SERVICE_UID="$daemon_user" \
 			SERVICE_PID_FILE="$SERVER_PID" \
 				service_start "$server_file" -c "$SERVER_CONFIG"
-			sleep 1
+
+			logger -t "$NAME" "Server started."
 		fi
 	fi
 }
@@ -313,29 +324,29 @@ stop_instance() {
 
 	if [ -f "$client_file" ]; then
 		SERVICE_PID_FILE="$CLIENT_PID" service_stop "$client_file"
-		sleep 1
 	fi
 
 	if [ "$enable_server" -eq 1 -a -f "$server_file" ]; then
 		SERVICE_PID_FILE="$SERVER_PID" service_stop "$server_file"
-		sleep 1
 	fi
 
 	rm -f "$CLIENT_PID" "$SERVER_PID"
 }
 
 start() {
-	echo -n "Starting $NAME"
+	echo "Starting ${NAME}..."
 	config_load $NAME
 	config_foreach start_instance 'general'
-	echo "."
 }
 
 stop() {
-	echo -n "Stopping $NAME"
+	echo "Stopping ${NAME}..."
 	config_load $NAME
 	config_foreach stop_instance 'general'
-	echo "."
 }
 
-exit $SUCCESS
+reload() {
+	echo "Reloading ${NAME}..."
+	stop
+	start
+}

@@ -1,194 +1,17 @@
-msgid "Kcptun"
-msgstr "Kcptun"
+msgid "(optional)"
+msgstr "(可选)"
 
-msgid "Overview"
-msgstr "总览"
+msgid "2nd ACK"
+msgstr "2次ACK跨越重传"
 
-msgid "Settings"
-msgstr "设置"
-
-msgid "Configuration List"
-msgstr "配置列表"
-
-msgid "Running Status"
-msgstr "运行状态"
-
-msgid "Client Version"
-msgstr "客户端版本"
-
-msgid "Client Status"
-msgstr "客户端状态"
-
-msgid "Not Running"
-msgstr "未运行"
-
-msgid "Running"
-msgstr "运行中"
-
-msgid "Unknown"
-msgstr "未知"
-
-msgid "Collecting data..."
-msgstr "正在收集数据..."
-
-msgid "Server Version"
-msgstr "服务端版本"
-
-msgid "Server Status"
-msgstr "服务端状态"
-
-msgid "Luci Version"
-msgstr "Lici 版本"
-
-msgid "Luci Installation Time"
-msgstr "Luci 安装时间"
-
-msgid "Author"
-msgstr "作者"
-
-msgid "Blog"
-msgstr "博客"
-
-msgid "Client Log"
-msgstr "客户端日志"
-
-msgid "Clear Client Log"
-msgstr "清理客户端日志"
-
-msgid "Processing..."
-msgstr "正在清理..."
-
-msgid "ID required"
-msgstr "ID 不能为空"
-
-msgid "Error ID"
-msgstr "ID 错误"
-
-msgid "Log file does not exist..."
-msgstr "日志文件不存在..."
-
-msgid "No log data..."
-msgstr "无日志数据..."
-
-msgid "Server Log"
-msgstr "服务端日志"
-
-msgid "Clear Server Log"
-msgstr "清理服务端日志"
-
-msgid "Monitor Log"
-msgstr "监控日志"
-
-msgid "Clear Monitor Log"
-msgstr "清理监控日志"
-
-msgid "General Settings"
-msgstr "基本设置"
-
-msgid "Kcptun Client"
-msgstr "Kcptun 客户端"
-
-msgid "Client Exec File"
-msgstr "客户端可执行文件"
-
-msgid "Enable Server"
-msgstr "启用服务端"
-
-msgid "Kcptun Server"
-msgstr "Kcptun 服务端"
-
-msgid "Disable"
-msgstr "禁用"
-
-msgid "Server Exec File"
-msgstr "服务端可执行文件"
-
-msgid "Run daemon as user"
-msgstr "以该用户启动"
-
-msgid "Enable Process Monitor"
-msgstr "启用进程监控"
-
-msgid "Check Kcptun process per minute."
-msgstr "每分钟检测进程是否运行"
-
-msgid "Enable Timed Restart Task"
-msgstr "启用定时重启任务"
-
-msgid "Restart Kcptun at 5 in the morning."
-msgstr "每天早上5点重启 Kcptun"
-
-msgid "Enable Logging"
-msgstr "启用日志记录"
-
-msgid "Log Folder"
-msgstr "日志文件夹"
-
-msgid "Clients List"
-msgstr "客户端列表"
+msgid "acknodelay"
+msgstr "acknodelay"
 
 msgid "Alias"
 msgstr "别名"
 
-msgid "(optional)"
-msgstr "(可选)"
-
-msgid "Server Address"
-msgstr "服务端地址"
-
-msgid "Local Port"
-msgstr "本地端口"
-
-msgid "Encrypt Method"
-msgstr "加密方式"
-
-msgid "Embedded Mode"
-msgstr "内置模式"
-
-msgid "Disable Compression"
-msgstr "禁用压缩"
-
-msgid "Servers List"
-msgstr "服务端列表"
-
-msgid "Target Address"
-msgstr "目标地址"
-
-msgid "Configuration"
-msgstr "配置"
-
-msgid "Client Manage"
-msgstr "客户端管理"
-
-msgid "Server IP"
-msgstr "服务端IP"
-
-msgid "Server Port"
-msgstr "服务端端口"
-
-msgid "Local Port"
-msgstr "本地端口"
-
-msgid "Local listen port."
-msgstr "本地监听端口"
-
-msgid "Key"
-msgstr "密码"
-
-msgid "Pre-shared secret for client and server."
-msgstr "客户端和服务端的通信密码"
-
-msgid "crypt"
-msgstr "crypt"
-
-msgid "mode"
-msgstr "mode"
-
-msgid "conn"
-msgstr "conn"
-
-msgid "Number of UDP connections to server."
-msgstr "到服务端的UDP连接数量"
+msgid "Author"
+msgstr "作者"
 
 msgid "autoexpire"
 msgstr "autoexpire"
@@ -196,35 +19,65 @@ msgstr "autoexpire"
 msgid "Autoexpire, Default unit is seconds."
 msgstr "自动重连间隔时间, 默认单位: 秒"
 
-msgid "mtu"
-msgstr "mtu"
+msgid "Blog"
+msgstr "博客"
 
-msgid "Maximum transmission unit of UDP packets."
-msgstr "UDP数据包的最大传输单元"
+msgid "Check Kcptun process per minute."
+msgstr "每分钟检查 Kcptun 进程"
 
-msgid "sndwnd"
-msgstr "sndwnd"
+msgid "Clear Client Log"
+msgstr "清理客户端日志"
 
-msgid "Send Window Size(num of packets)."
-msgstr "发送窗口大小 (数据包数量)"
+msgid "Clear Monitor Log"
+msgstr "清理监控日志"
 
-msgid "rcvwnd"
-msgstr "rcvwnd"
+msgid "Clear Server Log"
+msgstr "清理服务端日志"
 
-msgid "Receive Window Size(num of packets)."
-msgstr "接收窗口大小 (数据包数量)"
+msgid "Client Exec File"
+msgstr "客户端可执行文件"
+
+msgid "Client Log"
+msgstr "客户端日志"
+
+msgid "Client Manage"
+msgstr "客户端管理"
+
+msgid "Client Status"
+msgstr "客户端状态"
+
+msgid "Client Version"
+msgstr "客户端版本"
+
+msgid "Clients List"
+msgstr "客户端列表"
+
+msgid "Collecting data..."
+msgstr "正在收集数据..."
+
+msgid "Configuration"
+msgstr "配置"
+
+msgid "Configuration List"
+msgstr "配置列表"
+
+msgid "conn"
+msgstr "conn"
+
+msgid "crypt"
+msgstr "crypt"
 
 msgid "datashard"
 msgstr "datashard"
 
-msgid "Reed-solomon Erasure Coding - datashard."
-msgstr "前向纠错 - datashard"
+msgid "Disable"
+msgstr "禁用"
 
-msgid "parityshard"
-msgstr "parityshard"
+msgid "Disable Compression."
+msgstr "禁用压缩"
 
-msgid "Reed-solomon Erasure Coding - parityshard."
-msgstr "前向纠错 - parityshard"
+msgid "Disable Compression."
+msgstr "禁用压缩"
 
 msgid "dscp"
 msgstr "dscp"
@@ -232,23 +85,107 @@ msgstr "dscp"
 msgid "DSCP(6bit)"
 msgstr "DSCP(6bit)"
 
-msgid "nocomp"
-msgstr "nocomp"
+msgid "Embedded Mode"
+msgstr "内置模式"
 
-msgid "Disable Compression."
-msgstr "禁用压缩"
-
-msgid "nodelay"
-msgstr "nodelay"
+msgid "Enable Logging"
+msgstr "启用日志记录"
 
 msgid "Enable nodelay Mode."
 msgstr "启用 nodelay 模式"
 
+msgid "Enable Process Monitor"
+msgstr "启用进程监控"
+
+msgid "Enable Server"
+msgstr "启用服务端"
+
+msgid "Enable Timed Restart Task"
+msgstr "启用定时重启任务"
+
+msgid "Encrypt Method"
+msgstr "加密方式"
+
+msgid "Error ID"
+msgstr "ID 错误"
+
+msgid "General Settings"
+msgstr "基本设置"
+
+msgid "ID required"
+msgstr "ID 不能为空"
+
 msgid "interval"
 msgstr "interval"
 
-msgid "resend"
-msgstr "resend"
+msgid "Kcptun"
+msgstr "Kcptun"
+
+msgid "Kcptun Client"
+msgstr "Kcptun 客户端"
+
+msgid "Kcptun Server"
+msgstr "Kcptun 服务端"
+
+msgid "keepalive"
+msgstr "keepalive"
+
+msgid "Key"
+msgstr "密码"
+
+msgid "Listen Port"
+msgstr "监听端口"
+
+msgid "Local listen port."
+msgstr "本地监听端口"
+
+msgid "Local Port"
+msgstr "本地端口"
+
+msgid "Log file does not exist..."
+msgstr "日志文件不存在..."
+
+msgid "Log Folder"
+msgstr "日志文件夹"
+
+msgid "Luci Installation Time"
+msgstr "Luci 安装时间"
+
+msgid "Luci Version"
+msgstr "Lici 版本"
+
+msgid "Maximum transmission unit of UDP packets."
+msgstr "UDP数据包的最大传输单元"
+
+msgid "mode"
+msgstr "mode"
+
+msgid "Monitor Log"
+msgstr "监控日志"
+
+msgid "mtu"
+msgstr "mtu"
+
+msgid "nc"
+msgstr "nc"
+
+msgid "No log data..."
+msgstr "无日志数据..."
+
+msgid "nocomp"
+msgstr "nocomp"
+
+msgid "nodelay"
+msgstr "nodelay"
+
+msgid "Not a Kcptun executable file."
+msgstr "不是 Kcptun 可执行文件, 或文件不匹配"
+
+msgid "Not Running"
+msgstr "未运行"
+
+msgid "Number of UDP connections to server."
+msgstr "到服务端的UDP连接数量"
 
 msgid "Off"
 msgstr "关闭"
@@ -256,46 +193,101 @@ msgstr "关闭"
 msgid "On"
 msgstr "开启"
 
-msgid "2nd ACK"
-msgstr "2次ACK跨越重传"
+msgid "Overview"
+msgstr "总览"
 
-msgid "nc"
-msgstr "nc"
+msgid "parityshard"
+msgstr "parityshard"
 
-msgid "acknodelay"
-msgstr "acknodelay"
+msgid "Pre-shared secret for client and server."
+msgstr "客户端和服务端的通信密码"
 
-msgid "sockbuf"
-msgstr "sockbuf"
+msgid "Processing..."
+msgstr "正在清理..."
+
+msgid "rcvwnd"
+msgstr "rcvwnd"
+
+msgid "Receive Window Size(num of packets)."
+msgstr "接收窗口大小 (数据包数量)"
+
+msgid "Reed-solomon Erasure Coding - datashard."
+msgstr "前向纠错 - datashard"
+
+msgid "Reed-solomon Erasure Coding - parityshard."
+msgstr "前向纠错 - parityshard"
+
+msgid "resend"
+msgstr "resend"
+
+msgid "Restart Kcptun at 5 in the morning."
+msgstr "每天早上5点重启 Kcptun"
+
+msgid "Run daemon as user"
+msgstr "以该用户启动"
+
+msgid "Running"
+msgstr "运行中"
+
+msgid "Running Status"
+msgstr "运行状态"
+
+msgid "Send Window Size(num of packets)."
+msgstr "发送窗口大小 (数据包数量)"
 
 msgid "Send/secv buffer size of udp sockets, default unit is MB."
 msgstr "发送/接收UDP数据包的缓冲区大小, 默认单位: MB"
 
-msgid "keepalive"
-msgstr "keepalive"
+msgid "Server"
+msgstr "服务端地址"
 
-msgid ""
-"NAT keepalive interval(in seconds) to prevent your router from "
-"removing port mapping, default unit is seconds."
-msgstr "NAT Keepalive 包间隔时间, 防止路由器删除端口映射, 默认单位: 秒"
+msgid "Server Address"
+msgstr "服务端地址"
 
-msgid "Server Manage"
-msgstr "服务端管理"
-
-msgid "Target IP"
-msgstr "目标IP"
-
-msgid "Target Port"
-msgstr "目标端口"
-
-msgid "Listen Port"
-msgstr "监听端口"
-
-msgid "Server listen port."
-msgstr "服务端监听端口"
+msgid "Server Exec File"
+msgstr "服务端可执行文件"
 
 msgid "Server exec file required."
 msgstr "请输入服务端可执行文件路径"
 
-msgid "Not a Kcptun executable file."
-msgstr "不是 Kcptun 可执行文件, 或文件不匹配"
+msgid "Server listen port."
+msgstr "服务端监听端口"
+
+msgid "Server Log"
+msgstr "服务端日志"
+
+msgid "Server Manage"
+msgstr "服务端管理"
+
+msgid "Server Port"
+msgstr "服务端端口"
+
+msgid "Server Status"
+msgstr "服务端状态"
+
+msgid "Server Version"
+msgstr "服务端版本"
+
+msgid "Servers List"
+msgstr "服务端列表"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "sndwnd"
+msgstr "sndwnd"
+
+msgid "sockbuf"
+msgstr "sockbuf"
+
+msgid "Target"
+msgstr "目标地址"
+
+msgid "Target Address"
+msgstr "目标地址"
+
+msgid "Target Port"
+msgstr "目标端口"
+
+msgid "Unknown"
+msgstr "未知"

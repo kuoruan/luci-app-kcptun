@@ -42,7 +42,7 @@ end
 
 o = clients_list:option(DummyValue, "_server_address", translate("Server Address"))
 function o.cfgvalue(self, section)
-    local ip = m.uci:get(kcptun, section, "server_ip") or "?"
+    local ip = m.uci:get(kcptun, section, "server") or "?"
     local port = m.uci:get(kcptun, section, "server_port") or "?"
 
     return "%s:%s" %{ip, port}
@@ -94,7 +94,7 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
 
     o = servers_list:option(DummyValue, "_target_address", translate("Target Address"))
     function o.cfgvalue(self, section)
-        local ip = m.uci:get(kcptun, section, "target_ip") or "?"
+        local ip = m.uci:get(kcptun, section, "target") or "?"
         local port = m.uci:get(kcptun, section, "target_port") or "?"
 
         return "%s:%s" %{ip, port}
