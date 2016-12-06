@@ -133,7 +133,7 @@ o.datatype = "uinteger"
 o.placeholder = "0"
 o.rmempty = true
 
-o = s:option(Flag, "nocomp", translate("nocomp"), translate("Disable Compression."))
+o = s:option(Flag, "nocomp", translate("nocomp"), translate("Disable Compression?"))
 o.enabled = "true"
 o.disabled = "false"
 o.default = o.disabled
@@ -196,7 +196,7 @@ function o.write(self, section, value)
     end
 end
 
-o = s:option(Value, "keepalive", "%s %s" %{translate("keepalive"), translate("(optional)")}, translate("NAT keepalive interval(in seconds) to prevent your router from removing port mapping, default unit is seconds."))
+o = s:option(Value, "keepalive", "%s %s" %{translate("keepalive"), translate("(optional)")}, translate("NAT keepalive interval to prevent your router from removing port mapping, default unit is seconds."))
 o.datatype = "uinteger"
 o.placeholder = "10"
 o.rmempty = true
