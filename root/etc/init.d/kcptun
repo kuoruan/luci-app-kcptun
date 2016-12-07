@@ -74,6 +74,10 @@ write_client_config() {
 
 	add_iptables_rule $local_port "client"
 
+	if echo "$server" | grep -q ":"; then
+		server="[${server}]"
+	fi
+
 	echo -n "{" >$CLIENT_CONFIG
 	printf '\n  "localaddr": ":%s"' "$local_port" >>$CLIENT_CONFIG
 	printf ',\n  "remoteaddr": "%s:%s"' "$server" "$server_port" >>$CLIENT_CONFIG
@@ -158,6 +162,10 @@ write_server_config() {
 	[ -z "$target" -o -z "$target_port" -o -z "$listen_port" ] && return $ERROR
 
 	add_iptables_rule $listen_port "server"
+
+	if echo "$target" | grep -q ":"; then
+		target="[${target}]"
+	fi
 
 	echo -n "{" >$SERVER_CONFIG
 	printf '\n  "listen": ":%s"' "$listen_port" >>$SERVER_CONFIG
