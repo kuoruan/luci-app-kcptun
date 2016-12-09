@@ -42,15 +42,17 @@ end
 
 o = clients_list:option(DummyValue, "_server_address", translate("Server Address"))
 function o.cfgvalue(self, section)
-    local ip = m.uci:get(kcptun, section, "server") or "?"
-    local port = m.uci:get(kcptun, section, "server_port") or "?"
+    local server = m.uci:get(kcptun, section, "server") or "?"
+    local server_port = m.uci:get(kcptun, section, "server_port") or "?"
 
-    return "%s:%s" %{ip, port}
+    return "%s:%s" %{server, server_port}
 end
 
-o = clients_list:option(DummyValue, "local_port", translate("Local Port"))
-function o.cfgvalue(...)
-    return Value.cfgvalue(...) or "?"
+o = clients_list:option(DummyValue, "_local_addres", translate("Local Listen"))
+function o.cfgvalue(self, section)
+    local local_host = m.uci.get(kcptun, section, "local_host") or "?"
+    local local_port = m.uci.get(kcptun, section, "local_port") or "?"
+    return "%s:%s" %{local_host, local_port}
 end
 
 o = clients_list:option(DummyValue, "crypt", translate("Encrypt Method"))
@@ -94,15 +96,18 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
 
     o = servers_list:option(DummyValue, "_target_address", translate("Target Address"))
     function o.cfgvalue(self, section)
-        local ip = m.uci:get(kcptun, section, "target") or "?"
-        local port = m.uci:get(kcptun, section, "target_port") or "?"
+        local target = m.uci:get(kcptun, section, "target") or "?"
+        local target_port = m.uci:get(kcptun, section, "target_port") or "?"
 
-        return "%s:%s" %{ip, port}
+        return "%s:%s" %{target, target_port}
     end
 
-    o = servers_list:option(DummyValue, "listen_port", translate("Listen Port"))
-    function o.cfgvalue(...)
-        return Value.cfgvalue(...) or "?"
+    o = servers_list:option(DummyValue, "_listen_address", translate("Listen Port"))
+    function o.cfgvalue(self, section)
+        local listen_host = m.uci:get(kcptun, section, "listen_host") or "?"
+        local listen_port = m.uci:get(kcptun, section, "listen_port") or "?"
+
+        return "%s:%s" %{listen_host, listen_port}
     end
 
     o = servers_list:option(DummyValue, "crypt", translate("Encrypt Method"))

@@ -35,8 +35,16 @@ DEFAULT_USER=root
 ERROR=1
 SUCCESS=0
 
+is_ipv6_address() {
+	if [ $# -eq 0 ]; then
+		return $ERROR
+	fi
+
+	echo "$1" | grep -q ":"
+}
+
 write_client_config() {
-	if [ $# != 1 ]; then
+	if [ $# -eq 0 ]; then
 		return $ERROR
 	fi
 	local server server_port local_port key
@@ -46,6 +54,7 @@ write_client_config() {
 
 	config_get server      $1 server
 	config_get server_port $1 server_port
+	config_get local_host  $1 local_host
 	config_get local_port  $1 local_port
 	config_get key         $1 key
 	config_get crypt       $1 crypt
@@ -74,12 +83,11 @@ write_client_config() {
 
 	add_iptables_rule $local_port "client"
 
-	if echo "$server" | grep -q ":"; then
-		server="[${server}]"
-	fi
+	is_ipv6_address "$server" && server="[${server}]"
+	is_ipv6_address "$local_host" && local_host="[${local_host}]"
 
 	echo -n "{" >$CLIENT_CONFIG
-	printf '\n  "localaddr": ":%s"' "$local_port" >>$CLIENT_CONFIG
+	printf '\n  "localaddr": "%s:%s"' "$local_host" "$local_port" >>$CLIENT_CONFIG
 	printf ',\n  "remoteaddr": "%s:%s"' "$server" "$server_port" >>$CLIENT_CONFIG
 	[ -n "$key" ] && \
 		printf ',\n  "key": "%s"' "$key" >>$CLIENT_CONFIG
@@ -127,7 +135,7 @@ write_client_config() {
 }
 
 write_server_config() {
-	if [ $# != 1 ]; then
+	if [ $# -eq 0 ]; then
 		return $ERROR
 	fi
 	local target target_port listen_port key
@@ -137,6 +145,7 @@ write_server_config() {
 
 	config_get target      $1 target
 	config_get target_port $1 target_port
+	config_get listen_host $1 listen_host
 	config_get listen_port $1 listen_port
 	config_get key         $1 key
 	config_get crypt       $1 crypt
@@ -163,12 +172,11 @@ write_server_config() {
 
 	add_iptables_rule $listen_port "server"
 
-	if echo "$target" | grep -q ":"; then
-		target="[${target}]"
-	fi
+	is_ipv6_address "$target" && target="[${target}]"
+	is_ipv6_address "$listen_host" && listen_host="[${listen_host}]"
 
 	echo -n "{" >$SERVER_CONFIG
-	printf '\n  "listen": ":%s"' "$listen_port" >>$SERVER_CONFIG
+	printf '\n  "listen": "%s:%s"' "$listen_host" "$listen_port" >>$SERVER_CONFIG
 	printf ',\n  "target": "%s:%s"' "$target" "$target_port" >>$SERVER_CONFIG
 	[ -n "$key" ] && \
 		printf ',\n  "key": "%s"' "$key" >>$SERVER_CONFIG

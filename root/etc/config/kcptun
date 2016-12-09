@@ -11,12 +11,14 @@ config general
 config client
 	option server '0.0.0.0'
 	option server_port '29900'
+	option local_host '127.0.0.1'
 	option local_port '12948'
 	option crypt 'aes'
 	option mode 'fast'
 	option nocomp 'false'
 
 config server
+	option listen_host '127.0.0.1'
 	option listen_port '29900'
 	option target '0.0.0.0'
 	option target_port '12948'

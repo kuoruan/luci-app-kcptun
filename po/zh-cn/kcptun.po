@@ -133,11 +133,20 @@ msgstr "keepalive"
 msgid "Key"
 msgstr "密码"
 
+msgid "Listen Host"
+msgstr "监听主机"
+
 msgid "Listen Port"
 msgstr "监听端口"
 
+msgid "Local listen host."
+msgstr "本地监听主机"
+
 msgid "Local listen port."
 msgstr "本地监听端口"
+
+msgid "Local Host"
+msgstr "本地主机"
 
 msgid "Local Port"
 msgstr "本地端口"
@@ -254,6 +263,9 @@ msgstr "服务端可执行文件"
 
 msgid "Server exec file required."
 msgstr "请输入服务端可执行文件路径"
+
+msgid "Server listen host."
+msgstr "服务端监听主机"
 
 msgid "Server listen port."
 msgstr "服务端监听端口"

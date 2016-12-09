@@ -68,6 +68,11 @@ o.placeholder = "12948"
 o.default = "12948"
 o.rmempty = false
 
+o = s:option(Value, "listen_host", translate("Listen Host"), translate("Server listen host."))
+o.datatype = "host"
+o.placeholder = "127.0.0.1"
+o.rmempty = true
+
 o = s:option(Value, "listen_port", translate("Listen Port"), translate("Server listen port."))
 o.datatype = "port"
 o.placeholder = "29900"
