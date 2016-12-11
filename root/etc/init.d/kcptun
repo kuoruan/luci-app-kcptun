@@ -18,19 +18,15 @@
 START=99
 STOP=15
 
-SERVICE_WRITE_PID=1
-SERVICE_DAEMONIZE=1
-
 NAME=kcptun
 LOG_FOLDER=/var/log/$NAME
-PID_FOLDER=/var/run/$NAME
 CONFIG_FOLDER=/var/etc/$NAME
-CLIENT_PID=$PID_FOLDER/client.pid
-SERVER_PID=$PID_FOLDER/server.pid
 CLIENT_CONFIG=$CONFIG_FOLDER/client.json
 SERVER_CONFIG=$CONFIG_FOLDER/server.json
 CRON_FILE=/etc/crontabs/root
 DEFAULT_USER=root
+
+SERVICE_DAEMONIZE=1
 
 ERROR=1
 SUCCESS=0
@@ -237,7 +233,6 @@ load_settings() {
 
 create_folder() {
 	[ -d "$CONFIG_FOLDER" ] || mkdir -p "$CONFIG_FOLDER"
-	[ -d "$PID_FOLDER" ] || mkdir -p "$PID_FOLDER"
 
 	if [ "$enable_logging" -eq 1 ]; then
 
@@ -313,7 +308,6 @@ start_instance() {
 			[ -x "$client_file" ] || chmod 755 "$client_file"
 
 			SERVICE_UID="$daemon_user" \
-			SERVICE_PID_FILE="$CLIENT_PID" \
 				service_start "$client_file" -c "$CLIENT_CONFIG"
 
 			logger -t "$NAME" "Client started."
@@ -327,7 +321,6 @@ start_instance() {
 			[ -x "$server_file" ] || chmod 755 "$server_file"
 
 			SERVICE_UID="$daemon_user" \
-			SERVICE_PID_FILE="$SERVER_PID" \
 				service_start "$server_file" -c "$SERVER_CONFIG"
 
 			logger -t "$NAME" "Server started."
@@ -339,14 +332,12 @@ stop_instance() {
 	load_settings $1
 
 	if [ -f "$client_file" ]; then
-		SERVICE_PID_FILE="$CLIENT_PID" service_stop "$client_file"
+		service_stop "$client_file"
 	fi
 
 	if [ "$enable_server" -eq 1 -a -f "$server_file" ]; then
-		SERVICE_PID_FILE="$SERVER_PID" service_stop "$server_file"
+		service_stop "$server_file"
 	fi
-
-	rm -f "$CLIENT_PID" "$SERVER_PID"
 }
 
 start() {
