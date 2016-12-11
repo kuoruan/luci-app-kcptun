@@ -25,11 +25,19 @@ local default_log_folder = "/var/log/kcptun"
 local client_table = {}
 local server_table = {}
 
+local function get_ip_string(ip)
+    if ip and ip:find(":") then
+        return "[%s]" %{ip}
+    else
+        return ip or ""
+    end
+end
+
 uci:foreach(kcptun, "client", function(c)
     if c.alias then
         client_table[c[".name"]] = c.alias
     elseif c.server and c.server_port then
-        client_table[c[".name"]] = "%s:%s" %{c.server, c.server_port}
+        client_table[c[".name"]] = "%s:%s" %{get_ip_string(c.server), c.server_port}
     end
 end)
 
@@ -37,7 +45,7 @@ uci:foreach(kcptun, "server", function(s)
     if s.alias then
         server_table[s[".name"]] = s.alias
     elseif s.target and s.target_port then
-        server_table[s[".name"]] = "%s:%s" %{s.target, s.target_port}
+        server_table[s[".name"]] = "%s:%s" %{get_ip_string(s.target), s.target_port}
     end
 end)
 
