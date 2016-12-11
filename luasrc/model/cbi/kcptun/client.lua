@@ -68,7 +68,7 @@ o.placeholder = "29900"
 o.default = "29900"
 o.rmempty = false
 
-o = s:option(Value, "local_host", translate("Local Host"), translate("Local listen host."))
+o = s:option(Value, "local_host", "%s %s" %{translate("Local Host"), translate("(optional)")}, translate("Local listen host."))
 o.datatype = "host"
 o.placeholder = "127.0.0.1"
 o.rmempty = true

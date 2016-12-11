@@ -50,7 +50,7 @@ end
 
 o = clients_list:option(DummyValue, "_local_addres", translate("Local Listen"))
 function o.cfgvalue(self, section)
-    local local_host = m.uci.get(kcptun, section, "local_host") or "?"
+    local local_host = m.uci.get(kcptun, section, "local_host") or ""
     local local_port = m.uci.get(kcptun, section, "local_port") or "?"
     return "%s:%s" %{local_host, local_port}
 end
@@ -102,9 +102,9 @@ if uci:get_first(kcptun, "general", "enable_server") == "1" then
         return "%s:%s" %{target, target_port}
     end
 
-    o = servers_list:option(DummyValue, "_listen_address", translate("Listen Port"))
+    o = servers_list:option(DummyValue, "_listen_address", translate("Listen Address"))
     function o.cfgvalue(self, section)
-        local listen_host = m.uci:get(kcptun, section, "listen_host") or "?"
+        local listen_host = m.uci:get(kcptun, section, "listen_host") or ""
         local listen_port = m.uci:get(kcptun, section, "listen_port") or "?"
 
         return "%s:%s" %{listen_host, listen_port}

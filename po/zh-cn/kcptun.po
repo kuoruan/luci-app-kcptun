@@ -133,11 +133,17 @@ msgstr "keepalive"
 msgid "Key"
 msgstr "密码"
 
+msgid "Listen Address"
+msgstr "监听地址"
+
 msgid "Listen Host"
 msgstr "监听主机"
 
 msgid "Listen Port"
 msgstr "监听端口"
+
+msgid "Local Listen"
+msgstr "本地监听地址"
 
 msgid "Local listen host."
 msgstr "本地监听主机"
