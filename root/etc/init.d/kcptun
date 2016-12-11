@@ -262,7 +262,7 @@ setup_iptables() {
 }
 
 setup_cron() {
-	[ -f "$CRON_FILE" ] || touch "$CRON_FILE"
+	[ -s "$CRON_FILE" ] || echo >"$CRON_FILE"
 
 	if [ "$enable_monitor" -eq 1 ]; then
 		if ! grep -q '/usr/bin/kcptun_monitor' "$CRON_FILE"; then
