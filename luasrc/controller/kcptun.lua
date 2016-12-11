@@ -106,7 +106,7 @@ function kcptun_info()
                 info.monitor = {}
                 local monitor_log_file = log_folder .. "/kcptun-monitor.log"
                 if fs.access(monitor_log_file) then
-                    info.monitor.log = sys.exec("tail -n 20 " .. monitor_log_file)
+                    info.monitor.log = sys.exec("tail -n 10 " .. monitor_log_file)
                 else
                     info.monitor.log = "error"
                 end
