@@ -1,6 +1,6 @@
 #!/bin/sh /etc/rc.common
 #
-# Copyright 2016 Xingwang Liao <kuoruan@gmail.com>
+# Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,232 +17,162 @@
 
 START=99
 STOP=15
+USE_PROCD=1
 
 NAME=kcptun
-LOG_FOLDER=/var/log/$NAME
+DEFAULT_LOG_FOLDER=/var/log/$NAME
 CONFIG_FOLDER=/var/etc/$NAME
-CLIENT_CONFIG=$CONFIG_FOLDER/client.json
-SERVER_CONFIG=$CONFIG_FOLDER/server.json
-CRON_FILE=/etc/crontabs/root
 DEFAULT_USER=root
 
-SERVICE_DAEMONIZE=1
+if [ -r /usr/share/libubox/jshn.sh ]; then
+	. /usr/share/libubox/jshn.sh
+elif [ -r /lib/functions/jshn.sh ]; then
+	. /lib/functions/jshn.sh
+else
+	logger -p daemon.err -t "$NAME" "Please install jshn first."
+	exit 1
+fi
 
-ERROR=1
-SUCCESS=0
+_log() {
+	local msg="$1"
+	logger -p daemon.info -t "$NAME" "$msg"
 
-is_ipv6_address() {
-	if [ $# -eq 0 ]; then
-		return $ERROR
+	if ( is_enable_logging ); then
+		echo "[INFO] $(date '+%Y/%m/%d %T') $msg" >>"$(get_log_folder)/event.log"
+	fi
+}
+
+_err() {
+	local msg="$1"
+	logger -p daemon.err -t "$NAME" "$msg"
+
+	if ( is_enable_logging ); then
+		echo "[ERROR] $(date '+%Y/%m/%d %T') $msg" >>"$(get_log_folder)/event.log"
+	fi
+}
+
+_cron_restart() {
+	/etc/init.d/cron restart  >/dev/null 2>&1
+}
+
+_add_cron_script() {
+	local entry="$1"
+	if ! ( crontab -l | grep -q "$entry" ); then
+		(crontab -l ; echo "$entry") | sort | uniq | crontab -
+		_cron_restart
+	fi
+}
+
+_rm_cron_script() {
+	local entry="$1"
+	if ( crontab -l | grep -q "$entry" ); then
+		crontab -l | grep -v "$entry" | sort | uniq | crontab -
+		_cron_restart
+	fi
+}
+
+uci_get_by_type_option(){
+	local type="$1"
+	local option="$2"
+	local default="$3"
+
+	local ret
+	ret="$(uci -q get ${NAME}.@${type}[-1].${option})"
+	echo "${ret:=$default}"
+}
+
+get_log_folder() {
+	if [ -z "$log_folder" ]; then
+		log_folder=$(uci_get_by_type_option "general" "log_folder" "$DEFAULT_LOG_FOLDER")
 	fi
 
+	echo "$log_folder"
+}
+
+is_enable_logging() {
+	if [ -z "$enable_logging" ]; then
+		enable_logging=$(uci_get_by_type_option "general" "enable_logging" "0")
+	fi
+
+	[ ."$enable_logging" = ."1" ]
+}
+
+load_all_config_options() {
+	local section_id="$1"
+
+	local all_option_variables=""
+
+	config_cb() {
+		local name="$2"
+
+		if [ ."$name" = ."$section_id" ]; then
+			option_cb() {
+				all_option_variables="$all_option_variables $1"
+			}
+		else
+			option_cb() { return 0; }
+		fi
+	}
+
+	config_load "$NAME"
+
+	for var in $all_option_variables; do
+		config_get "$var" "$section_id" "$var"
+	done
+}
+
+is_ipv6_address() {
 	echo "$1" | grep -q ":"
 }
 
-write_client_config() {
-	if [ $# -eq 0 ]; then
-		return $ERROR
-	fi
-	local server server_port local_port key
-	local crypt mode conn autoexpire mtu sndwnd rcvwnd
-	local datashard parityshard dscp nocomp sockbuf keepalive
-	local nodelay interval resend nc acknodelay
+gen_client_config_file() {
+	local section_id="$1"
 
-	config_get server      $1 server
-	config_get server_port $1 server_port
-	config_get local_host  $1 local_host
-	config_get local_port  $1 local_port
-	config_get key         $1 key
-	config_get crypt       $1 crypt
-	config_get mode        $1 mode
-	config_get conn        $1 conn
-	config_get autoexpire  $1 autoexpire
-	config_get mtu         $1 mtu
-	config_get sndwnd      $1 sndwnd
-	config_get rcvwnd      $1 rcvwnd
-	config_get datashard   $1 datashard
-	config_get parityshard $1 parityshard
-	config_get dscp        $1 dscp
-	config_get nocomp      $1 nocomp
-	config_get sockbuf     $1 sockbuf
-	config_get keepalive   $1 keepalive
+	load_all_config_options "$section_id"
 
-	if [ "$mode"x = "manualx" ]; then
-		config_get nodelay    $1 nodelay
-		config_get interval   $1 interval
-		config_get resend     $1 resend
-		config_get nc         $1 nc
-		config_get acknodelay $1 acknodelay
-	fi
+	local config_file=${CONFIG_FOLDER}/client.${section_id}.json
 
-	[ -z "$server" -o -z "$server_port" -o -z "$local_port" ] && return $ERROR
+	[ -z "$server_addr" ] || [ -z "$server_port" ] || [ -z "$listen_port" ] && return 1
 
-	add_iptables_rule $local_port "client"
+	is_ipv6_address "$server_addr" && server_addr="[${server_addr}]"
+	is_ipv6_address "$listen_addr" && listen_addr="[${listen_addr}]"
 
-	is_ipv6_address "$server" && server="[${server}]"
-	is_ipv6_address "$local_host" && local_host="[${local_host}]"
+	json_init
+	json_add_string "remoteaddr" "${server_addr}:${server_port}"
+	json_add_string "localaddr" "${listen_addr}:${listen_port}"
 
-	echo -n "{" >$CLIENT_CONFIG
-	printf '\n  "localaddr": "%s:%s"' "$local_host" "$local_port" >>$CLIENT_CONFIG
-	printf ',\n  "remoteaddr": "%s:%s"' "$server" "$server_port" >>$CLIENT_CONFIG
-	[ -n "$key" ] && \
-		printf ',\n  "key": "%s"' "$key" >>$CLIENT_CONFIG
-	[ -n "$crypt" ] && \
-		printf ',\n  "crypt": "%s"' "$crypt" >>$CLIENT_CONFIG
-	[ -n "$mode" ] && \
-		printf ',\n  "mode": "%s"' "$mode" >>$CLIENT_CONFIG
-	[ -n "$conn" ] && \
-		printf ',\n  "conn": %d' $conn >>$CLIENT_CONFIG
-	[ -n "$autoexpire" ] && \
-		printf ',\n  "autoexpire": %d' $autoexpire >>$CLIENT_CONFIG
-	[ -n "$mtu" ] && \
-		printf ',\n  "mtu": %d' "$mtu" >>$CLIENT_CONFIG
-	[ -n "$sndwnd" ] && \
-		printf ',\n  "sndwnd": %d' "$sndwnd" >>$CLIENT_CONFIG
-	[ -n "$rcvwnd" ] && \
-		printf ',\n  "rcvwnd": %d' "$rcvwnd" >>$CLIENT_CONFIG
-	[ -n "$datashard" ] && \
-		printf ',\n  "datashard": %d' "$datashard" >>$CLIENT_CONFIG
-	[ -n "$parityshard" ] && \
-		printf ',\n  "parityshard": %d' "$parityshard" >>$CLIENT_CONFIG
-	[ -n "$dscp" ] && \
-		printf ',\n  "dscp": %d' "$dscp" >>$CLIENT_CONFIG
-	[ -n "$nocomp" ] && \
-		printf ',\n  "nocomp": %s' "$nocomp" >>$CLIENT_CONFIG
-	[ -n "$nodelay" ] && \
-		printf ',\n  "nodelay": %d' "$nodelay" >>$CLIENT_CONFIG
-	[ -n "$interval" ] && \
-		printf ',\n  "interval": %d' "$interval" >>$CLIENT_CONFIG
-	[ -n "$resend" ] && \
-		printf ',\n  "resend": %d' "$resend" >>$CLIENT_CONFIG
-	[ -n "$nc" ] && \
-		printf ',\n  "nc": %d' "$nc" >>$CLIENT_CONFIG
-	[ -n "$acknodelay" ] && \
-		printf ',\n  "acknodelay": %s' "$acknodelay" >>$CLIENT_CONFIG
-	[ -n "$sockbuf" ] && \
-		printf ',\n  "sockbuf": %d' "$sockbuf" >>$CLIENT_CONFIG
-	[ -n "$keepalive" ] && \
-		printf ',\n  "keepalive": %d' "$keepalive" >>$CLIENT_CONFIG
-	[ -n "$client_log" ] && \
-		printf ',\n  "log": "%s"' "$client_log" >>$CLIENT_CONFIG
-	echo -e "\n}" >>$CLIENT_CONFIG
+	add_configs() {
+		local type="$1"; shift
+		local k v
 
-	return $?
-}
+		for k in "$@"; do
+			v="$(eval echo "\$$k")"
 
-write_server_config() {
-	if [ $# -eq 0 ]; then
-		return $ERROR
-	fi
-	local target target_port listen_port key
-	local crypt mode mtu sndwnd rcvwnd
-	local datashard parityshard dscp nocomp sockbuf keepalive
-	local nodelay interval resend nc acknodelay
+			if [ -n "$v" ]; then
+				if [ "$type" = "string" ]; then
+					json_add_string "$k" "$v"
+				elif [ "$type" = "int" ]; then
+					json_add_int "$k" "$v"
+				elif [ "$type" = "boolean" ]; then
+					json_add_boolean "$k" "$v"
+				fi
+			fi
+		done
+	}
 
-	config_get target      $1 target
-	config_get target_port $1 target_port
-	config_get listen_host $1 listen_host
-	config_get listen_port $1 listen_port
-	config_get key         $1 key
-	config_get crypt       $1 crypt
-	config_get mode        $1 mode
-	config_get mtu         $1 mtu
-	config_get sndwnd      $1 sndwnd
-	config_get rcvwnd      $1 rcvwnd
-	config_get datashard   $1 datashard
-	config_get parityshard $1 parityshard
-	config_get dscp        $1 dscp
-	config_get nocomp      $1 nocomp
-	config_get sockbuf     $1 sockbuf
-	config_get keepalive   $1 keepalive
+	add_configs "string" key crypt mode
+	add_configs "int" conn autoexpire mtu sndwnd rcvwnd datashard parityshard dscp \
+		nodelay interval resend nc sockbuf keepalive scavengettl snmpperiod
+	add_configs "boolean" nocomp acknodelay
 
-	if [ "$mode" = "manual" ]; then
-		config_get nodelay    $1 nodelay
-		config_get interval   $1 interval
-		config_get resend     $1 resend
-		config_get nc         $1 nc
-		config_get acknodelay $1 acknodelay
+	if ( is_enable_logging ); then
+		json_add_string "log" "$(get_log_folder)/client.log"
 	fi
 
-	[ -z "$target" -o -z "$target_port" -o -z "$listen_port" ] && return $ERROR
+	json_close_object
 
-	add_iptables_rule $listen_port "server"
-
-	is_ipv6_address "$target" && target="[${target}]"
-	is_ipv6_address "$listen_host" && listen_host="[${listen_host}]"
-
-	echo -n "{" >$SERVER_CONFIG
-	printf '\n  "listen": "%s:%s"' "$listen_host" "$listen_port" >>$SERVER_CONFIG
-	printf ',\n  "target": "%s:%s"' "$target" "$target_port" >>$SERVER_CONFIG
-	[ -n "$key" ] && \
-		printf ',\n  "key": "%s"' "$key" >>$SERVER_CONFIG
-	[ -n "$crypt" ] && \
-		printf ',\n  "crypt": "%s"' "$crypt" >>$SERVER_CONFIG
-	[ -n "$mode" ] && \
-		printf ',\n  "mode": "%s"' "$mode" >>$SERVER_CONFIG
-	[ -n "$mtu" ] && \
-		printf ',\n  "mtu": %d' "$mtu" >>$SERVER_CONFIG
-	[ -n "$sndwnd" ] && \
-		printf ',\n  "sndwnd": %d' "$sndwnd" >>$SERVER_CONFIG
-	[ -n "$rcvwnd" ] && \
-		printf ',\n  "rcvwnd": %d' "$rcvwnd" >>$SERVER_CONFIG
-	[ -n "$datashard" ] && \
-		printf ',\n  "datashard": %d' "$datashard" >>$SERVER_CONFIG
-	[ -n "$parityshard" ] && \
-		printf ',\n  "parityshard": %d' "$parityshard" >>$SERVER_CONFIG
-	[ -n "$dscp" ] && \
-		printf ',\n  "dscp": %d' "$dscp" >>$SERVER_CONFIG
-	[ -n "$nocomp" ] && \
-		printf ',\n  "nocomp": %s' $nocomp >>$SERVER_CONFIG
-	[ -n "$nodelay" ] && \
-		printf ',\n  "nodelay": %d' "$nodelay" >>$SERVER_CONFIG
-	[ -n "$interval" ] && \
-		printf ',\n  "interval": %d' "$interval" >>$SERVER_CONFIG
-	[ -n "$resend" ] && \
-		printf ',\n  "resend": %d' "$resend" >>$SERVER_CONFIG
-	[ -n "$nc" ] && \
-		printf ',\n  "nc": %d' "$nc" >>$SERVER_CONFIG
-	[ -n "$acknodelay" ] && \
-		printf ',\n  "acknodelay": %s' "$acknodelay" >>$SERVER_CONFIG
-	[ -n "$sockbuf" ] && \
-		printf ',\n  "sockbuf": %d' "$sockbuf" >>$SERVER_CONFIG
-	[ -n "$keepalive" ] && \
-		printf ',\n  "keepalive": %d' "$keepalive" >>$SERVER_CONFIG
-	[ -n "$server_log" ] && \
-		printf ',\n  "log": "%s"' "$server_log" >>$SERVER_CONFIG
-	echo -e "\n}" >>$SERVER_CONFIG
-
-	return $?
-}
-
-load_settings() {
-	config_get_bool enable_server       $1 enable_server       0
-	config_get_bool enable_logging      $1 enable_logging      0
-	config_get_bool enable_monitor      $1 enable_monitor      0
-	config_get_bool enable_auto_restart $1 enable_auto_restart 0
-
-	config_get kcptun_client $1 kcptun_client
-	config_get kcptun_server $1 kcptun_server
-	config_get client_file   $1 client_file
-	config_get server_file   $1 server_file
-	config_get daemon_user   $1 daemon_user
-	config_get log_folder    $1 log_folder
-
-	[ -z "$daemon_user" ] && daemon_user=$DEFAULT_USER
-}
-
-create_folder() {
-	[ -d "$CONFIG_FOLDER" ] || mkdir -p "$CONFIG_FOLDER"
-
-	if [ "$enable_logging" -eq 1 ]; then
-
-		local log_folder=${log_folder:-$LOG_FOLDER}
-		[ -d "$log_folder" ] || mkdir -p "$log_folder"
-
-		server_log="$log_folder/kcptun-server.log"
-		client_log="$log_folder/kcptun-client.log"
-
-		chown -R "$daemon_user" "$log_folder"
+	if (json_dump -i > "$config_file"); then
+		echo "$config_file"
 	fi
 }
 
@@ -256,104 +186,129 @@ setup_iptables() {
 		iptables -A INPUT -j "$NAME" >/dev/null 2>&1
 }
 
-setup_cron() {
-	[ -s "$CRON_FILE" ] || echo >"$CRON_FILE"
-
-	if [ "$enable_monitor" -eq 1 ]; then
-		if ! grep -q '/usr/bin/kcptun_monitor' "$CRON_FILE"; then
-			sed -i '$a */1 * * * * /usr/bin/kcptun_monitor' "$CRON_FILE"
-		fi
-	else
-		sed -i '/^\*\/1 \* \* \* \* \/usr\/bin\/kcptun_monitor$/d' "$CRON_FILE"
-	fi
-
-	if [ "$enable_auto_restart" -eq 1 ]; then
-		if ! grep -q '/etc/init.d/kcptun' "$CRON_FILE"; then
-			sed -i '$a 0 5 * * * /etc/init.d/kcptun restart' "$CRON_FILE"
-		fi
-	else
-		sed -i '/^0 5 \* \* \* \/etc\/init.d\/kcptun restart$/d' "$CRON_FILE"
-	fi
-
-	if [ "$enable_monitor" -eq 1 -o "$enable_auto_restart" -eq 1 ]; then
-		if ! ps -w | grep -v grep | grep -q crond; then
-			/etc/init.d/cron restart
-		fi
-	fi
-}
-
 add_iptables_rule() {
-	if [ $# != 2 ]; then
-		return $ERROR
-	fi
-
-	local port=$1
-	local comment=$2
+	local port="$1"
+	local comment="$2"
 
 	iptables -A "$NAME" -p udp --dport "$port" -m comment --comment "$comment" -j ACCEPT
 	iptables -A "$NAME" -p tcp --dport "$port" -m comment --comment "$comment" -j ACCEPT
 }
 
-start_instance() {
-	load_settings $1
-	create_folder
+setup_cron_task() {
+	local script="/etc/init.d/${NAME}"
+	clear_cron_entry() {
+		_rm_cron_script "$script"
+	}
 
-	setup_iptables
-	setup_cron
+	if [ -n "$auto_restart" ]; then
+		local h m
 
-	if [ "$kcptun_client"x != "nilx"  ]; then
-		write_client_config $kcptun_client
-		if [ $? -eq 0 ]; then
-			[ -f "$client_file" ] || return $ERROR
-			[ -x "$client_file" ] || chmod 755 "$client_file"
+		h=$(echo "${auto_restart}" | cut -d':' -f1)
+		m=$(echo "${auto_restart}" | cut -d':' -f2)
 
-			SERVICE_UID="$daemon_user" \
-				service_start "$client_file" -c "$CLIENT_CONFIG"
-
-			logger -t "$NAME" "Client started."
+		if [ -n "$h" ] && [ -n "$m" ]; then
+			local entry="${m} ${h} * * * ${script} restart"
+			_add_cron_script "$entry"
+		else
+			clear_cron_entry
 		fi
-	fi
-
-	if [ "$enable_server" -eq 1 -a "$kcptun_server"x != "nilx" ]; then
-		write_server_config $kcptun_server
-		if [ $? -eq 0 ]; then
-			[ -f "$server_file" ] || return $ERROR
-			[ -x "$server_file" ] || chmod 755 "$server_file"
-
-			SERVICE_UID="$daemon_user" \
-				service_start "$server_file" -c "$SERVER_CONFIG"
-
-			logger -t "$NAME" "Server started."
-		fi
+	else
+		clear_cron_entry
 	fi
 }
 
-stop_instance() {
-	load_settings $1
+validate_server_section() {
+	uci_validate_section "$NAME" server "$1" \
+		'server_addr:host' \
+		'server_port:port' \
+		'listen_addr:host' \
+		'listen_port:port' \
+		'conn:uinteger' \
+		'autoexpire:uinteger' \
+		'scavengettl:and(integer,min(-1))' \
+		'mtu:and(uinteger,max(1500))' \
+		'sndwnd:uinteger' \
+		'rcvwnd:uinteger' \
+		'datashard:uinteger' \
+		'parityshard:uinteger' \
+		'dscp:uinteger' \
+		'nocomp:bool' \
+		'nodelay:bool' \
+		'interval:uinteger' \
+		'resend:range(0,2)' \
+		'nc:bool' \
+		'acknodelay:bool' \
+		'sockbuf:uinteger' \
+		'keepalive:uinteger' \
+		'snmpperiod:and(uinteger,min(1))'
+}
 
-	if [ -f "$client_file" ]; then
-		service_stop "$client_file"
+validate_client_file() {
+	local file="$1"
+
+	if [ ! -f "$file" ]; then
+		return 1
 	fi
 
-	if [ "$enable_server" -eq 1 -a -f "$server_file" ]; then
-		service_stop "$server_file"
+	[ -x "$file" ] || chmod +x "$file"
+
+	( $file -v | grep -q "$NAME" )
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$NAME"
+}
+
+start_service() {
+	kcptun_server=$(uci_get_by_type_option "general" "kcptun_server")
+	client_file=$(uci_get_by_type_option "general" "client_file")
+	daemon_user=$(uci_get_by_type_option "general" "daemon_user" "$DEFAULT_USER")
+	auto_restart=$(uci_get_by_type_option "general" "auto_restart")
+
+	setup_cron_task
+
+	[ -z "$kcptun_server" ] || [ "$kcptun_server" = "nil" ] && { _log "Client will stop."; return 0; }
+	validate_server_section "$kcptun_server" || { _err "Server config validation failed."; return 1; }
+
+	[ -z "$client_file" ] && { _err "Please set client file path."; return 1; }
+	validate_client_file "$client_file" || { _err "Client file validation failed."; return 1; }
+
+	if ( is_enable_logging ); then
+		mkdir -p "$CONFIG_FOLDER" "$(get_log_folder)"
+		chown -R "$daemon_user" "$(get_log_folder)"
+	fi
+
+	client_config_file="$(gen_client_config_file "$kcptun_server")"
+
+	if [ -r "$client_config_file" ]; then
+		setup_iptables
+		add_iptables_rule "$listen_port" "client"
+
+		procd_open_instance
+		procd_set_param command "$client_file"
+		procd_append_param command -c "$client_config_file"
+		procd_set_param respawn
+		procd_set_param user "$daemon_user"
+		procd_set_param file "$client_config_file"
+		procd_add_jail_mount "$client_config_file"
+		procd_add_jail_mount_rw "$log_folder"
+		procd_close_instance
+
+		_log "Service started."
 	fi
 }
 
-start() {
-	echo "Starting ${NAME}..."
-	config_load $NAME
-	config_foreach start_instance 'general'
+stop_service() {
+	_log "Service stoped."
 }
 
-stop() {
-	echo "Stopping ${NAME}..."
-	config_load $NAME
-	config_foreach stop_instance 'general'
-}
-
-reload() {
-	echo "Reloading ${NAME}..."
+restart() {
+	_log "Restart begin..."
 	stop
 	start
+}
+
+boot() {
+	ubus -t 30 wait_for network.interface 2>/dev/null
+	rc_procd start_service
 }

@@ -13,26 +13,25 @@ msgstr "别名"
 msgid "Author"
 msgstr "作者"
 
+msgid "Auto Restart Service"
+msgstr "自动重启服务"
+
 msgid "autoexpire"
 msgstr "autoexpire"
 
-msgid "Autoexpire, Default unit is seconds."
-msgstr "自动重连间隔时间, 默认单位: 秒"
+msgid ""
+"Auto expiration time(in seconds) for a single UDP "
+"connection, 0 to disable."
+msgstr "单个 UDP 连接的自动过期时间(秒)，设置 0 来禁用"
 
 msgid "Blog"
 msgstr "博客"
 
-msgid "Check Kcptun process per minute."
-msgstr "每分钟检查 Kcptun 进程"
-
 msgid "Clear Client Log"
-msgstr "清理客户端日志"
+msgstr "清空客户端日志"
 
-msgid "Clear Monitor Log"
-msgstr "清理监控日志"
-
-msgid "Clear Server Log"
-msgstr "清理服务端日志"
+msgid "Clear Event Log"
+msgstr "清空事件日志"
 
 msgid "Client Exec File"
 msgstr "客户端可执行文件"
@@ -49,17 +48,8 @@ msgstr "客户端状态"
 msgid "Client Version"
 msgstr "客户端版本"
 
-msgid "Clients List"
-msgstr "客户端列表"
-
 msgid "Collecting data..."
 msgstr "正在收集数据..."
-
-msgid "Configuration"
-msgstr "配置"
-
-msgid "Configuration List"
-msgstr "配置列表"
 
 msgid "conn"
 msgstr "conn"
@@ -94,12 +84,6 @@ msgstr "启用日志记录"
 msgid "Enable nodelay Mode."
 msgstr "启用 nodelay 模式"
 
-msgid "Enable Process Monitor"
-msgstr "启用进程监控"
-
-msgid "Enable Server"
-msgstr "启用服务端"
-
 msgid "Enable Timed Restart Task"
 msgstr "启用定时重启任务"
 
@@ -109,8 +93,19 @@ msgstr "加密方式"
 msgid "Error ID"
 msgstr "ID 错误"
 
+msgid "Event Log"
+msgstr "事件日志"
+
+msgid "False"
+msgstr "否"
+
 msgid "General Settings"
 msgstr "基本设置"
+
+msgid ""
+"How long an expired connection can live(in sec), "
+"-1 to disable."
+msgstr "过期连接保留多长时间(秒)，设置 -1 来禁用"
 
 msgid "ID required"
 msgstr "ID 不能为空"
@@ -118,11 +113,11 @@ msgstr "ID 不能为空"
 msgid "interval"
 msgstr "interval"
 
+msgid "Invalid Client File."
+msgstr "客户端文件配置有误"
+
 msgid "Kcptun"
 msgstr "Kcptun"
-
-msgid "Kcptun Client"
-msgstr "Kcptun 客户端"
 
 msgid "Kcptun Server"
 msgstr "Kcptun 服务端"
@@ -163,9 +158,6 @@ msgstr "日志文件不存在..."
 msgid "Log Folder"
 msgstr "日志文件夹"
 
-msgid "Luci Installation Time"
-msgstr "Luci 安装时间"
-
 msgid "Luci Version"
 msgstr "Lici 版本"
 
@@ -175,16 +167,13 @@ msgstr "UDP数据包的最大传输单元"
 msgid "mode"
 msgstr "mode"
 
-msgid "Monitor Log"
-msgstr "监控日志"
-
 msgid "mtu"
 msgstr "mtu"
 
 msgid ""
 "NAT keepalive interval to prevent your router from "
 "removing port mapping, default unit is seconds."
-msgstr "NAT Keepalive 包间隔时间, 防止路由器删除端口映射, 默认单位: 秒"
+msgstr "NAT Keepalive 包间隔时间(秒), 防止路由器删除端口映射"
 
 msgid "nc"
 msgstr "nc"
@@ -240,8 +229,8 @@ msgstr "前向纠错 - parityshard"
 msgid "resend"
 msgstr "resend"
 
-msgid "Restart Kcptun at 5 in the morning."
-msgstr "每天早上5点重启 Kcptun"
+msgid "Restart Time"
+msgstr "重启时间"
 
 msgid "Run daemon as user"
 msgstr "以该用户启动"
@@ -256,7 +245,7 @@ msgid "Send Window Size(num of packets)."
 msgstr "发送窗口大小 (数据包数量)"
 
 msgid "Send/secv buffer size of udp sockets, default unit is MB."
-msgstr "发送/接收UDP数据包的缓冲区大小, 默认单位: MB"
+msgstr "发送/接收UDP数据包的缓冲区大小(MB)"
 
 msgid "Server"
 msgstr "服务端地址"
@@ -264,32 +253,11 @@ msgstr "服务端地址"
 msgid "Server Address"
 msgstr "服务端地址"
 
-msgid "Server Exec File"
-msgstr "服务端可执行文件"
-
-msgid "Server exec file required."
-msgstr "请输入服务端可执行文件路径"
-
-msgid "Server listen host."
-msgstr "服务端监听主机"
-
-msgid "Server listen port."
-msgstr "服务端监听端口"
-
-msgid "Server Log"
-msgstr "服务端日志"
-
 msgid "Server Manage"
 msgstr "服务端管理"
 
 msgid "Server Port"
 msgstr "服务端端口"
-
-msgid "Server Status"
-msgstr "服务端状态"
-
-msgid "Server Version"
-msgstr "服务端版本"
 
 msgid "Servers List"
 msgstr "服务端列表"
@@ -299,6 +267,9 @@ msgstr "设置"
 
 msgid "sndwnd"
 msgstr "sndwnd"
+
+msgid "SNMP collect period, in seconds"
+msgstr "SNMP采集周期(秒)"
 
 msgid "sockbuf"
 msgstr "sockbuf"
@@ -311,6 +282,12 @@ msgstr "目标地址"
 
 msgid "Target Port"
 msgstr "目标端口"
+
+msgid "The value '%s' is invalid."
+msgstr "'%s' 的值无效"
+
+msgid "True"
+msgstr "是"
 
 msgid "Unknown"
 msgstr "未知"
