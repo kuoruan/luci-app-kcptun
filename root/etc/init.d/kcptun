@@ -218,7 +218,7 @@ setup_cron_task() {
 }
 
 validate_server_section() {
-	uci_validate_section "$NAME" server "$1" \
+	uci_validate_section "$NAME" servers "$1" \
 		'server_addr:host' \
 		'server_port:port' \
 		'listen_addr:host' \
@@ -260,7 +260,7 @@ service_triggers() {
 }
 
 start_service() {
-	kcptun_server=$(uci_get_by_type_option "general" "kcptun_server")
+	kcptun_server=$(uci_get_by_type_option "general" "server")
 	client_file=$(uci_get_by_type_option "general" "client_file")
 	daemon_user=$(uci_get_by_type_option "general" "daemon_user" "$DEFAULT_USER")
 	auto_restart=$(uci_get_by_type_option "general" "auto_restart")

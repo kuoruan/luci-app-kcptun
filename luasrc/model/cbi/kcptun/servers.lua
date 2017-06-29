@@ -27,9 +27,9 @@ local function get_ip_string(ip)
 	end
 end
 
-m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Servers List")})
+m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Server List")})
 
-s = m:section(TypedSection, "server")
+s = m:section(TypedSection, "servers")
 s.anonymous = true
 s.addremove = true
 s.sortable = true

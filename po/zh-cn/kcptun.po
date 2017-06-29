@@ -39,9 +39,6 @@ msgstr "客户端可执行文件"
 msgid "Client Log"
 msgstr "客户端日志"
 
-msgid "Client Manage"
-msgstr "客户端管理"
-
 msgid "Client Status"
 msgstr "客户端状态"
 
@@ -84,9 +81,6 @@ msgstr "启用日志记录"
 msgid "Enable nodelay Mode."
 msgstr "启用 nodelay 模式"
 
-msgid "Enable Timed Restart Task"
-msgstr "启用定时重启任务"
-
 msgid "Encrypt Method"
 msgstr "加密方式"
 
@@ -118,6 +112,9 @@ msgstr "客户端文件配置有误"
 
 msgid "Kcptun"
 msgstr "Kcptun"
+
+msgid "Kcptun Client"
+msgstr "Kcptun 客户端"
 
 msgid "Kcptun Server"
 msgstr "Kcptun 服务端"
@@ -259,7 +256,7 @@ msgstr "服务端管理"
 msgid "Server Port"
 msgstr "服务端端口"
 
-msgid "Servers List"
+msgid "Server List"
 msgstr "服务端列表"
 
 msgid "Settings"

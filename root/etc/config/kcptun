@@ -1,11 +1,11 @@
 
 config general
-	option kcptun_server 'nil'
+	option server 'nil'
 	option client_file '/usr/bin/kcptun/client'
 	option daemon_user 'root'
 	option enable_logging '0'
 
-config server
+config servers
 	option server_addr '0.0.0.0'
 	option server_port '29900'
 	option listen_addr '127.0.0.1'

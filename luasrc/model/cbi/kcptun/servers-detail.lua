@@ -44,12 +44,12 @@ local modes = {
 m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Edit Server")})
 m.redirect = dsp.build_url("admin/services/kcptun/servers")
 
-if m.uci:get(kcptun, sid) ~= "server" then
+if m.uci:get(kcptun, sid) ~= "servers" then
 	luci.http.redirect(m.redirect)
 	return
 end
 
-s = m:section(NamedSection, sid, "server")
+s = m:section(NamedSection, sid, "servers")
 s.anonymous = true
 s.addremove = false
 

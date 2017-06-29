@@ -31,7 +31,7 @@ local function get_ip_string(ip)
 	end
 end
 
-uci:foreach(kcptun, "server", function(s)
+uci:foreach(kcptun, "servers", function(s)
 	if s.alias then
 		server_table[s[".name"]] = s.alias
 	elseif s.server_addr and s.server_port then
@@ -70,7 +70,7 @@ s = m:section(TypedSection, "general", translate("General Settings"))
 s.anonymous = true
 s.addremove = false
 
-o = s:option(ListValue, "kcptun_server", translate("Kcptun Server"))
+o = s:option(ListValue, "server", translate("Server"))
 o:value("nil", translate("Disable"))
 for k, v in pairs(server_table) do
 	o:value(k, v)

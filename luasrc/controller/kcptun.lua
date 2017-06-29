@@ -28,7 +28,7 @@ function index()
 
 	entry({"admin", "services", "kcptun"},
 		alias("admin", "services", "kcptun", "overview"),
-		_("Kcptun")).dependent = true
+		_("Kcptun Client")).dependent = true
 
 	entry({"admin", "services", "kcptun", "overview"},
 		cbi("kcptun/overview"),
