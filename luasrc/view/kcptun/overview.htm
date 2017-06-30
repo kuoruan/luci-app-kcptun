@@ -19,20 +19,22 @@
 	local fs   = require "nixio.fs"
 	local uci  = require "luci.model.uci".cursor()
 	local ipkg = require "luci.model.ipkg"
+	local dsp  = require "luci.dispatcher"
 
 	local kcptun = "kcptun"
+	local package_name = "luci-app-kcptun"
 
 	local enable_monitor = uci:get_first(kcptun, "general", "enable_monitor") == "1"
 	local enable_logging = uci:get_first(kcptun, "general", "enable_logging") == "1"
 	local client_file = (uci:get_first("kcptun", "general", "client_file") or ""):trim()
-	local package_info = ipkg.info("luci-app-kcptun") or {}
+	local package_info = ipkg.info(package_name) or {}
 
 	local client_version
 	if client_file ~= "" and fs.access(client_file, "rwx", "rx", "rx") then
 		client_version = sys.exec("%s -v | cut -d' ' -f3" %{client_file})
 	end
 	if not client_version or client_version == "" then
-		client_version = translate("Invalid Client File.")
+		client_version = "<em>" .. translate("Invalid Client File.") .. "</em>"
 	end
 -%>
 
@@ -52,7 +54,7 @@
 			default:
 		}
 
-		(new XHR()).post('<%=url('admin/services/kcptun/clear_log')%>/' + id, { token: '<%=token%>' },
+		(new XHR()).get('<%=dsp.build_url("admin", "services", "kcptun", "clear_log")%>/' + id, { token: '<%=token%>' },
 			function(x) {
 				btn.disabled = false;
 				btn.value    = btn.placeholder;
@@ -88,7 +90,7 @@
 		}
 	}
 
-	XHR.poll(5, '<%=url('admin/services/kcptun/info')%>', null,
+	XHR.poll(5, '<%=dsp.build_url("admin", "services", "kcptun", "info")%>', null,
 		function(x, info) {
 			var client_status_tb = document.getElementById('kcptun_client_status');
 			var client_log_ta    = document.getElementById('kcptun_client_log');
@@ -114,10 +116,10 @@
 
 	<fieldset class="cbi-section-node">
 		<table width="100%" cellspacing="10" id="kcptun_status_table">
-			<tr><td width="33%"><%:Client Version%></td><td><%=pcdata(client_version)%></td></tr>
+			<tr><td width="33%"><%:Client Version%></td><td><%=client_version%></td></tr>
 			<tr><td width="33%"><%:Client Status%></td><td id="kcptun_client_status"><em><%:Collecting data...%></em></td></tr>
 			<% if next(package_info) ~= nil then -%>
-			<tr><td width="33%"><%:Luci Version%></td><td><%=pcdata(package_info["luci-app-kcptun"]["Version"])%></td></tr>
+			<tr><td width="33%"><%:LuCI Version%></td><td><%=pcdata(package_info[package_name]["Version"])%></td></tr>
 			<% end -%>
 			<tr><td width="33%"><%:Author%></td><td>Xingwang Liao &lt;kuoruan@gmail.com&gt;</td></tr>
 			<tr><td width="33%"><%:Blog%></td><td><a href="https://blog.kuoruan.com" target="_blank">https://blog.kuoruan.com</a></td></tr>

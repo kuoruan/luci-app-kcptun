@@ -17,8 +17,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-kcptun
-PKG_VERSION:=1.3
-PKG_RELEASE:=1
+PKG_VERSION:=1.3.1
+PKG_RELEASE:=2
 
 PKG_LICENSE:=Apache-2.0
 PKG_MAINTAINER:=Xingwang Liao <kuoruan@gmail.com>

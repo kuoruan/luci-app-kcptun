@@ -20,7 +20,6 @@ local fs   = require "nixio.fs"
 local m, s, o
 local kcptun = "kcptun"
 local server_table = {}
-local default_client_file = "/usr/bin/kcptun/client"
 local default_log_folder  = "/var/log/kcptun"
 
 local function get_ip_string(ip)
@@ -80,7 +79,7 @@ o.rmempty = false
 
 o = s:option(Value, "client_file", translate("Client Exec File"))
 o.datatype = "file"
-o.placeholder = default_client_file
+o.placeholder = translate("Full file path")
 o.rmempty = false
 o.validate = function(self, value, section)
 	if value and fs.access(value) and not is_kcptun(value) then

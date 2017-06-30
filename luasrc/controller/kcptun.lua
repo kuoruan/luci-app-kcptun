@@ -39,8 +39,8 @@ function index()
 		_("Settings"), 20).leaf = true
 
 	entry({"admin", "services", "kcptun", "servers"},
-			arcombine(cbi("kcptun/servers"), cbi("kcptun/servers-detail")),
-			_("Servers Manage"), 30).leaf = true
+		arcombine(cbi("kcptun/servers"), cbi("kcptun/servers-detail")),
+		_("Server Manage"), 30).leaf = true
 
 	entry({"admin", "services", "kcptun", "info"}, call("kcptun_info"))
 
