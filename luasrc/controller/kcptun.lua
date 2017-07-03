@@ -32,11 +32,11 @@ function index()
 
 	entry({"admin", "services", "kcptun", "overview"},
 		cbi("kcptun/overview"),
-		_("Overview"), 10).leaf = true
+		_("Overview"), 10)
 
 	entry({"admin", "services", "kcptun", "settings"},
 		cbi("kcptun/settings"),
-		_("Settings"), 20).leaf = true
+		_("Settings"), 20)
 
 	entry({"admin", "services", "kcptun", "servers"},
 		arcombine(cbi("kcptun/servers"), cbi("kcptun/servers-detail")),

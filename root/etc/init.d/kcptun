@@ -98,38 +98,12 @@ is_enable_logging() {
 	[ ."$enable_logging" = ."1" ]
 }
 
-load_all_config_options() {
-	local section_id="$1"
-
-	local all_option_variables=""
-
-	config_cb() {
-		local name="$2"
-
-		if [ ."$name" = ."$section_id" ]; then
-			option_cb() {
-				all_option_variables="$all_option_variables $1"
-			}
-		else
-			option_cb() { return 0; }
-		fi
-	}
-
-	config_load "$NAME"
-
-	for var in $all_option_variables; do
-		config_get "$var" "$section_id" "$var"
-	done
-}
-
 is_ipv6_address() {
 	echo "$1" | grep -q ":"
 }
 
 gen_client_config_file() {
 	local section_id="$1"
-
-	load_all_config_options "$section_id"
 
 	local config_file=${CONFIG_FOLDER}/client.${section_id}.json
 
@@ -231,10 +205,10 @@ validate_server_section() {
 		'listen_port:port' \
 		'conn:uinteger' \
 		'autoexpire:uinteger' \
-		'scavengettl:and(integer,min(-1))' \
-		'mtu:and(uinteger,max(1500))' \
-		'sndwnd:uinteger' \
-		'rcvwnd:uinteger' \
+		'scavengettl:min(-1)' \
+		'mtu:min(68)' \
+		'sndwnd:min(1)' \
+		'rcvwnd:min(1)' \
 		'datashard:uinteger' \
 		'parityshard:uinteger' \
 		'dscp:uinteger' \
@@ -246,7 +220,7 @@ validate_server_section() {
 		'acknodelay:bool' \
 		'sockbuf:uinteger' \
 		'keepalive:uinteger' \
-		'snmpperiod:and(uinteger,min(1))'
+		'snmpperiod:min(1)'
 }
 
 validate_client_file() {
@@ -275,7 +249,7 @@ start_service() {
 		 _log "No server selected, Client will stop."
 		 clear_cron_task
 		 return 0
-	elif ! ( validate_server_section "$kcptun_server" ); then
+	elif ! validate_server_section "$kcptun_server"; then
 		_err "Server config validation failed."
 		clear_cron_task
 		return 1
@@ -285,7 +259,7 @@ start_service() {
 		_err "Please set client file path."
 		clear_cron_task
 		return 1;
-	elif ! ( validate_client_file "$client_file" ); then
+	elif ! validate_client_file "$client_file"; then
 		_err "Client file validation failed."
 		clear_cron_task
 		return 1

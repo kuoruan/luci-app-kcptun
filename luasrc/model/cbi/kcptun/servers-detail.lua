@@ -107,23 +107,23 @@ o.placeholder = "0"
 
 o = s:option(Value, "scavengettl", "%s %s" %{translate("scavengettl"), translate("(optional)")},
 	translate("How long an expired connection can live(in sec), -1 to disable."))
-o.datatype = "and(integer, min(-1))"
+o.datatype = "min(-1)"
 o.placeholder = "600"
 
 o = s:option(Value, "mtu", "%s %s" %{translate("mtu"), translate("(optional)")},
 	translate("Maximum transmission unit of UDP packets."))
-o.datatype = "and(uinteger, max(1500))"
+o.datatype = "min(68)"
 o.placeholder = "1350"
 
 o = s:option(Value, "sndwnd", "%s %s" %{translate("sndwnd"), translate("(optional)")},
 	translate("Send Window Size(num of packets)."))
-o.datatype = "uinteger"
+o.datatype = "min(1)"
 o.default = "128"
 o.placeholder = "128"
 
 o = s:option(Value, "rcvwnd", "%s %s" %{translate("rcvwnd"), translate("(optional)")},
 	translate("Receive Window Size(num of packets)."))
-o.datatype = "uinteger"
+o.datatype = "min(1)"
 o.default = "512"
 o.placeholder = "512"
 
@@ -204,7 +204,7 @@ o.placeholder = "10"
 
 o = s:option(Value, "snmpperiod", "%s %s" %{translate("snmpperiod"),
 	translate("(optional)")}, translate("SNMP collect period, in seconds"))
-o.datatype = "and(uinteger, min(1))"
+o.datatype = "min(1)"
 o.placeholder = "60"
 
 return m
