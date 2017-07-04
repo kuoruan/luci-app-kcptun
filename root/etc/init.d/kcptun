@@ -98,16 +98,16 @@ is_enable_logging() {
 	[ ."$enable_logging" = ."1" ]
 }
 
-is_ipv6_address() {
-	echo "$1" | grep -q ":"
-}
-
 gen_client_config_file() {
 	local section_id="$1"
 
 	local config_file=${CONFIG_FOLDER}/client.${section_id}.json
 
 	[ -z "$server_addr" ] || [ -z "$server_port" ] || [ -z "$listen_port" ] && return 1
+
+	is_ipv6_address() {
+		echo "$1" | grep -q ":"
+	}
 
 	is_ipv6_address "$server_addr" && server_addr="[${server_addr}]"
 	is_ipv6_address "$listen_addr" && listen_addr="[${listen_addr}]"
@@ -203,6 +203,9 @@ validate_server_section() {
 		'server_port:port' \
 		'listen_addr:host' \
 		'listen_port:port' \
+		'key:string' \
+		'crypt:string' \
+		'mode:or("normal","fast","fast2","fast3","manual")' \
 		'conn:min(1)' \
 		'autoexpire:uinteger' \
 		'scavengettl:min(-1)' \
