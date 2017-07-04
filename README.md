@@ -5,6 +5,10 @@ OpenWrt/LEDE 上的 Kcptun Luci 支持界面
 
 ## 编译说明
 
+由于目录结构原因，无法使用 OpenWrt/LEDE 的 SDK 直接编译。
+需要下载 OpenWrt/LEDE 的完整源码 https://github.com/lede-project/source
+并将 luci-app-kcptun 放入 ```feeds/luci/applications/``` 目录下。
+
 ```
 cd openwrt
 git clone https://github.com/kuoruan/luci-app-kcptun.git feeds/luci/applications/luci-app-kcptun
@@ -16,6 +20,8 @@ rm -rf tmp/
 make menuconfig
 make package/luci-app-kcptun/compile V=s
 ```
+
+如果需要在 SDK 上编译，需要自行修改目录结构。参考：https://github.com/shadowsocks/luci-app-shadowsocks
 
 ## 安装说明
 
