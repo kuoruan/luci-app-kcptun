@@ -185,13 +185,13 @@ o.cfgvalue = function(...)
 	local value = Value.cfgvalue(...)
 
 	if value then
-		return tonumber(value) / 1024 /1024
+		return tonumber(value) / 1024 / 1024
 	end
 end
 o.write = function(self, section, value)
 	local number = tonumber(value)
 	if number then
-		Value.write(self, section, n * 1024 *1024)
+		Value.write(self, section, number * 1024 * 1024)
 	else
 		Value.remove(self, section)
 	end
