@@ -97,7 +97,7 @@ o.default = "fast"
 
 o = s:option(Value, "conn", "%s %s" %{translate("conn"), translate("(optional)")},
 	translate("Number of UDP connections to server."))
-o.datatype = "uinteger"
+o.datatype = "min(1)"
 o.placeholder = "1"
 
 o = s:option(Value, "autoexpire", "%s %s" %{translate("autoexpire"), translate("(optional)")},
@@ -112,7 +112,7 @@ o.placeholder = "600"
 
 o = s:option(Value, "mtu", "%s %s" %{translate("mtu"), translate("(optional)")},
 	translate("Maximum transmission unit of UDP packets."))
-o.datatype = "min(68)"
+o.datatype = "range(64,9200)"
 o.placeholder = "1350"
 
 o = s:option(Value, "sndwnd", "%s %s" %{translate("sndwnd"), translate("(optional)")},

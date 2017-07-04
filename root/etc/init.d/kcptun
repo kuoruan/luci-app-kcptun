@@ -203,10 +203,10 @@ validate_server_section() {
 		'server_port:port' \
 		'listen_addr:host' \
 		'listen_port:port' \
-		'conn:uinteger' \
+		'conn:min(1)' \
 		'autoexpire:uinteger' \
 		'scavengettl:min(-1)' \
-		'mtu:min(68)' \
+		'mtu:range(64,9200)' \
 		'sndwnd:min(1)' \
 		'rcvwnd:min(1)' \
 		'datashard:uinteger' \
