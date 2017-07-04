@@ -58,16 +58,16 @@ _cron_restart() {
 
 _add_cron_script() {
 	local entry="$1"
-	if ! ( crontab -l | grep -q "$entry" ); then
-		(crontab -l ; echo "$entry") | sort | uniq | crontab -
+	if ! ( crontab -l 2>/dev/null | grep -q "$entry" ); then
+		(crontab -l 2>/dev/null; echo "$entry") | sort | uniq | crontab -
 		_cron_restart
 	fi
 }
 
 _rm_cron_script() {
 	local entry="$1"
-	if ( crontab -l | grep -q "$entry" ); then
-		crontab -l | grep -v "$entry" | sort | uniq | crontab -
+	if ( crontab -l 2>/dev/null | grep -q "$entry" ); then
+		crontab -l 2>/dev/null | grep -v "$entry" | sort | uniq | crontab -
 		_cron_restart
 	fi
 }
