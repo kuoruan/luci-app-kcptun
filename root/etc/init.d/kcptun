@@ -36,19 +36,21 @@ fi
 
 _log() {
 	local msg="$1"
-	logger -p daemon.info -t "$NAME" "$msg"
 
-	if ( is_enable_logging ); then
+	if is_enable_logging; then
 		echo "[INFO] $(date '+%Y/%m/%d %T') $msg" >>"$(get_log_folder)/event.log"
+	else
+		logger -p daemon.info -t "$NAME" "$msg"
 	fi
 }
 
 _err() {
 	local msg="$1"
-	logger -p daemon.err -t "$NAME" "$msg"
 
-	if ( is_enable_logging ); then
+	if is_enable_logging; then
 		echo "[ERROR] $(date '+%Y/%m/%d %T') $msg" >>"$(get_log_folder)/event.log"
+	else
+		logger -p daemon.err -t "$NAME" "$msg"
 	fi
 }
 
@@ -143,13 +145,13 @@ gen_client_config_file() {
 		nodelay interval resend nc sockbuf keepalive scavengettl snmpperiod
 	add_configs "boolean" nocomp acknodelay
 
-	if ( is_enable_logging ); then
+	if is_enable_logging; then
 		json_add_string "log" "$(get_log_folder)/client.log"
 	fi
 
 	json_close_object
 
-	if ( json_dump -i >"$config_file" ); then
+	if json_dump -i >"$config_file"; then
 		echo "$config_file"
 	fi
 }
@@ -270,7 +272,7 @@ start_service() {
 
 	setup_cron_task
 
-	if ( is_enable_logging ); then
+	if is_enable_logging; then
 		mkdir -p "$CONFIG_FOLDER" "$(get_log_folder)"
 		chown -R "$daemon_user" "$(get_log_folder)"
 	fi
