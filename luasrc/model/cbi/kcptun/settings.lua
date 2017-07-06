@@ -140,4 +140,15 @@ o.validate = function(self, value, section)
 	return time_validator(self, value, translate("Restart Time"))
 end
 
+o = s:option(ListValue, "arch", translate("CPU Architecture"),
+	translate("The arch use to check update. Note: Make sure OpenWrt/LEDE 'MIPS FPU Emulator' is enabled on MIPS/MIPSLE devices."))
+o:value("", translate("Auto determine"))
+o:value("i386", "x86")
+o:value("x86_64", "x86_64")
+o:value("armv5", "ARMv5")
+o:value("armv6", "ARMv6")
+o:value("armv7", "ARMv7+")
+o:value("ar71xx", "MIPS")
+o:value("ramips", "MIPSLE")
+
 return m

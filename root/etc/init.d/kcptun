@@ -19,40 +19,18 @@ START=99
 STOP=15
 USE_PROCD=1
 
-NAME=kcptun
-INIT_SCRIPT=/etc/init.d/$NAME
-DEFAULT_LOG_FOLDER=/var/log/$NAME
-CONFIG_FOLDER=/var/etc/$NAME
+KCPTUN=kcptun
+INIT_SCRIPT=/etc/init.d/$KCPTUN
+CONFIG_FOLDER=/var/etc/$KCPTUN
 DEFAULT_USER=root
 
-if [ -r /usr/share/libubox/jshn.sh ]; then
-	. /usr/share/libubox/jshn.sh
-elif [ -r /lib/functions/jshn.sh ]; then
-	. /lib/functions/jshn.sh
+if [ -r /usr/lib/kcptun/functions.sh ]; then
+	. /usr/lib/kcptun/functions.sh
 else
-	logger -p daemon.err -t "$NAME" "Please install jshn first."
+	logger -p daemon.err -t "$KCPTUN" \
+		"Could not find '/usr/lib/kcptun/functions.sh', please reinstall LuCI."
 	exit 1
 fi
-
-_log() {
-	local msg="$1"
-
-	if is_enable_logging; then
-		echo "[INFO] $(date '+%Y/%m/%d %T') $msg" >>"$(get_log_folder)/event.log"
-	else
-		logger -p daemon.info -t "$NAME" "$msg"
-	fi
-}
-
-_err() {
-	local msg="$1"
-
-	if is_enable_logging; then
-		echo "[ERROR] $(date '+%Y/%m/%d %T') $msg" >>"$(get_log_folder)/event.log"
-	else
-		logger -p daemon.err -t "$NAME" "$msg"
-	fi
-}
 
 _cron_restart() {
 	/etc/init.d/cron restart  >/dev/null 2>&1
@@ -64,32 +42,6 @@ _add_cron_script() {
 
 _rm_cron_script() {
 	crontab -l 2>/dev/null | grep -vF "$1" | sort | uniq | crontab -
-}
-
-uci_get_by_type_option(){
-	local type="$1"
-	local option="$2"
-	local default="$3"
-
-	local ret
-	ret="$(uci -q get ${NAME}.@${type}[-1].${option})"
-	echo "${ret:=$default}"
-}
-
-get_log_folder() {
-	if [ -z "$log_folder" ]; then
-		log_folder=$(uci_get_by_type_option "general" "log_folder" "$DEFAULT_LOG_FOLDER")
-	fi
-
-	echo "$log_folder"
-}
-
-is_enable_logging() {
-	if [ -z "$enable_logging" ]; then
-		enable_logging=$(uci_get_by_type_option "general" "enable_logging" "0")
-	fi
-
-	[ ."$enable_logging" = ."1" ]
 }
 
 gen_client_config_file() {
@@ -137,7 +89,7 @@ gen_client_config_file() {
 	add_configs "boolean" nocomp acknodelay
 
 	if is_enable_logging; then
-		json_add_string "log" "$(get_log_folder)/client.log"
+		json_add_string "log" "${log_folder}/client.log"
 	fi
 
 	json_close_object
@@ -148,20 +100,20 @@ gen_client_config_file() {
 }
 
 setup_iptables_chain() {
-	if ! ( iptables -nL "$NAME" >/dev/null 2>&1 ); then
-		_log "Creating new firewall chain ${NAME}..."
-		iptables -N "$NAME" 2>/dev/null
+	if ! ( iptables -nL "$KCPTUN" >/dev/null 2>&1 ); then
+		_log "Creating new firewall chain ${KCPTUN}..."
+		iptables -N "$KCPTUN" 2>/dev/null
 	fi
 
-	iptables -C OUTPUT -j "$NAME" 2>/dev/null || \
-		iptables -A OUTPUT -j "$NAME" 2>/dev/null
-	iptables -C INPUT -j "$NAME" 2>/dev/null || \
-		iptables -A INPUT -j "$NAME" 2>/dev/null
+	iptables -C OUTPUT -j "$KCPTUN" 2>/dev/null || \
+		iptables -A OUTPUT -j "$KCPTUN" 2>/dev/null
+	iptables -C INPUT -j "$KCPTUN" 2>/dev/null || \
+		iptables -A INPUT -j "$KCPTUN" 2>/dev/null
 }
 
 clear_iptables_chain() {
-	_log "Deleting all firewall rules in chain ${NAME}..."
-	iptables -F "$NAME" >/dev/null 2>&1
+	_log "Deleting all firewall rules in chain ${KCPTUN}..."
+	iptables -F "$KCPTUN" >/dev/null 2>&1
 }
 
 add_iptables_rule() {
@@ -169,18 +121,18 @@ add_iptables_rule() {
 	local type="$2"
 
 	if [ "$type" = "client" ]; then
-		( iptables -C "$NAME" -p tcp --dport "$port" -m comment \
+		( iptables -C "$KCPTUN" -p tcp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
 
 		_log "Add firewall rules for ${type}, port ${port}."
-		iptables -A "$NAME" -p tcp --dport "$port" -m comment \
+		iptables -A "$KCPTUN" -p tcp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null
 	elif [ "$type" = "server" ]; then
-		( iptables -C "$NAME" -p udp --dport "$port" -m comment \
+		( iptables -C "$KCPTUN" -p udp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
 
 		_log "Add firewall rules for ${type}, port ${port}."
-		iptables -A "$NAME" -p udp --dport "$port" -m comment \
+		iptables -A "$KCPTUN" -p udp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null
 	fi
 }
@@ -238,7 +190,7 @@ setup_cron_restart_task() {
 }
 
 validate_server_section() {
-	uci_validate_section "$NAME" servers "$1" \
+	uci_validate_section "$KCPTUN" servers "$1" \
 		'server_addr:host' \
 		'server_port:port' \
 		'listen_addr:host' \
@@ -266,20 +218,8 @@ validate_server_section() {
 		'snmpperiod:min(1)'
 }
 
-validate_client_file() {
-	local file="$1"
-
-	if [ ! -f "$file" ]; then
-		return 1
-	fi
-
-	[ -x "$file" ] || chmod +x "$file"
-
-	( $file -v | grep -q "$NAME" )
-}
-
 service_triggers() {
-	procd_add_reload_trigger "$NAME"
+	procd_add_reload_trigger "$KCPTUN"
 }
 
 start_service() {
@@ -287,6 +227,11 @@ start_service() {
 	client_file=$(uci_get_by_type_option "general" "client_file")
 	daemon_user=$(uci_get_by_type_option "general" "daemon_user" "$DEFAULT_USER")
 	auto_restart=$(uci_get_by_type_option "general" "auto_restart")
+
+	if is_enable_logging; then
+		mkdir -p "$CONFIG_FOLDER" "$log_folder"
+		chown -R "$daemon_user" "$log_folder"
+	fi
 
 	if [ -z "$kcptun_server" ] || [ "$kcptun_server" = "nil" ]; then
 		 _log "No server selected, Client will stop."
@@ -310,11 +255,6 @@ start_service() {
 
 	setup_cron_restart_task
 	setup_iptables_chain
-
-	if is_enable_logging; then
-		mkdir -p "$CONFIG_FOLDER" "$(get_log_folder)"
-		chown -R "$daemon_user" "$(get_log_folder)"
-	fi
 
 	client_config_file="$(gen_client_config_file "$kcptun_server")"
 

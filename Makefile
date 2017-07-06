@@ -17,14 +17,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-kcptun
-PKG_VERSION:=1.3.2
+PKG_VERSION:=1.3.3
 PKG_RELEASE:=1
 
 PKG_LICENSE:=Apache-2.0
 PKG_MAINTAINER:=Xingwang Liao <kuoruan@gmail.com>
 
 LUCI_TITLE:=LuCI support for Kcptun
-LUCI_DEPENDS:=+jshn
+LUCI_DEPENDS:=+jshn +wget +luci-lib-jsonc
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/config
