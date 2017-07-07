@@ -109,12 +109,10 @@
 		btn.disabled = true;
 		btn.value    = '<%:Processing...%>';
 
-		var elem = document.getElementById('_kcptun-' + type +'_update');
-
 		(new XHR()).get('<%=luci.dispatcher.build_url("admin", "services", "kcptun", "update")%>/' + type,
 			{ token: '<%=token%>', arch: '<%=arch%>' },
 			function(x) {
-				if (x.status == 200 && elem) {
+				if (x.status == 200) {
 					var code = parseInt(x.responseText);
 					switch (code) {
 						case 0:
@@ -125,6 +123,9 @@
 							btn.value = '<%:Download file failed. Please retry.%>';
 							btn.disabled = false;
 							break;
+						case 26:
+							btn.value = '<%:ARCH mismatching! Please reselect.%>';
+							btn.disabled = true;
 						default:
 							btn.value    = '<%:Update failed! Please try agin later.%>';
 							btn.disabled = true;

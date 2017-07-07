@@ -10,6 +10,9 @@ msgstr "2次 ACK 跨越重传"
 msgid "Alias"
 msgstr "别名"
 
+msgid "ARCH mismatching! Please reselect."
+msgstr "CPU 架构不匹配，请重新选择"
+
 msgid "Author"
 msgstr "作者"
 
@@ -143,7 +146,7 @@ msgid ""
 msgstr "NAT Keepalive 包间隔时间(秒), 防止路由器删除端口映射"
 
 msgid "New version %s found."
-msgstr "发现新版本 %s !"
+msgstr "发现新版本 %s ！"
 
 msgid "No log data..."
 msgstr "无日志数据..."
@@ -179,7 +182,7 @@ msgid "Pre-shared secret for client and server."
 msgstr "客户端和服务端的通信密码"
 
 msgid "Processing..."
-msgstr "正在清理..."
+msgstr "正在操作..."
 
 msgid "Receive Window Size(num of packets)."
 msgstr "接收窗口大小 (数据包数量)"

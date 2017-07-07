@@ -206,6 +206,7 @@ function action_update(type)
 		type = kcptun
 	end
 
+	local arch = http.formvalue("arch") or ""
 	local code = sys.call("sh /usr/lib/%s/%s_update.sh update %s" %{ kcptun, type, arch })
 
 	http.prepare_content("text/plain")
