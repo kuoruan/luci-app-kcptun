@@ -18,6 +18,7 @@ KCPTUN=kcptun
 LATEST_KCPTUN_API='https://api.github.com/repos/xtaci/kcptun/releases/latest'
 BASE_DOWNLOAD_URL='https://github.com/xtaci/kcptun/releases/download'
 LATEST_FILE=/usr/lib/kcptun/KCPTUN_LATEST
+DEFAULT_CLIENT_FILE=/usr/bin/kcptun_client
 
 if [ -r /usr/lib/kcptun/functions.sh ]; then
 	. /usr/lib/kcptun/functions.sh
@@ -161,7 +162,7 @@ update_kcptun() {
 	local file_path extract_path client_file back_file new_file
 	file_path="$(mktemp -q -u)"
 	extract_path="$(mktemp -q -d)"
-	client_file="$(uci_get_by_type_option "general" "client_file" "/usr/bin/kcptun_client")"
+	client_file="$(uci_get_by_type_option "general" "client_file" "$DEFAULT_CLIENT_FILE")"
 
 	clean_all() {
 		rm -rf "$file_path" "$extract_path"

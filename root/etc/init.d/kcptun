@@ -244,7 +244,7 @@ start_service() {
 	fi
 
 	if [ -z "$client_file" ]; then
-		_err "Please set client file path."
+		_err "Please set client file path, or use auto download."
 		clear_all
 		return 1;
 	elif ! validate_client_file "$client_file"; then

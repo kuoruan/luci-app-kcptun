@@ -16,6 +16,9 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
+msgid "Auto download later"
+msgstr ""
+
 msgid "Auto Restart Service"
 msgstr ""
 

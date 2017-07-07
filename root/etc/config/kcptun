@@ -1,7 +1,6 @@
 
 config general
 	option server 'nil'
-	option client_file '/usr/bin/kcptun/client'
 	option daemon_user 'root'
 	option enable_logging '1'
 

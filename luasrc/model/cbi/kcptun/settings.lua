@@ -78,14 +78,13 @@ o.default = "nil"
 o.rmempty = false
 
 o = s:option(Value, "client_file", translate("Client Exec File"))
+o:value("", translate("Auto download later"))
 o.datatype = "file"
 o.placeholder = translate("Full file path")
-o.rmempty = false
 o.validate = function(self, value, section)
 	if value and fs.access(value) and not is_kcptun(value) then
 		return nil, translate("Not a Kcptun executable file.")
 	end
-
 	return value
 end
 

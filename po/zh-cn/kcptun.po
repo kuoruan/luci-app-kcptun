@@ -16,6 +16,9 @@ msgstr "CPU 架构不匹配，请重新选择"
 msgid "Author"
 msgstr "作者"
 
+msgid "Auto download later"
+msgstr "稍后自动下载"
+
 msgid "Auto Restart Service"
 msgstr "自动重启服务"
 
