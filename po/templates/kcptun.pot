@@ -1,5 +1,5 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
+msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "(optional)"
 msgstr ""
@@ -16,11 +16,20 @@ msgstr ""
 msgid "Auto Restart Service"
 msgstr ""
 
+msgid "Auto determine"
+msgstr ""
+
 msgid ""
 "Auto expiration time(in seconds) for a single UDP connection, 0 to disable."
 msgstr ""
 
 msgid "Blog"
+msgstr ""
+
+msgid "CPU Architecture"
+msgstr ""
+
+msgid "Check update error."
 msgstr ""
 
 msgid "Clear Client Log"
@@ -56,6 +65,9 @@ msgstr ""
 msgid "Disable Compression?"
 msgstr ""
 
+msgid "Download file failed. Please retry."
+msgstr ""
+
 msgid "Edit Server"
 msgstr ""
 
@@ -71,9 +83,6 @@ msgstr ""
 msgid "Encrypt Method"
 msgstr ""
 
-msgid "Error ID"
-msgstr ""
-
 msgid "Event Log"
 msgstr ""
 
@@ -87,9 +96,6 @@ msgid "General Settings"
 msgstr ""
 
 msgid "How long an expired connection can live(in sec), -1 to disable."
-msgstr ""
-
-msgid "ID required"
 msgstr ""
 
 msgid "Invalid Client File."
@@ -136,7 +142,16 @@ msgid ""
 "default unit is seconds."
 msgstr ""
 
+msgid "New version %s found."
+msgstr ""
+
 msgid "No log data..."
+msgstr ""
+
+msgid "No update found."
+msgstr ""
+
+msgid "No update infomation."
 msgstr ""
 
 msgid "None"
@@ -214,10 +229,36 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid ""
+"The arch use to check update. Note: Make sure OpenWrt/LEDE 'MIPS FPU "
+"Emulator' is enabled on MIPS/MIPSLE devices."
+msgstr ""
+
 msgid "The value '%s' is invalid."
 msgstr ""
 
 msgid "True"
+msgstr ""
+
+msgid "Unknown error."
+msgstr ""
+
+msgid "Update Kcptun"
+msgstr ""
+
+msgid "Update LuCI"
+msgstr ""
+
+msgid "Update failed! Please try agin later."
+msgstr ""
+
+msgid "Update now!"
+msgstr ""
+
+msgid "Update success!"
+msgstr ""
+
+msgid "View update details."
 msgstr ""
 
 msgid "acknodelay"

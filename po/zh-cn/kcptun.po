@@ -5,7 +5,7 @@ msgid "(optional)"
 msgstr "(可选)"
 
 msgid "2nd ACK"
-msgstr "2次ACK跨越重传"
+msgstr "2次 ACK 跨越重传"
 
 msgid "Alias"
 msgstr "别名"
@@ -16,12 +16,21 @@ msgstr "作者"
 msgid "Auto Restart Service"
 msgstr "自动重启服务"
 
+msgid "Auto determine"
+msgstr "自动确定"
+
 msgid ""
 "Auto expiration time(in seconds) for a single UDP connection, 0 to disable."
 msgstr "单个 UDP 连接的自动过期时间(秒)，设置 0 来禁用"
 
 msgid "Blog"
 msgstr "博客"
+
+msgid "CPU Architecture"
+msgstr "CPU 架构"
+
+msgid "Check update error."
+msgstr "检查更新失败"
 
 msgid "Clear Client Log"
 msgstr "清空客户端日志"
@@ -56,6 +65,9 @@ msgstr "禁用压缩"
 msgid "Disable Compression?"
 msgstr "是否禁用压缩?"
 
+msgid "Download file failed. Please retry."
+msgstr "下载文件失败，请重试"
+
 msgid "Edit Server"
 msgstr "编辑服务端"
 
@@ -70,9 +82,6 @@ msgstr "启用 nodelay 模式"
 
 msgid "Encrypt Method"
 msgstr "加密方式"
-
-msgid "Error ID"
-msgstr "ID 错误"
 
 msgid "Event Log"
 msgstr "事件日志"
@@ -89,14 +98,11 @@ msgstr "基本设置"
 msgid "How long an expired connection can live(in sec), -1 to disable."
 msgstr "过期连接保留多长时间(秒)，设置 -1 来禁用"
 
-msgid "ID required"
-msgstr "ID 不能为空"
-
 msgid "Invalid Client File."
 msgstr "客户端文件配置有误"
 
 msgid "Kcptun"
-msgstr "Kcptun"
+msgstr ""
 
 msgid "Kcptun Client"
 msgstr "Kcptun 客户端"
@@ -136,8 +142,17 @@ msgid ""
 "default unit is seconds."
 msgstr "NAT Keepalive 包间隔时间(秒), 防止路由器删除端口映射"
 
+msgid "New version %s found."
+msgstr "发现新版本 %s !"
+
 msgid "No log data..."
 msgstr "无日志数据..."
+
+msgid "No update found."
+msgstr "未发现更新"
+
+msgid "No update infomation."
+msgstr "无更新信息"
 
 msgid "None"
 msgstr "无"
@@ -214,68 +229,96 @@ msgstr "服务端端口"
 msgid "Settings"
 msgstr "设置"
 
+msgid ""
+"The ARCH use to check update. Note: Make sure OpenWrt/LEDE 'MIPS FPU "
+"Emulator' is enabled on MIPS/MIPSLE devices."
+msgstr ""
+"用于检查更新的 ARCH。注意: 在 MIPS/MIPSLE 设备上，请确保 OpenWrt/LEDE 的 'MIPS "
+"FPU Emulator' 已经启用。"
+
 msgid "The value '%s' is invalid."
 msgstr "'%s' 的值无效"
 
 msgid "True"
 msgstr "是"
 
+msgid "Unknown error."
+msgstr "未知错误"
+
+msgid "Update Kcptun"
+msgstr "更新 Kcptun"
+
+msgid "Update LuCI"
+msgstr "更新 LuCI"
+
+msgid "Update failed! Please try agin later."
+msgstr "更新失败，请稍候重试"
+
+msgid "Update now!"
+msgstr "现在更新！"
+
+msgid "Update success!"
+msgstr "更新成功！"
+
+msgid "View update details."
+msgstr "查看新版详细信息。"
+
 msgid "acknodelay"
-msgstr "acknodelay"
+msgstr ""
 
 msgid "autoexpire"
-msgstr "autoexpire"
+msgstr ""
 
 msgid "conn"
-msgstr "conn"
+msgstr ""
 
 msgid "crypt"
-msgstr "crypt"
+msgstr ""
 
 msgid "datashard"
-msgstr "datashard"
+msgstr ""
 
 msgid "dscp"
-msgstr "dscp"
+msgstr ""
 
 msgid "interval"
-msgstr "interval"
+msgstr ""
 
 msgid "keepalive"
-msgstr "keepalive"
+msgstr ""
 
 msgid "mode"
-msgstr "mode"
+msgstr ""
 
 msgid "mtu"
-msgstr "mtu"
+msgstr ""
 
 msgid "nc"
-msgstr "nc"
+msgstr ""
 
 msgid "nocomp"
-msgstr "nocomp"
+msgstr ""
 
 msgid "nodelay"
-msgstr "nodelay"
+msgstr ""
 
 msgid "parityshard"
-msgstr "parityshard"
+msgstr ""
 
 msgid "rcvwnd"
-msgstr "rcvwnd"
+msgstr ""
 
 msgid "resend"
-msgstr "resend"
+msgstr ""
 
 msgid "scavengettl"
 msgstr ""
 
 msgid "sndwnd"
-msgstr "sndwnd"
+msgstr ""
 
 msgid "snmpperiod"
 msgstr ""
 
 msgid "sockbuf"
-msgstr "sockbuf"
+msgstr ""
