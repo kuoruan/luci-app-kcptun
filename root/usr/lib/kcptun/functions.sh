@@ -21,7 +21,8 @@ if [ -r /usr/share/libubox/jshn.sh ]; then
 elif [ -r /lib/functions/jshn.sh ]; then
 	. /lib/functions/jshn.sh
 else
-	_err "Package jshn is required, Please install first."
+	logger -p daemon.err -t "$KCPTUN" \
+		"Package jshn is required, please install first."
 	exit 1
 fi
 
