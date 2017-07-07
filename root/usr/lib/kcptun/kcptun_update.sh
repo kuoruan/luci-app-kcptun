@@ -147,6 +147,8 @@ update_kcptun() {
 
 	determine_file_tree
 
+	_log "Update begin, ARCH: ${arch} File tree: ${file_tree}${sub_version}"
+
 	local url
 	url="$(cat "$LATEST_FILE" | sed 's/[[:space:]]//g')"
 
@@ -171,6 +173,7 @@ update_kcptun() {
 		return 1
 	fi
 
+	_log "Start downloading ${KCPTUN} file..."
 	download_file "$url" "$file_path"
 
 	if [ "$?" != "0" ]; then
@@ -214,6 +217,7 @@ update_kcptun() {
 	fi
 
 	(
+		_log "Moving the new file..."
 		mkdir -p "$(dirname "$client_file")"
 		mv -f "$new_file" "$client_file"
 	)
