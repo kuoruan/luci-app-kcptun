@@ -16,10 +16,10 @@
 
 [ -z "$KCPTUN" ] && KCPTUN=kcptun
 
-if [ -r /usr/share/libubox/jshn.sh ]; then
-	. /usr/share/libubox/jshn.sh
-elif [ -r /lib/functions/jshn.sh ]; then
-	. /lib/functions/jshn.sh
+if [ -r ${IPKG_INSTROOT}/usr/share/libubox/jshn.sh ]; then
+	. ${IPKG_INSTROOT}/usr/share/libubox/jshn.sh
+elif [ -r ${IPKG_INSTROOT}/lib/functions/jshn.sh ]; then
+	. ${IPKG_INSTROOT}/lib/functions/jshn.sh
 else
 	logger -p daemon.err -t "$KCPTUN" \
 		"Package jshn is required, please install first."

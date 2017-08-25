@@ -24,8 +24,8 @@ INIT_SCRIPT=/etc/init.d/$KCPTUN
 CONFIG_FOLDER=/var/etc/$KCPTUN
 DEFAULT_USER=root
 
-if [ -r /usr/lib/kcptun/functions.sh ]; then
-	. /usr/lib/kcptun/functions.sh
+if [ -r ${IPKG_INSTROOT}/usr/lib/kcptun/functions.sh ]; then
+	. ${IPKG_INSTROOT}/usr/lib/kcptun/functions.sh
 else
 	logger -p daemon.err -t "$KCPTUN" \
 		"Could not find '/usr/lib/kcptun/functions.sh', please reinstall LuCI."
