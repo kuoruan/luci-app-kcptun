@@ -18,11 +18,7 @@
 START=99
 USE_PROCD=1
 
-EXTRA_COMMANDS=cron_restart
-EXTRA_HELP="	cron_restart	Called by cron task."
-
 KCPTUN=kcptun
-INIT_SCRIPT=/etc/init.d/$KCPTUN
 CONFIG_FOLDER=/var/etc/$KCPTUN
 
 if [ -r /usr/share/libubox/jshn.sh ]; then
@@ -40,14 +36,6 @@ _log() {
 	local msg="$2"
 
 	logger -p "daemon.${level}" -t "$KCPTUN" "$msg"
-}
-
-_add_cron_script() {
-	(crontab -l 2>/dev/null; echo "$1") | sort | uniq | crontab -
-}
-
-_rm_cron_script() {
-	crontab -l 2>/dev/null | grep -vF "$1" | sort | uniq | crontab -
 }
 
 gen_client_config_file() {
@@ -128,50 +116,11 @@ add_iptables_rule() {
 	fi
 }
 
-rm_cron_restart_task() {
-	local section_id="$1"
-
-	local entry="${INIT_SCRIPT} cron_restart ${section_id}"
-
-	if ( crontab -l 2>/dev/null | grep -qF "$entry" ); then
-		_rm_cron_script "$entry"
-		cron_changed="1"
-	fi
-}
-
-add_cron_restart_task() {
-	local restart_time="$1"
-	local section_id="$2"
-
-	local h m
-
-	h=$(echo "${restart_time}" | cut -d':' -f1)
-	m=$(echo "${restart_time}" | cut -d':' -f2)
-
-	rm_cron_restart_task "$section_id"
-
-	if [ -n "$h" ] && [ -n "$m" ]; then
-		local entry="${m} ${h} * * * ${INIT_SCRIPT} cron_restart ${section_id}"
-
-		if ! ( crontab -l 2>/dev/null | grep -qF "$entry" ); then
-			_add_cron_script "$entry"
-			cron_changed="1"
-		fi
-	fi
-}
-
-restart_cron_if_needed() {
-	if [ -n "$cron_changed" ] && ( ps | grep -v grep | grep -q crond ); then
-		/etc/init.d/cron restart  >/dev/null 2>&1
-	fi
-}
-
 validate_config_section() {
 	uci_validate_section "$KCPTUN" general "$1" \
 		'server:uciname' \
 		'client_file:file' \
 		'daemon_user:string:root' \
-		'auto_restart:string' \
 		'enable_logging:bool:0' \
 		'log_folder:directory:/var/log/kcptun'
 }
@@ -269,9 +218,6 @@ start_kcptun_instance() {
 
 	add_iptables_rule "$listen_port" "client"
 
-	[ -n "$auto_restart" ] && \
-		add_cron_restart_task "$auto_restart" "$section"
-
 	procd_open_instance
 	procd_set_param command "$client_file"
 	procd_append_param command -c "$config_file"
@@ -289,33 +235,13 @@ service_triggers() {
 }
 
 start_service() {
-	rm_cron_restart_task
-
 	clear_iptables_chain
 	setup_iptables_chain
 
 	config_load "$KCPTUN"
 	config_foreach start_kcptun_instance "general"
-
-	restart_cron_if_needed
 }
 
 stop_service() {
 	clear_iptables_chain
-	rm_cron_restart_task
-	restart_cron_if_needed
-}
-
-cron_restart() {
-	local section="$1"
-
-	_log "info" "Cron task start."
-
-	if [ -z "$section" ]; then
-		_log "err" "Section id required."
-		return 1
-	fi
-
-	start_kcptun_instance "$section"
-	restart_cron_if_needed
 }

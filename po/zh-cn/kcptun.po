@@ -10,9 +10,6 @@ msgstr "别名"
 msgid "Auto"
 msgstr "自动"
 
-msgid "Auto Restart Service"
-msgstr "自动重启服务"
-
 msgid ""
 "Auto expiration time(in seconds) for a single UDP connection, 0 to disable."
 msgstr "单个 UDP 连接的自动过期时间(秒)，设置 0 来禁用"
@@ -199,9 +196,6 @@ msgstr "前向纠错 - parityshard"
 msgid "Refresh every 5 seconds."
 msgstr "每 5 秒刷新。"
 
-msgid "Restart Time"
-msgstr "重启时间"
-
 msgid "Run Daemon as User"
 msgstr "以该用户启动"
 
@@ -248,9 +242,6 @@ msgstr ""
 msgid ""
 "The downloaded file is not suitable for current device. Please reselect ARCH."
 msgstr "下载的文件不适用于当前设备，请重新选择 ARCH。"
-
-msgid "The value '%s' is invalid."
-msgstr "'%s' 的值无效"
 
 msgid "True"
 msgstr "是"

@@ -25,23 +25,6 @@ uci:foreach("kcptun", "servers", function(s)
 	end
 end)
 
-local function time_validator(self, value, desc)
-	if value ~= nil then
-		local h_str, m_str = value:match("^(%d%d?):(%d%d?)$")
-		local h = tonumber(h_str)
-		local m = tonumber(m_str)
-		if ( h ~= nil and
-			 h >= 0   and
-			 h <= 23  and
-			 m ~= nil and
-			 m >= 0   and
-			 m <= 59) then
-			return value
-		end
-	end
-	return nil, translatef("The value '%s' is invalid.", desc)
-end
-
 m = Map("kcptun", "%s - %s" % { translate("Kcptun"), translate("Settings") })
 m:append(Template("kcptun/status"))
 
@@ -93,15 +76,6 @@ o.validate = function(self, value, section)
 		end
 	end
 	return Value.validate(self, value, section)
-end
-
-o = s:option(Value, "auto_restart", translate("Auto Restart Service"))
-o:value("", translate("Off"))
-for i = 0, 23, 1 do
-	o:value(string.format("%02d:00", i))
-end
-o.validate = function(self, value, section)
-	return time_validator(self, value, translate("Restart Time"))
 end
 
 o = s:option(ListValue, "arch", translate("CPU Architecture"),

@@ -10,9 +10,6 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-msgid "Auto Restart Service"
-msgstr ""
-
 msgid ""
 "Auto expiration time(in seconds) for a single UDP connection, 0 to disable."
 msgstr ""
@@ -199,9 +196,6 @@ msgstr ""
 msgid "Refresh every 5 seconds."
 msgstr ""
 
-msgid "Restart Time"
-msgstr ""
-
 msgid "Run Daemon as User"
 msgstr ""
 
@@ -245,9 +239,6 @@ msgstr ""
 
 msgid ""
 "The downloaded file is not suitable for current device. Please reselect ARCH."
-msgstr ""
-
-msgid "The value '%s' is invalid."
 msgstr ""
 
 msgid "True"
