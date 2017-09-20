@@ -222,10 +222,7 @@ start_kcptun_instance() {
 	procd_set_param command "$client_file"
 	procd_append_param command -c "$config_file"
 	procd_set_param respawn
-
-	[ -z "$daemon_user" ] && \
-		procd_set_param user "$daemon_user"
-
+	procd_set_param user "$daemon_user"
 	procd_set_param file "$config_file"
 	procd_close_instance
 }
