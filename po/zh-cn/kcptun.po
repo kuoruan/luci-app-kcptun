@@ -1,54 +1,45 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "(optional)"
-msgstr "(可选)"
-
 msgid "2nd ACK"
 msgstr "2次 ACK 跨越重传"
 
 msgid "Alias"
 msgstr "别名"
 
-msgid "ARCH mismatching! Please reselect."
-msgstr "CPU 架构不匹配，请重新选择"
-
-msgid "Author"
-msgstr "作者"
-
-msgid "Auto download later"
-msgstr "稍后自动下载"
+msgid "Auto"
+msgstr "自动"
 
 msgid "Auto Restart Service"
 msgstr "自动重启服务"
-
-msgid "Auto determine"
-msgstr "自动确定"
 
 msgid ""
 "Auto expiration time(in seconds) for a single UDP connection, 0 to disable."
 msgstr "单个 UDP 连接的自动过期时间(秒)，设置 0 来禁用"
 
-msgid "Blog"
-msgstr "博客"
-
 msgid "CPU Architecture"
 msgstr "CPU 架构"
 
-msgid "Check update error."
-msgstr "检查更新失败"
+msgid "Can't determine ARCH, or ARCH not supported. Please select manually."
+msgstr "无法自动确定 ARCH，或者不支持该 ARCH，请手动重新选择。"
 
-msgid "Clear Client Log"
-msgstr "清空客户端日志"
+msgid "Can't move new file to path: %s"
+msgstr "无法移动新文件到：%s"
 
-msgid "Clear Event Log"
-msgstr "清空事件日志"
+msgid "Check Kcptun"
+msgstr "检查 Kcptun"
 
-msgid "Client Exec File"
-msgstr "客户端可执行文件"
+msgid "Check Luci"
+msgstr "检查 Luci"
 
-msgid "Client Log"
-msgstr "客户端日志"
+msgid "Clear Log File"
+msgstr "清理日志文件"
+
+msgid "Click to Update"
+msgstr "点击更新"
+
+msgid "Client File"
+msgstr "客户端文件"
 
 msgid "Client Status"
 msgstr "客户端状态"
@@ -71,9 +62,6 @@ msgstr "禁用压缩"
 msgid "Disable Compression?"
 msgstr "是否禁用压缩?"
 
-msgid "Download file failed. Please retry."
-msgstr "下载文件失败，请重试"
-
 msgid "Edit Server"
 msgstr "编辑服务端"
 
@@ -89,17 +77,20 @@ msgstr "启用 nodelay 模式"
 msgid "Encrypt Method"
 msgstr "加密方式"
 
-msgid "Event Log"
-msgstr "事件日志"
+msgid "Error get log data."
+msgstr "获取日志数据失败。"
 
 msgid "False"
 msgstr "否"
 
-msgid "Full file path"
-msgstr "完整文件路径"
+msgid "File download failed or timed out: %s"
+msgstr "文件下载失败或超时：%s"
 
 msgid "General Settings"
 msgstr "基本设置"
+
+msgid "Get remote version info failed."
+msgstr "获取远程版本信息失败。"
 
 msgid "How long an expired connection can live(in sec), -1 to disable."
 msgstr "过期连接保留多长时间(秒)，设置 -1 来禁用"
@@ -116,11 +107,23 @@ msgstr "Kcptun 客户端"
 msgid "Key"
 msgstr "密码"
 
+msgid "Last 50 lines of log file:"
+msgstr "日志文件的最新 50 行："
+
+msgid "Last 50 lines of syslog:"
+msgstr "系统日志的最新 50 行："
+
 msgid "Listen Address"
 msgstr "监听地址"
 
-msgid "Local Host"
-msgstr "本地主机"
+msgid "Loading"
+msgstr "正在加载..."
+
+msgid "Local Listen Host"
+msgstr "本地监听地址"
+
+msgid "Local Listen Port."
+msgstr "本地监听端口"
 
 msgid "Local Port"
 msgstr "本地端口"
@@ -128,17 +131,20 @@ msgstr "本地端口"
 msgid "Local listen host."
 msgstr "本地监听主机"
 
-msgid "Local listen port."
-msgstr "本地监听端口"
+msgid "Log"
+msgstr "日志"
+
+msgid "Log Data"
+msgstr "日志数据"
 
 msgid "Log Folder"
 msgstr "日志文件夹"
 
-msgid "Log file does not exist..."
-msgstr "日志文件不存在..."
-
 msgid "LuCI Version"
 msgstr "LuCI 版本"
+
+msgid "Make sure that the 'Client File' dictionary has enough space."
+msgstr "请确保“客户端文件”所在的文件夹具有足够的空间。"
 
 msgid "Maximum transmission unit of UDP packets."
 msgstr "UDP数据包的最大传输单元"
@@ -148,26 +154,20 @@ msgid ""
 "default unit is seconds."
 msgstr "NAT Keepalive 包间隔时间(秒), 防止路由器删除端口映射"
 
-msgid "New version %s found."
-msgstr "发现新版本 %s ！"
+msgid "New version found, but failed to get new version download url."
+msgstr "发现新版本，但是获取下载地址失败。"
 
-msgid "No log data..."
-msgstr "无日志数据..."
-
-msgid "No update found."
+msgid "No Update Found"
 msgstr "未发现更新"
 
-msgid "No update infomation."
-msgstr "无更新信息"
+msgid "No log data."
+msgstr "无日志数据。"
 
 msgid "None"
 msgstr "无"
 
 msgid "Not Running"
 msgstr "未运行"
-
-msgid "Not a Kcptun executable file."
-msgstr "不是 Kcptun 可执行文件, 或文件不匹配"
 
 msgid "Number of UDP connections to server."
 msgstr "到服务端的UDP连接数量"
@@ -178,8 +178,8 @@ msgstr "关闭"
 msgid "On"
 msgstr "开启"
 
-msgid "Overview"
-msgstr "总览"
+msgid "Package update failed."
+msgstr "软件包升级失败。"
 
 msgid "Pre-shared secret for client and server."
 msgstr "客户端和服务端的通信密码"
@@ -196,10 +196,13 @@ msgstr "前向纠错 - datashard"
 msgid "Reed-solomon Erasure Coding - parityshard."
 msgstr "前向纠错 - parityshard"
 
+msgid "Refresh every 5 seconds."
+msgstr "每 5 秒刷新。"
+
 msgid "Restart Time"
 msgstr "重启时间"
 
-msgid "Run daemon as user"
+msgid "Run Daemon as User"
 msgstr "以该用户启动"
 
 msgid "Running"
@@ -236,11 +239,15 @@ msgid "Settings"
 msgstr "设置"
 
 msgid ""
-"The ARCH use to check update. Note: Make sure OpenWrt/LEDE 'MIPS FPU "
+"The ARCH for checking updates. Note: Make sure OpenWrt/LEDE 'MIPS FPU "
 "Emulator' is enabled on MIPS/MIPSLE devices."
 msgstr ""
-"用于检查更新的 ARCH。注意: 在 MIPS/MIPSLE 设备上，请确保 OpenWrt/LEDE 的 'MIPS "
-"FPU Emulator' 已经启用。"
+"用于检查更新的 ARCH。注意: 在 MIPS/MIPSLE 设备上，请确保 OpenWrt/LEDE 的 "
+"'MIPS FPU Emulator' 已经启用。"
+
+msgid ""
+"The downloaded file is not suitable for current device. Please reselect ARCH."
+msgstr "下载的文件不适用于当前设备，请重新选择 ARCH。"
 
 msgid "The value '%s' is invalid."
 msgstr "'%s' 的值无效"
@@ -248,26 +255,16 @@ msgstr "'%s' 的值无效"
 msgid "True"
 msgstr "是"
 
-msgid "Unknown error."
-msgstr "未知错误"
-
-msgid "Update Kcptun"
-msgstr "更新 Kcptun"
-
-msgid "Update LuCI"
-msgstr "更新 LuCI"
-
-msgid "Update failed! Please try agin later."
-msgstr "更新失败，请稍候重试"
-
-msgid "Update now!"
-msgstr "现在更新！"
-
-msgid "Update success!"
+msgid "Update Success."
 msgstr "更新成功！"
 
-msgid "View update details."
-msgstr "查看新版详细信息。"
+msgid "Update in progress. Are you sure to close window?"
+msgstr "正在更新，确定关闭窗口？"
+
+msgid ""
+"You need to reload current page after update luci. Note that translation "
+"will not be updated."
+msgstr "更新 luci 之后你需要手动刷新当前页面。注意：翻译不会被更新"
 
 msgid "acknodelay"
 msgstr ""
@@ -307,6 +304,9 @@ msgstr ""
 
 msgid "nodelay"
 msgstr ""
+
+msgid "optional"
+msgstr "可选"
 
 msgid "parityshard"
 msgstr ""

@@ -1,53 +1,44 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-msgid "(optional)"
-msgstr ""
-
 msgid "2nd ACK"
 msgstr ""
 
 msgid "Alias"
 msgstr ""
 
-msgid "ARCH mismatching! Please reselect."
-msgstr ""
-
-msgid "Author"
-msgstr ""
-
-msgid "Auto download later"
+msgid "Auto"
 msgstr ""
 
 msgid "Auto Restart Service"
-msgstr ""
-
-msgid "Auto determine"
 msgstr ""
 
 msgid ""
 "Auto expiration time(in seconds) for a single UDP connection, 0 to disable."
 msgstr ""
 
-msgid "Blog"
-msgstr ""
-
 msgid "CPU Architecture"
 msgstr ""
 
-msgid "Check update error."
+msgid "Can't determine ARCH, or ARCH not supported. Please select manually."
 msgstr ""
 
-msgid "Clear Client Log"
+msgid "Can't move new file to path: %s"
 msgstr ""
 
-msgid "Clear Event Log"
+msgid "Check Kcptun"
 msgstr ""
 
-msgid "Client Exec File"
+msgid "Check Luci"
 msgstr ""
 
-msgid "Client Log"
+msgid "Clear Log File"
+msgstr ""
+
+msgid "Click to Update"
+msgstr ""
+
+msgid "Client File"
 msgstr ""
 
 msgid "Client Status"
@@ -71,9 +62,6 @@ msgstr ""
 msgid "Disable Compression?"
 msgstr ""
 
-msgid "Download file failed. Please retry."
-msgstr ""
-
 msgid "Edit Server"
 msgstr ""
 
@@ -89,16 +77,19 @@ msgstr ""
 msgid "Encrypt Method"
 msgstr ""
 
-msgid "Event Log"
+msgid "Error get log data."
 msgstr ""
 
 msgid "False"
 msgstr ""
 
-msgid "Full file path"
+msgid "File download failed or timed out: %s"
 msgstr ""
 
 msgid "General Settings"
+msgstr ""
+
+msgid "Get remote version info failed."
 msgstr ""
 
 msgid "How long an expired connection can live(in sec), -1 to disable."
@@ -116,10 +107,22 @@ msgstr ""
 msgid "Key"
 msgstr ""
 
+msgid "Last 50 lines of log file:"
+msgstr ""
+
+msgid "Last 50 lines of syslog:"
+msgstr ""
+
 msgid "Listen Address"
 msgstr ""
 
-msgid "Local Host"
+msgid "Loading"
+msgstr ""
+
+msgid "Local Listen Host"
+msgstr ""
+
+msgid "Local Listen Port."
 msgstr ""
 
 msgid "Local Port"
@@ -128,16 +131,19 @@ msgstr ""
 msgid "Local listen host."
 msgstr ""
 
-msgid "Local listen port."
+msgid "Log"
+msgstr ""
+
+msgid "Log Data"
 msgstr ""
 
 msgid "Log Folder"
 msgstr ""
 
-msgid "Log file does not exist..."
+msgid "LuCI Version"
 msgstr ""
 
-msgid "LuCI Version"
+msgid "Make sure that the 'Client File' dictionary has enough space."
 msgstr ""
 
 msgid "Maximum transmission unit of UDP packets."
@@ -148,25 +154,19 @@ msgid ""
 "default unit is seconds."
 msgstr ""
 
-msgid "New version %s found."
+msgid "New version found, but failed to get new version download url."
 msgstr ""
 
-msgid "No log data..."
+msgid "No Update Found"
 msgstr ""
 
-msgid "No update found."
-msgstr ""
-
-msgid "No update infomation."
+msgid "No log data."
 msgstr ""
 
 msgid "None"
 msgstr ""
 
 msgid "Not Running"
-msgstr ""
-
-msgid "Not a Kcptun executable file."
 msgstr ""
 
 msgid "Number of UDP connections to server."
@@ -178,7 +178,7 @@ msgstr ""
 msgid "On"
 msgstr ""
 
-msgid "Overview"
+msgid "Package update failed."
 msgstr ""
 
 msgid "Pre-shared secret for client and server."
@@ -196,10 +196,13 @@ msgstr ""
 msgid "Reed-solomon Erasure Coding - parityshard."
 msgstr ""
 
+msgid "Refresh every 5 seconds."
+msgstr ""
+
 msgid "Restart Time"
 msgstr ""
 
-msgid "Run daemon as user"
+msgid "Run Daemon as User"
 msgstr ""
 
 msgid "Running"
@@ -236,8 +239,12 @@ msgid "Settings"
 msgstr ""
 
 msgid ""
-"The arch use to check update. Note: Make sure OpenWrt/LEDE 'MIPS FPU "
+"The ARCH for checking updates. Note: Make sure OpenWrt/LEDE 'MIPS FPU "
 "Emulator' is enabled on MIPS/MIPSLE devices."
+msgstr ""
+
+msgid ""
+"The downloaded file is not suitable for current device. Please reselect ARCH."
 msgstr ""
 
 msgid "The value '%s' is invalid."
@@ -246,25 +253,15 @@ msgstr ""
 msgid "True"
 msgstr ""
 
-msgid "Unknown error."
+msgid "Update Success."
 msgstr ""
 
-msgid "Update Kcptun"
+msgid "Update in progress. Are you sure to close window?"
 msgstr ""
 
-msgid "Update LuCI"
-msgstr ""
-
-msgid "Update failed! Please try agin later."
-msgstr ""
-
-msgid "Update now!"
-msgstr ""
-
-msgid "Update success!"
-msgstr ""
-
-msgid "View update details."
+msgid ""
+"You need to reload current page after update luci. Note that translation "
+"will not be updated."
 msgstr ""
 
 msgid "acknodelay"
@@ -304,6 +301,9 @@ msgid "nocomp"
 msgstr ""
 
 msgid "nodelay"
+msgstr ""
+
+msgid "optional"
 msgstr ""
 
 msgid "parityshard"

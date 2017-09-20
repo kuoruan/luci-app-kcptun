@@ -1,0 +1,154 @@
+<%#
+ Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
+ Licensed to the public under the Apache License 2.0.
+-%>
+
+<%
+local kcp  = require "luci.model.kcptun"
+
+local client_version = kcp.get_kcptun_version(kcp.get_config_option("client_file"))
+local luci_version = kcp.get_luci_version()
+-%>
+
+<fieldset class="cbi-section">
+	<legend><%:Running Status%></legend>
+	<table width="100%" cellspacing="10" id="_kcptun-status_table">
+		<tr>
+			<td width="33%"><%:Client Version%></td>
+			<td>
+				<% if client_version == "" then -%>
+				<em><%:Invalid Client File.%></em>
+				<% else -%>
+				<%=pcdata(client_version)%>
+				<%- end %>
+			</td>
+		</tr>
+		<tr><td width="33%"><%:Client Status%></td><td id="_kcptun-client_status"><em><%:Collecting data...%></em></td></tr>
+		<% if luci_version ~= "" then -%>
+		<tr><td width="33%"><%:LuCI Version%></td><td><%=pcdata(luci_version)%></td></tr>
+		<% end -%>
+	</table>
+</fieldset>
+
+<script type="text/javascript">//<![CDATA[
+	(function(doc) {
+		var client_status_tb = doc.getElementById('_kcptun-client_status');
+		XHR.poll(5, '<%=luci.dispatcher.build_url("admin/services/kcptun/status")%>', null,
+			function(x, info) {
+				if (info && client_status_tb) {
+					client_status_tb.innerHTML = info.client ? '<%:Running%>' : '<%:Not Running%>';
+				}
+			}
+		);
+	})(document);
+
+	function createVersionUrl(version, url) {
+		var urlNode = '';
+		if (url) {
+			urlNode += '<a href="' + url + '" target="_blank">';
+		}
+
+		urlNode += '<em style="color:red;">' + version + '</em>';
+
+		if (url) {
+			urlNode += '</a>';
+		}
+
+		return urlNode;
+	}
+
+	var kcptun_info, luci_info;
+
+	function check_update(type, btn) {
+		btn.disabled = true;
+		btn.value = '<%:Processing...%>';
+
+		var arch_select = document.getElementById('cbid.kcptun.general.arch');
+
+		(new XHR()).get('<%=luci.dispatcher.build_url("admin/services/kcptun/check")%>/' + type,
+			{ token: '<%=token%>', arch: arch_select ? arch_select.value : "" },
+			function(x, json) {
+				btn.disabled = false;
+				btn.value = btn.placeholder;
+
+				if (json) {
+					var detailElm = document.getElementById(btn.id + '-detail');
+
+					if (json.code == 0) {
+						if (json.update) {
+							eval(type + '_info = json');
+
+							btn.value = '<%:Click to Update%>';
+							btn.placeholder = '<%:Click to Update%>';
+
+							btn.setAttribute('onclick', 'do_update("' + type + '", this);');
+
+							if (detailElm) {
+								detailElm.innerHTML = createVersionUrl(json.version, json.url.html);
+							}
+						} else {
+							btn.disabled = true;
+							btn.value = '<%:No Update Found%>';
+
+							if (detailElm) {
+								detailElm.innerHTML = '';
+							}
+						}
+					} else if (json.error) {
+						if (detailElm && json.html_url) {
+							detailElm.innerHTML = createVersionUrl(json.version, json.html_url)
+						}
+
+						alert(json.error);
+					}
+				}
+			}
+		);
+	}
+
+	function do_update(type, btn) {
+		btn.disabled = true;
+		btn.value = '<%:Processing...%>';
+
+		var url, file_type;
+		switch (type) {
+			case 'kcptun':
+				url = kcptun_info ? kcptun_info.url.download : '';
+				file_type = kcptun_info ? kcptun_info.type : '';
+				break;
+			case 'luci':
+				url = luci_info ? luci_info.url.luci : '';
+			default:
+				break;
+		}
+
+		window.onbeforeunload = function(e) {
+			var dialogText = '<%:Update in progress. Are you sure to close window?%>';
+			e.returnValue = dialogText;
+			return dialogText;
+		};
+
+		(new XHR()).get('<%=luci.dispatcher.build_url("admin/services/kcptun/update")%>/' + type,
+			{ token: '<%=token%>', url: url, type: file_type },
+			function(x, json) {
+				btn.disabled = false;
+				btn.value = btn.placeholder;
+
+				window.onbeforeunload = null;
+
+				if (json) {
+					if (json.code == 0) {
+						btn.disabled = true;
+						alert('<%:Update Success.%>');
+
+						window.setTimeout(function() {
+							window.location.reload();
+						}, 500);
+					} else if (json.error){
+						alert(json.error);
+					}
+				}
+			}
+		);
+	}
+//]]></script>

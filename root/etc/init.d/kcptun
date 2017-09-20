@@ -16,24 +16,30 @@
 #
 
 START=99
-STOP=15
 USE_PROCD=1
+
+EXTRA_COMMANDS=cron_restart
+EXTRA_HELP="	cron_restart	Called by cron task."
 
 KCPTUN=kcptun
 INIT_SCRIPT=/etc/init.d/$KCPTUN
 CONFIG_FOLDER=/var/etc/$KCPTUN
-DEFAULT_USER=root
 
-if [ -r ${IPKG_INSTROOT}/usr/lib/kcptun/functions.sh ]; then
-	. ${IPKG_INSTROOT}/usr/lib/kcptun/functions.sh
+if [ -r /usr/share/libubox/jshn.sh ]; then
+	. /usr/share/libubox/jshn.sh
+elif [ -r /lib/functions/jshn.sh ]; then
+	. /lib/functions/jshn.sh
 else
 	logger -p daemon.err -t "$KCPTUN" \
-		"Could not find '/usr/lib/kcptun/functions.sh', please reinstall LuCI."
+		"Package required: jshn."
 	exit 1
 fi
 
-_cron_restart() {
-	/etc/init.d/cron restart  >/dev/null 2>&1
+_log() {
+	local level="$1"
+	local msg="$2"
+
+	logger -p "daemon.${level}" -t "$KCPTUN" "$msg"
 }
 
 _add_cron_script() {
@@ -45,20 +51,7 @@ _rm_cron_script() {
 }
 
 gen_client_config_file() {
-	local section_id="$1"
-
-	local config_file=${CONFIG_FOLDER}/client.${section_id}.json
-
-	[ -z "$server_addr" ] || [ -z "$server_port" ] || [ -z "$listen_port" ] && return 1
-
-	is_ipv6_address() {
-		echo "$1" | grep -q ":"
-	}
-
-	is_ipv6_address "$server_addr" && server_addr="[${server_addr}]"
-	is_ipv6_address "$listen_addr" && listen_addr="[${listen_addr}]"
-
-	add_iptables_rule "$listen_port" "client"
+	local config_file="$1"
 
 	json_init
 	json_add_string "remoteaddr" "${server_addr}:${server_port}"
@@ -77,7 +70,11 @@ gen_client_config_file() {
 				elif [ "$type" = "int" ]; then
 					json_add_int "$k" "$v"
 				elif [ "$type" = "boolean" ]; then
-					json_add_boolean "$k" "$v"
+					if [ "$v" = "true" ]; then
+						json_add_boolean "$k" "1"
+					else
+						json_add_boolean "$k" "0"
+					fi
 				fi
 			fi
 		done
@@ -88,20 +85,17 @@ gen_client_config_file() {
 		nodelay interval resend nc sockbuf keepalive scavengettl snmpperiod
 	add_configs "boolean" nocomp acknodelay
 
-	if is_enable_logging; then
-		json_add_string "log" "${log_folder}/client.log"
+	if [ -n "$log_file" ]; then
+		json_add_string "log" "$log_file"
 	fi
 
 	json_close_object
 
-	if json_dump -i >"$config_file"; then
-		echo "$config_file"
-	fi
+	json_dump -i >"$config_file"
 }
 
 setup_iptables_chain() {
 	if ! ( iptables -nL "$KCPTUN" >/dev/null 2>&1 ); then
-		_log "Creating new firewall chain ${KCPTUN}..."
 		iptables -N "$KCPTUN" 2>/dev/null
 	fi
 
@@ -112,7 +106,6 @@ setup_iptables_chain() {
 }
 
 clear_iptables_chain() {
-	_log "Deleting all firewall rules in chain ${KCPTUN}..."
 	iptables -F "$KCPTUN" >/dev/null 2>&1
 }
 
@@ -124,80 +117,74 @@ add_iptables_rule() {
 		( iptables -C "$KCPTUN" -p tcp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
 
-		_log "Add firewall rules for ${type}, port ${port}."
 		iptables -A "$KCPTUN" -p tcp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null
 	elif [ "$type" = "server" ]; then
 		( iptables -C "$KCPTUN" -p udp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
 
-		_log "Add firewall rules for ${type}, port ${port}."
 		iptables -A "$KCPTUN" -p udp --dport "$port" -m comment \
 			--comment "$type" -j ACCEPT 2>/dev/null
 	fi
 }
 
-rm_cron_task() {
-	local action="$1"
-	local restart="$2"
+rm_cron_restart_task() {
+	local section_id="$1"
 
-	local entry="${INIT_SCRIPT} ${action}"
+	local entry="${INIT_SCRIPT} cron_restart ${section_id}"
 
 	if ( crontab -l 2>/dev/null | grep -qF "$entry" ); then
-		_log "Removing existing cron ${action} task..."
 		_rm_cron_script "$entry"
-
-		[ "$restart" = "1" ] && _cron_restart
+		cron_changed="1"
 	fi
 }
 
-add_cron_task() {
-	local cron_time="$1"
-	local action="$2"
-	local restart="$3"
+add_cron_restart_task() {
+	local restart_time="$1"
+	local section_id="$2"
 
-	local entry="${cron_time} ${INIT_SCRIPT} ${action}"
-	if ! ( crontab -l 2>/dev/null | grep -qF "$entry" ); then
-		rm_cron_task "$action" "0"
+	local h m
 
-		_log "Adding new cron ${action} task..."
-		_add_cron_script "$entry"
-		[ "$restart" = "1" ] && _cron_restart
-	fi
-}
+	h=$(echo "${restart_time}" | cut -d':' -f1)
+	m=$(echo "${restart_time}" | cut -d':' -f2)
 
-clear_all() {
-	rm_cron_task "restart" "1"
-	clear_iptables_chain
-}
+	rm_cron_restart_task "$section_id"
 
-setup_cron_restart_task() {
-	if [ -n "$auto_restart" ]; then
-		local h m
+	if [ -n "$h" ] && [ -n "$m" ]; then
+		local entry="${m} ${h} * * * ${INIT_SCRIPT} cron_restart ${section_id}"
 
-		h=$(echo "${auto_restart}" | cut -d':' -f1)
-		m=$(echo "${auto_restart}" | cut -d':' -f2)
-
-		if [ -n "$h" ] && [ -n "$m" ]; then
-			add_cron_task "${m} ${h} * * *" "restart" "1"
-			_log "Service will restart at ${auto_restart} every day."
-		else
-			rm_cron_task "restart" "1"
+		if ! ( crontab -l 2>/dev/null | grep -qF "$entry" ); then
+			_add_cron_script "$entry"
+			cron_changed="1"
 		fi
-	else
-		rm_cron_task "restart" "1"
 	fi
+}
+
+restart_cron_if_needed() {
+	if [ -n "$cron_changed" ] && ( ps | grep -v grep | grep -q crond ); then
+		/etc/init.d/cron restart  >/dev/null 2>&1
+	fi
+}
+
+validate_config_section() {
+	uci_validate_section "$KCPTUN" general "$1" \
+		'server:uciname' \
+		'client_file:file' \
+		'daemon_user:string:root' \
+		'auto_restart:string' \
+		'enable_logging:bool:0' \
+		'log_folder:directory:/var/log/kcptun'
 }
 
 validate_server_section() {
 	uci_validate_section "$KCPTUN" servers "$1" \
 		'server_addr:host' \
-		'server_port:port' \
-		'listen_addr:host' \
-		'listen_port:port' \
+		'server_port:port:29900' \
+		'listen_addr:host:0.0.0.0' \
+		'listen_port:port:12948' \
 		'key:string' \
-		'crypt:string' \
-		'mode:or("normal","fast","fast2","fast3","manual")' \
+		'crypt:string:aes' \
+		'mode:or("normal","fast","fast2","fast3","manual"):fast' \
 		'conn:min(1)' \
 		'autoexpire:uinteger' \
 		'scavengettl:min(-1)' \
@@ -207,15 +194,94 @@ validate_server_section() {
 		'datashard:uinteger' \
 		'parityshard:uinteger' \
 		'dscp:uinteger' \
-		'nocomp:bool' \
+		'nocomp:or("true", "false")' \
 		'nodelay:bool' \
 		'interval:uinteger' \
 		'resend:range(0,2)' \
 		'nc:bool' \
-		'acknodelay:bool' \
+		'acknodelay:or("true", "false")' \
 		'sockbuf:uinteger' \
 		'keepalive:uinteger' \
 		'snmpperiod:min(1)'
+}
+
+validate_client_file() {
+	local file="$1"
+
+	if [ ! -f "$file" ]; then
+		return 1
+	fi
+
+	[ -x "$file" ] || chmod 755 "$file"
+
+	( $file -v 2>/dev/null | grep -q "$KCPTUN" )
+}
+
+start_kcptun_instance() {
+	local section="$1"
+
+	if ! validate_config_section "$section" ; then
+		_log "err" "Config validate failed."
+		return 1
+	fi
+
+	if [ -z "$server" ] || [ "$server" = "nil" ]; then
+		_log "info" "No server selected, Client will stop."
+		return 0
+	elif ! validate_server_section "$server"; then
+		_log "err" "Server config validation failed."
+		return 1
+	elif [ -z "$server_addr" ] || [ -z "$listen_port" ]; then
+		_log "err" "Server config validation failed."
+		return 1
+	fi
+
+	if [ -z "$client_file" ]; then
+		_log "err" "Please set client file path, or use auto download."
+		return 1;
+	elif ! validate_client_file "$client_file"; then
+		_log "err" "Client file validation failed."
+		return 1
+	fi
+
+	is_ipv6_address() {
+		echo "$1" | grep -q ":"
+	}
+
+	is_ipv6_address "$server_addr" && server_addr="[${server_addr}]"
+	is_ipv6_address "$listen_addr" && listen_addr="[${listen_addr}]"
+
+	[ -d "$CONFIG_FOLDER" ] || mkdir -p "$CONFIG_FOLDER"
+
+	log_file=""
+	if [ "$enable_logging" = "1" ]; then
+		mkdir -p "$log_folder"
+		chown -R "$daemon_user" "$log_folder"
+		log_file="${log_folder}/client.${section}.log"
+	fi
+
+	local config_file=${CONFIG_FOLDER}/client.${section}.json
+
+	if ! ( gen_client_config_file "$config_file" ); then
+		_log "err" "Can't create config file".
+		return 1
+	fi
+
+	add_iptables_rule "$listen_port" "client"
+
+	[ -n "$auto_restart" ] && \
+		add_cron_restart_task "$auto_restart" "$section"
+
+	procd_open_instance
+	procd_set_param command "$client_file"
+	procd_append_param command -c "$config_file"
+	procd_set_param respawn
+
+	[ -z "$daemon_user" ] && \
+		procd_set_param user "$daemon_user"
+
+	procd_set_param file "$config_file"
+	procd_close_instance
 }
 
 service_triggers() {
@@ -223,75 +289,33 @@ service_triggers() {
 }
 
 start_service() {
-	kcptun_server=$(uci_get_by_type_option "general" "server")
-	client_file=$(uci_get_by_type_option "general" "client_file")
-	daemon_user=$(uci_get_by_type_option "general" "daemon_user" "$DEFAULT_USER")
-	auto_restart=$(uci_get_by_type_option "general" "auto_restart")
+	rm_cron_restart_task
 
-	if is_enable_logging; then
-		mkdir -p "$CONFIG_FOLDER" "$log_folder"
-		chown -R "$daemon_user" "$log_folder"
-	fi
-
-	if [ -z "$kcptun_server" ] || [ "$kcptun_server" = "nil" ]; then
-		 _log "No server selected, Client will stop."
-		 clear_all
-		 return 0
-	elif ! validate_server_section "$kcptun_server"; then
-		_err "Server config validation failed."
-		clear_all
-		return 1
-	fi
-
-	if [ -z "$client_file" ]; then
-		_err "Please set client file path, or use auto download."
-		clear_all
-		return 1;
-	elif ! validate_client_file "$client_file"; then
-		_err "Client file validation failed."
-		clear_all
-		return 1
-	fi
-
-	setup_cron_restart_task
+	clear_iptables_chain
 	setup_iptables_chain
 
-	client_config_file="$(gen_client_config_file "$kcptun_server")"
+	config_load "$KCPTUN"
+	config_foreach start_kcptun_instance "general"
 
-	if [ "$?" = "0" ] && [ -r "$client_config_file" ]; then
-		procd_open_instance
-		procd_set_param command "$client_file"
-		procd_append_param command -c "$client_config_file"
-		procd_set_param respawn
-		procd_set_param user "$daemon_user"
-		procd_set_param file "$client_config_file"
-		procd_close_instance
-
-		_log "Service started."
-	else
-		_err "Gen client config file failed."
-		clear_all
-		return 1
-	fi
+	restart_cron_if_needed
 }
 
 stop_service() {
-	_log "Service stoped."
+	clear_iptables_chain
+	rm_cron_restart_task
+	restart_cron_if_needed
 }
 
-reload_service() {
-	_log "Reload begin..."
-	stop
-	start
-}
+cron_restart() {
+	local section="$1"
 
-restart() {
-	_log "Restart begin..."
-	stop
-	start
-}
+	_log "info" "Cron task start."
 
-boot() {
-	ubus -t 30 wait_for network.interface 2>/dev/null
-	rc_procd start_service
+	if [ -z "$section" ]; then
+		_log "err" "Section id required."
+		return 1
+	fi
+
+	start_kcptun_instance "$section"
+	restart_cron_if_needed
 }

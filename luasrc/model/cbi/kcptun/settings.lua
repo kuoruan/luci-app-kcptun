@@ -1,16 +1,5 @@
 -- Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
---
--- Licensed under the Apache License, Version 2.0 (the "License");
--- you may not use this file except in compliance with the License.
--- You may obtain a copy of the License at
---
---    http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
+-- Licensed to the public under the Apache License 2.0.
 
 local uci  = require "luci.model.uci".cursor()
 local util = require "luci.util"
@@ -18,33 +7,23 @@ local sys  = require "luci.sys"
 local fs   = require "nixio.fs"
 
 local m, s, o
-local kcptun = "kcptun"
-local server_table = {}
-local default_log_folder  = "/var/log/kcptun"
+local server_table = { }
 
 local function get_ip_string(ip)
 	if ip and ip:find(":") then
-		return "[%s]" %{ip}
+		return "[%s]" % ip
 	else
 		return ip or ""
 	end
 end
 
-uci:foreach(kcptun, "servers", function(s)
+uci:foreach("kcptun", "servers", function(s)
 	if s.alias then
 		server_table[s[".name"]] = s.alias
 	elseif s.server_addr and s.server_port then
-		server_table[s[".name"]] = "%s:%s" %{get_ip_string(s.server_addr), s.server_port}
+		server_table[s[".name"]] = "%s:%s" % { get_ip_string(s.server_addr), s.server_port }
 	end
 end)
-
-local function is_kcptun(file)
-	if not fs.access(file, "rwx", "rx", "rx") then
-		fs.chmod(file, 755)
-	end
-
-	return sys.call("%s -v | grep -q '%s'" %{file, kcptun}) == 0
-end
 
 local function time_validator(self, value, desc)
 	if value ~= nil then
@@ -63,47 +42,33 @@ local function time_validator(self, value, desc)
 	return nil, translatef("The value '%s' is invalid.", desc)
 end
 
-m = Map(kcptun, "%s - %s" %{translate("Kcptun"), translate("Settings")})
+m = Map("kcptun", "%s - %s" % { translate("Kcptun"), translate("Settings") })
+m:append(Template("kcptun/status"))
 
-s = m:section(TypedSection, "general", translate("General Settings"))
+s = m:section(NamedSection, "general", "general", translate("General Settings"))
 s.anonymous = true
 s.addremove = false
 
 o = s:option(ListValue, "server", translate("Server"))
-o:value("nil", translate("Disable"))
+o:value("", translate("Disable"))
 for k, v in pairs(server_table) do
 	o:value(k, v)
 end
-o.default = "nil"
-o.rmempty = false
 
-o = s:option(Value, "client_file", translate("Client Exec File"))
-o:value("", translate("Auto download later"))
-o.datatype = "file"
-o.placeholder = translate("Full file path")
-o.validate = function(self, value, section)
-	if value and fs.access(value) and not is_kcptun(value) then
-		return nil, translate("Not a Kcptun executable file.")
-	end
-	return value
-end
+o = s:option(Value, "client_file", translate("Client File"))
+o.rmempty  = false
 
-o = s:option(ListValue, "daemon_user", translate("Run daemon as user"))
-local p_user
-for _, p_user in util.vspairs(util.split(sys.exec("cat /etc/passwd | cut -d':' -f1"))) do
-	o:value(p_user)
+o = s:option(ListValue, "daemon_user", translate("Run Daemon as User"))
+for u in util.execi("cat /etc/passwd | cut -d ':' -f1") do
+	o:value(u)
 end
 
 o = s:option(Flag, "enable_logging", translate("Enable Logging"))
-o.enabled = "1"
-o.disabled = "0"
-o.default = o.disabled
-o.rmempty = false
+o.rmempty  = false
 
 o = s:option(Value, "log_folder", translate("Log Folder"))
 o.datatype = "directory"
-o.default = default_log_folder
-o.placeholder = default_log_folder
+o.placeholder = "/var/log/kcptun"
 o:depends("enable_logging", "1")
 o.formvalue = function(...)
 	local v = (Value.formvalue(...) or ""):trim()
@@ -140,8 +105,9 @@ o.validate = function(self, value, section)
 end
 
 o = s:option(ListValue, "arch", translate("CPU Architecture"),
-	translate("The ARCH use to check update. Note: Make sure OpenWrt/LEDE 'MIPS FPU Emulator' is enabled on MIPS/MIPSLE devices."))
-o:value("", translate("Auto determine"))
+	translate("The ARCH for checking updates." ..
+	" Note: Make sure OpenWrt/LEDE 'MIPS FPU Emulator' is enabled on MIPS/MIPSLE devices."))
+o:value("", translate("Auto"))
 o:value("i386", "x86")
 o:value("x86_64", "x86_64")
 o:value("armv5", "ARMv5")
@@ -149,5 +115,19 @@ o:value("armv6", "ARMv6")
 o:value("armv7", "ARMv7+")
 o:value("ar71xx", "MIPS")
 o:value("ramips", "MIPSLE")
+
+o = s:option(Button, "_check_kcptun", translate("Check Kcptun"),
+	translate("Make sure that the 'Client File' dictionary has enough space."))
+o.template = "kcptun/button"
+o.inputstyle = "apply"
+o.placeholder = translate("Check Kcptun")
+o.btnclick = "check_update('kcptun', this);"
+
+o = s:option(Button, "_check_luci", translate("Check Luci"),
+	translate("You need to reload current page after update luci. Note that translation will not be updated."))
+o.template = "kcptun/button"
+o.inputstyle = "apply"
+o.placeholder = translate("Check Luci")
+o.btnclick = "check_update('luci', this);"
 
 return m
