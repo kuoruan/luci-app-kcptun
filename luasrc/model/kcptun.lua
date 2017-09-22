@@ -351,15 +351,6 @@ function extract_kcptun(file, subfix)
 		}
 	end
 
-	local version = get_kcptun_version(new_file)
-	if version == "" then
-		exec("/bin/rm", { "-rf", tmp_dir })
-		return {
-			code = 1,
-			error = i18n.translate("The client file is not suitable for current device. Please reselect ARCH.")
-		}
-	end
-
 	return {
 		code = 0,
 		file = new_file
@@ -371,6 +362,17 @@ function move_kcptun(file)
 		return {
 			code = 1,
 			error = i18n.translate("Client file is required.")
+		}
+	end
+
+	local tmp_dir = util.exec("dirname %s" % file)
+
+	local version = get_kcptun_version(file)
+	if version == "" then
+		exec("/bin/rm", { "-rf", tmp_dir })
+		return {
+			code = 1,
+			error = i18n.translate("The client file is not suitable for current device. Please reselect ARCH.")
 		}
 	end
 
