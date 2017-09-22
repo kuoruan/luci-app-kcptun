@@ -37,7 +37,7 @@ end
 
 local function http_write_json(content)
 	http.prepare_content("application/json")
-	http.write_json(content)
+	http.write_json(content or { code = 1 })
 end
 
 function action_status()
@@ -49,35 +49,38 @@ function action_status()
 end
 
 function action_check(type)
+	local json = nil
 	if type == "kcptun" then
-		http_write_json(kcp.check_kcptun(http.formvalue("arch")))
+		json = kcp.check_kcptun(http.formvalue("arch"))
 	elseif type == "luci" then
-		http_write_json(kcp.check_luci())
+		json = kcp.check_luci()
 	else
 		http.status(500, "Bad address")
+		return
 	end
+
+	http_write_json(json)
 end
 
 function action_update(type)
-	local download_url = http.formvalue("url")
-
-	if not download_url or download_url == "" then
-		http_write_json({
-			code = 1,
-			error = "Download url is required."
-		})
-		return
-	end
-
+	local json = nil
 	if type == "kcptun" then
-		http_write_json(kcp.update_kcptun(download_url, http.formvalue("type")))
-		return
+		local task = http.formvalue("task")
+		if task == "extract" then
+			json = kcp.extract_kcptun(http.formvalue("file"), http.formvalue("subfix"))
+		elseif task == "move" then
+			json = kcp.move_kcptun(http.formvalue("file"))
+		else
+			json = kcp.download_kcptun(http.formvalue("url"))
+		end
 	elseif type == "luci" then
-		http_write_json(kcp.update_luci(download_url))
+		json = kcp.update_luci(http.formvalue("url"))
 	else
 		http.status(500, "Bad address")
 		return
 	end
+
+	http_write_json(json)
 end
 
 function action_log_data()
@@ -103,7 +106,7 @@ function action_log_clear(type)
 	if type and type ~= "" then
 		local log_file = kcp.get_current_log_file(type)
 
-		local fs   = require "nixio.fs"
+		local fs = require "nixio.fs"
 
 		if fs.access(log_file) then
 			fs.writefile(log_file, "")

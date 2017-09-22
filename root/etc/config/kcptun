@@ -1,6 +1,7 @@
 
 config general 'general'
 	option server ''
+	option client_file '/var/kcptun_client'
 	option daemon_user 'root'
 	option enable_logging '1'
 

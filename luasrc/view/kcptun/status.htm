@@ -4,7 +4,8 @@
 -%>
 
 <%
-local kcp  = require "luci.model.kcptun"
+local kcp = require "luci.model.kcptun"
+local dsp = require "luci.dispatcher"
 
 local client_version = kcp.get_kcptun_version(kcp.get_config_option("client_file"))
 local luci_version = kcp.get_luci_version()
@@ -33,7 +34,7 @@ local luci_version = kcp.get_luci_version()
 <script type="text/javascript">//<![CDATA[
 	(function(doc) {
 		var client_status_tb = doc.getElementById('_kcptun-client_status');
-		XHR.poll(5, '<%=luci.dispatcher.build_url("admin/services/kcptun/status")%>', null,
+		XHR.poll(5, '<%=dsp.build_url("admin/services/kcptun/status")%>', null,
 			function(x, info) {
 				if (info && client_status_tb) {
 					client_status_tb.innerHTML = info.client ? '<%:Running%>' : '<%:Not Running%>';
@@ -41,6 +42,49 @@ local luci_version = kcp.get_luci_version()
 			}
 		);
 	})(document);
+
+	function add_remove_page_notice(isAdd) {
+		if (isAdd) {
+			window.onbeforeunload = function(e) {
+				var dialogText = '<%:Update in progress. Are you sure to close window?%>';
+				e.returnValue = dialogText;
+				return dialogText;
+			};
+		} else {
+			window.onbeforeunload = null;
+		}
+	}
+
+	function on_request_success(btn) {
+		add_remove_page_notice(false);
+
+		var success = '<%:Update Success.%>';
+
+		if (btn) {
+			btn.value = success;
+			btn.placeholder = success;
+			btn.disabled = true;
+		}
+
+		alert(success);
+
+		window.setTimeout(function () {
+			window.location.reload();
+		}, 500);
+	}
+
+	function on_request_error(btn, json) {
+		add_remove_page_notice(false);
+
+		if (btn) {
+			btn.disabled = false;
+			btn.value = btn.placeholder;
+		}
+
+		if (json && json.error) {
+			alert(json.error);
+		}
+	}
 
 	function createVersionUrl(version, url) {
 		var urlNode = '';
@@ -59,29 +103,33 @@ local luci_version = kcp.get_luci_version()
 
 	var kcptun_info, luci_info;
 
+	var token_str = '<%=token%>';
+
 	function check_update(type, btn) {
 		btn.disabled = true;
 		btn.value = '<%:Processing...%>';
 
+		add_remove_page_notice(true);
+
 		var arch_select = document.getElementById('cbid.kcptun.general.arch');
 
-		(new XHR()).get('<%=luci.dispatcher.build_url("admin/services/kcptun/check")%>/' + type,
-			{ token: '<%=token%>', arch: arch_select ? arch_select.value : "" },
-			function(x, json) {
-				btn.disabled = false;
-				btn.value = btn.placeholder;
-
-				if (json) {
+		(new XHR()).get('<%=dsp.build_url("admin/services/kcptun/check")%>/' + type, {
+			token: token_str,
+			arch: arch_select ? arch_select.value : ""
+		}, function(x, json) {
+				if (x && x.status == 200) {
 					var detailElm = document.getElementById(btn.id + '-detail');
 
 					if (json.code == 0) {
 						if (json.update) {
 							eval(type + '_info = json');
 
+							add_remove_page_notice(false);
+							btn.disabled = false;
 							btn.value = '<%:Click to Update%>';
 							btn.placeholder = '<%:Click to Update%>';
 
-							btn.setAttribute('onclick', 'do_update("' + type + '", this);');
+							btn.setAttribute('onclick', 'do_' + type + '_update(this);');
 
 							if (detailElm) {
 								detailElm.innerHTML = createVersionUrl(json.version, json.url.html);
@@ -94,61 +142,99 @@ local luci_version = kcp.get_luci_version()
 								detailElm.innerHTML = '';
 							}
 						}
-					} else if (json.error) {
+					} else {
 						if (detailElm && json.html_url) {
 							detailElm.innerHTML = createVersionUrl(json.version, json.html_url)
 						}
 
-						alert(json.error);
+						on_request_error(btn, json);
 					}
+				} else {
+					on_request_error(btn);
 				}
-			}
-		);
+			});
 	}
 
-	function do_update(type, btn) {
+	function do_kcptun_update(btn) {
+		btn.disabled = true;
+		btn.value = '<%:Downloading...%>';
+
+		add_remove_page_notice(true);
+
+		var kcptun_update_url = '<%=dsp.build_url("admin/services/kcptun/update/kcptun")%>';
+
+		(new XHR()).get(kcptun_update_url, {
+			token: token_str,
+			url: kcptun_info ? kcptun_info.url.download : ''
+		}, function (x, json) {
+			if (x && x.status == 200) {
+				if (json.code == 0) {
+					btn.value = '<%:Extracting...%>';
+
+					(new XHR()).get(kcptun_update_url, {
+						token: token_str,
+						task: "extract",
+						file: json.file,
+						subfix: kcptun_info ? kcptun_info.type : ''
+					}, function (x, json) {
+						if (x && x.status == 200) {
+							if (json.code == 0) {
+								btn.value = '<%:Moving...%>';
+
+								(new XHR()).get(kcptun_update_url, {
+									token: token_str,
+									task: "move",
+									file: json.file
+								}, function (x, res) {
+									if (x && x.status == 200) {
+										if (json.code == 0) {
+											on_request_success(btn);
+										} else {
+											on_request_error(btn, json);
+										}
+									} else {
+										on_request_error(btn);
+									}
+								});
+							} else {
+								on_request_error(btn, json);
+							}
+						} else {
+							on_request_error(btn);
+						}
+					});
+				} else {
+					on_request_error(btn, json);
+				}
+			} else {
+				on_request_error(btn);
+			}
+		});
+	}
+
+	function do_luci_update(type, btn) {
 		btn.disabled = true;
 		btn.value = '<%:Processing...%>';
 
-		var url, file_type;
-		switch (type) {
-			case 'kcptun':
-				url = kcptun_info ? kcptun_info.url.download : '';
-				file_type = kcptun_info ? kcptun_info.type : '';
-				break;
-			case 'luci':
-				url = luci_info ? luci_info.url.luci : '';
-			default:
-				break;
-		}
+		add_remove_page_notice(true);
 
-		window.onbeforeunload = function(e) {
-			var dialogText = '<%:Update in progress. Are you sure to close window?%>';
-			e.returnValue = dialogText;
-			return dialogText;
-		};
+		var luci_update_url = '<%=dsp.build_url("admin/services/kcptun/update/luci")%>';
 
-		(new XHR()).get('<%=luci.dispatcher.build_url("admin/services/kcptun/update")%>/' + type,
-			{ token: '<%=token%>', url: url, type: file_type },
-			function(x, json) {
+		(new XHR()).get(luci_update_url, {
+			token: token_str,
+			url: luci_info ? luci_info.url.download : ''
+		}, function(x, json) {
 				btn.disabled = false;
 				btn.value = btn.placeholder;
-
-				window.onbeforeunload = null;
-
-				if (json) {
+				if (x && x.status == 200) {
 					if (json.code == 0) {
-						btn.disabled = true;
-						alert('<%:Update Success.%>');
-
-						window.setTimeout(function() {
-							window.location.reload();
-						}, 500);
-					} else if (json.error){
-						alert(json.error);
+						on_request_success(btn);
+					} else {
+						on_request_error(btn, json);
 					}
+				} else {
+					on_request_error(btn);
 				}
-			}
-		);
+			});
 	}
 //]]></script>
