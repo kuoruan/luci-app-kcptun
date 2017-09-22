@@ -20,6 +20,9 @@ msgstr ""
 msgid "Can't determine ARCH, or ARCH not supported. Please select manually."
 msgstr ""
 
+msgid "Can't find client in file: %s"
+msgstr ""
+
 msgid "Can't move new file to path: %s"
 msgstr ""
 
@@ -44,6 +47,9 @@ msgstr ""
 msgid "Client Version"
 msgstr ""
 
+msgid "Client file is required."
+msgstr ""
+
 msgid "Collecting data..."
 msgstr ""
 
@@ -57,6 +63,12 @@ msgid "Disable Compression"
 msgstr ""
 
 msgid "Disable Compression?"
+msgstr ""
+
+msgid "Download url is required."
+msgstr ""
+
+msgid "Downloading..."
 msgstr ""
 
 msgid "Edit Server"
@@ -77,10 +89,16 @@ msgstr ""
 msgid "Error get log data."
 msgstr ""
 
+msgid "Extracting..."
+msgstr ""
+
 msgid "False"
 msgstr ""
 
 msgid "File download failed or timed out: %s"
+msgstr ""
+
+msgid "File path required."
 msgstr ""
 
 msgid "General Settings"
@@ -144,6 +162,9 @@ msgid "Make sure that the 'Client File' dictionary has enough space."
 msgstr ""
 
 msgid "Maximum transmission unit of UDP packets."
+msgstr ""
+
+msgid "Moving..."
 msgstr ""
 
 msgid ""
@@ -238,7 +259,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"The downloaded file is not suitable for current device. Please reselect ARCH."
+"The client file is not suitable for current device. Please reselect ARCH."
 msgstr ""
 
 msgid "True"

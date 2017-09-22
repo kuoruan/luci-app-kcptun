@@ -20,6 +20,9 @@ msgstr "CPU 架构"
 msgid "Can't determine ARCH, or ARCH not supported. Please select manually."
 msgstr "无法自动确定 ARCH，或者不支持该 ARCH，请手动重新选择。"
 
+msgid "Can't find client in file: %s"
+msgstr "无法在文件中找到客户端：%s"
+
 msgid "Can't move new file to path: %s"
 msgstr "无法移动新文件到：%s"
 
@@ -44,6 +47,9 @@ msgstr "客户端状态"
 msgid "Client Version"
 msgstr "客户端版本"
 
+msgid "Client file is required."
+msgstr "请指定客户端文件。"
+
 msgid "Collecting data..."
 msgstr "正在收集数据..."
 
@@ -58,6 +64,12 @@ msgstr "禁用压缩"
 
 msgid "Disable Compression?"
 msgstr "是否禁用压缩?"
+
+msgid "Download url is required."
+msgstr "请指定下载链接。"
+
+msgid "Downloading..."
+msgstr "正在下载..."
 
 msgid "Edit Server"
 msgstr "编辑服务端"
@@ -77,11 +89,17 @@ msgstr "加密方式"
 msgid "Error get log data."
 msgstr "获取日志数据失败。"
 
+msgid "Extracting..."
+msgstr "正在解压..."
+
 msgid "False"
 msgstr "否"
 
 msgid "File download failed or timed out: %s"
 msgstr "文件下载失败或超时：%s"
+
+msgid "File path required."
+msgstr "请指定文件路径。"
 
 msgid "General Settings"
 msgstr "基本设置"
@@ -145,6 +163,9 @@ msgstr "请确保“客户端文件”所在的文件夹具有足够的空间。
 
 msgid "Maximum transmission unit of UDP packets."
 msgstr "UDP数据包的最大传输单元"
+
+msgid "Moving..."
+msgstr "正在移动..."
 
 msgid ""
 "NAT keepalive interval to prevent your router from removing port mapping, "
@@ -240,8 +261,8 @@ msgstr ""
 "'MIPS FPU Emulator' 已经启用。"
 
 msgid ""
-"The downloaded file is not suitable for current device. Please reselect ARCH."
-msgstr "下载的文件不适用于当前设备，请重新选择 ARCH。"
+"The client file is not suitable for current device. Please reselect ARCH."
+msgstr "客户端文件不适用于当前设备，请重新选择 ARCH。"
 
 msgid "True"
 msgstr "是"
