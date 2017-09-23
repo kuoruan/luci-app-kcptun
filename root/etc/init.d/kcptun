@@ -119,7 +119,7 @@ add_iptables_rule() {
 validate_config_section() {
 	uci_validate_section "$KCPTUN" general "$1" \
 		'server:uciname' \
-		'client_file:file' \
+		'client_file:string' \
 		'daemon_user:string:root' \
 		'enable_logging:bool:0' \
 		'log_folder:directory:/var/log/kcptun'
