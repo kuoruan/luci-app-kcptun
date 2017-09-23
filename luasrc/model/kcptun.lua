@@ -443,13 +443,10 @@ function update_luci(url)
 
 	sys.call("/bin/rm -f /tmp/luci_kcptun.*")
 
-	local luci_tmp_file = util.trim(util.exec("mktemp -u luci_kcptun.XXXXXX"))
-
-	exec("/bin/rm", { "-rf", tmp_dir })
-	exec("/bin/mkdir", { "-m", "777", "-p", tmp_dir })
+	local tmp_file = util.trim(util.exec("mktemp -u luci_kcptun.XXXXXX"))
 
 	local result = exec("/usr/bin/wget", {
-		"-O", luci_tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
+		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
@@ -460,17 +457,17 @@ function update_luci(url)
 	end
 
 	result = exec("opkg", {
-		"install", "--force-reinstall", "--force-overwrite", luci_tmp_file }) == 0
+		"install", "--force-reinstall", "--force-overwrite", tmp_file }) == 0
 
 	if not result then
-		exec("/bin/rm", { "-rf", tmp_dir })
+		exec("/bin/rm", { "-f", tmp_file })
 		return {
 			code = 1,
 			error = i18n.translate("Package update failed.")
 		}
 	end
 
-	exec("/bin/rm", { "-rf", tmp_dir })
+	exec("/bin/rm", { "-f", tmp_file })
 	exec("/bin/rm", { "-rf", "/tmp/luci-indexcache", "/tmp/luci-modulecache" })
 
 	return { code = 0 }
