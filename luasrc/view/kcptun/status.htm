@@ -121,10 +121,11 @@ local luci_version = kcp.get_luci_version()
 					var detailElm = document.getElementById(btn.id + '-detail');
 
 					if (json.code == 0) {
+						add_remove_page_notice(false);
+
 						if (json.update) {
 							eval(type + '_info = json');
 
-							add_remove_page_notice(false);
 							btn.disabled = false;
 							btn.value = '<%:Click to Update%>';
 							btn.placeholder = '<%:Click to Update%>';

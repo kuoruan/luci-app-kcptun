@@ -11,10 +11,19 @@ module("luci.model.kcptun", package.seeall)
 
 local kcptun_api = "https://api.github.com/repos/xtaci/kcptun/releases/latest"
 local luci_api = "https://api.github.com/repos/kuoruan/luci-app-kcptun/releases/latest"
-local wget = "/usr/bin/wget"
-local wget_args = { "-q", "--no-check-certificate", "--tries=1", "--connect-timeout=5", "--read-timeout=20" }
 
-local function exec(cmd, args, writer)
+local wget = "/usr/bin/wget"
+local wget_args = { "--no-check-certificate", "--quiet" }
+local wget_time_out = 40
+
+local function _unpack(t, i)
+	i = i or 1
+	if t[i] ~= nil then
+		return t[i], _unpack(t, i + 1)
+	end
+end
+
+local function exec(cmd, args, writer, timeout)
 	local os = require "os"
 	local nixio = require "nixio"
 
@@ -24,17 +33,33 @@ local function exec(cmd, args, writer)
 	if pid > 0 then
 		fdo:close()
 
-		while true do
-			local buffer = fdi:read(2048)
-			local wpid, stat, code = nixio.waitpid(pid, "nohang")
+		if writer or timeout then
+			local starttime = os.time()
+			while true do
+				if timeout and os.difftime(os.time(), starttime) >= timeout then
+					nixio.kill(pid, nixio.const.SIGTERM)
+					return 1
+				end
 
-			if writer and buffer and #buffer > 0 then
-				writer(buffer)
-			end
+				if writer then
+					local buffer = fdi:read(2048)
+					if buffer and #buffer > 0 then
+						writer(buffer)
+					end
+				end
+				local wpid, stat, code = nixio.waitpid(pid, "nohang")
 
-			if wpid and stat == "exited" then
-				break
+				if wpid and stat == "exited" then
+					return code
+				end
+
+				if not writer and timeout then
+					nixio.nanosleep(1)
+				end
 			end
+		else
+			local wpid, stat, code = nixio.waitpid(pid)
+			return wpid and stat == "exited" and code
 		end
 	elseif pid == 0 then
 		nixio.dup(fdo, nixio.stdout)
@@ -109,7 +134,7 @@ local function get_api_json(url)
 	local jsonc = require "luci.jsonc"
 
 	local output = { }
-	exec(wget, { unpack(wget_args), "-O-", url },
+	exec(wget, { "-O-", url, _unpack(wget_args) },
 		function(chunk) output[#output + 1] = chunk end)
 
 	local json_content = util.trim(table.concat(output))
@@ -185,7 +210,6 @@ function check_kcptun(arch)
 	end
 
 	local json = get_api_json(kcptun_api)
-	util.perror(json)
 
 	if json.tag_name == nil then
 		return {
@@ -291,10 +315,12 @@ function download_kcptun(url)
 		}
 	end
 
-	local tmp_file = util.trim(util.exec("mktemp -u"))
-	local command = "%s %s -O %s %s" % { wget, table.concat(wget_args, " "), tmp_file, url }
+	sys.call("/bin/rm -f /tmp/kcptun_download.*")
 
-	local result = sys.call(command) == 0
+	local tmp_file = util.trim(util.exec("mktemp -u kcptun_download.XXXXXX"))
+
+	local result = exec(wget, {
+		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
@@ -318,7 +344,8 @@ function extract_kcptun(file, subfix)
 		}
 	end
 
-	local tmp_dir = util.trim(util.exec("mktemp -d"))
+	sys.call("/bin/rm -rf /tmp/kcptun_extract.*")
+	local tmp_dir = util.trim(util.exec("mktemp -d -t kcptun_extract.XXXXXX"))
 
 	local output = { }
 	exec("/bin/tar", { "-C", tmp_dir, "-zxvf", file },
@@ -365,11 +392,9 @@ function move_kcptun(file)
 		}
 	end
 
-	local tmp_dir = util.exec("dirname %s" % file)
-
 	local version = get_kcptun_version(file)
 	if version == "" then
-		exec("/bin/rm", { "-rf", tmp_dir })
+		sys.call("/bin/rm -rf /tmp/kcptun.*")
 		return {
 			code = 1,
 			error = i18n.translate("The client file is not suitable for current device. Please reselect ARCH.")
@@ -400,7 +425,7 @@ function move_kcptun(file)
 		exec("/bin/rm", { "-f", client_file_bak })
 	end
 
-	exec("/bin/rm", { "-rf", tmp_dir })
+	sys.call("/bin/rm -rf /tmp/kcptun_extract.*")
 
 	uci:set("kcptun", "general", "client_file", client_file)
 	uci:commit("kcptun")
@@ -416,15 +441,26 @@ function update_luci(url)
 		}
 	end
 
-	local luci_tmp_file = util.trim(util.exec("mktemp -u"))
+	sys.call("/bin/rm -f /tmp/luci_kcptun.*")
+
+	local luci_tmp_file = util.trim(util.exec("mktemp -u luci_kcptun.XXXXXX"))
 
 	exec("/bin/rm", { "-rf", tmp_dir })
 	exec("/bin/mkdir", { "-m", "777", "-p", tmp_dir })
 
-	exec(wget, { unpack(wget_args), "-O", luci_tmp_file, url })
+	local result = exec("/usr/bin/wget", {
+		"-O", luci_tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
 
-	local command = "opkg install --force-reinstall --force-overwrite %s" % luci_tmp_file
-	local result = sys.call(command) == 0
+	if not result then
+		exec("/bin/rm", { "-f", tmp_file })
+		return {
+			code = 1,
+			error = i18n.translatef("File download failed or timed out: %s", url)
+		}
+	end
+
+	result = exec("opkg", {
+		"install", "--force-reinstall", "--force-overwrite", luci_tmp_file }) == 0
 
 	if not result then
 		exec("/bin/rm", { "-rf", tmp_dir })
