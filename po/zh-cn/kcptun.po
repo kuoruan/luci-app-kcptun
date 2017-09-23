@@ -274,9 +274,9 @@ msgid "Update in progress. Are you sure to close window?"
 msgstr "正在更新，确定关闭窗口？"
 
 msgid ""
-"You need to reload current page after update luci. Note that translation "
+"You may need to reload current page after update luci. Note that translation "
 "will not be updated."
-msgstr "更新 luci 之后你需要手动刷新当前页面。注意：翻译不会被更新"
+msgstr "更新 luci 之后你可能需要手动刷新当前页面。注意：翻译不会被更新"
 
 msgid "acknodelay"
 msgstr ""

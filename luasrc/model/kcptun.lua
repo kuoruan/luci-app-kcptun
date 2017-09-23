@@ -317,7 +317,7 @@ function download_kcptun(url)
 
 	sys.call("/bin/rm -f /tmp/kcptun_download.*")
 
-	local tmp_file = util.trim(util.exec("mktemp -u kcptun_download.XXXXXX"))
+	local tmp_file = util.trim(util.exec("mktemp -u -t kcptun_download.XXXXXX"))
 
 	local result = exec(wget, {
 		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
@@ -441,9 +441,9 @@ function update_luci(url)
 		}
 	end
 
-	sys.call("/bin/rm -f /tmp/luci_kcptun.*")
+	sys.call("/bin/rm -f /tmp/luci_kcptun.*.ipk")
 
-	local tmp_file = util.trim(util.exec("mktemp -u luci_kcptun.XXXXXX"))
+	local tmp_file = util.trim(util.exec("mktemp -u -t luci_kcptun.XXXXXX")) .. ".ipk"
 
 	local result = exec("/usr/bin/wget", {
 		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
@@ -456,7 +456,7 @@ function update_luci(url)
 		}
 	end
 
-	result = exec("opkg", {
+	result = exec("/bin/opkg", {
 		"install", "--force-reinstall", "--force-overwrite", tmp_file }) == 0
 
 	if not result then

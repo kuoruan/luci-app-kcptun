@@ -55,7 +55,7 @@ local luci_version = kcp.get_luci_version()
 		}
 	}
 
-	function on_request_success(btn) {
+	function on_update_success(btn) {
 		add_remove_page_notice(false);
 
 		var success = '<%:Update Success.%>';
@@ -189,7 +189,7 @@ local luci_version = kcp.get_luci_version()
 								}, function (x, res) {
 									if (x && x.status == 200) {
 										if (json.code == 0) {
-											on_request_success(btn);
+											on_update_success(btn);
 										} else {
 											on_request_error(btn, json);
 										}
@@ -213,7 +213,7 @@ local luci_version = kcp.get_luci_version()
 		});
 	}
 
-	function do_luci_update(type, btn) {
+	function do_luci_update(btn) {
 		btn.disabled = true;
 		btn.value = '<%:Processing...%>';
 
@@ -223,13 +223,13 @@ local luci_version = kcp.get_luci_version()
 
 		(new XHR()).get(luci_update_url, {
 			token: token_str,
-			url: luci_info ? luci_info.url.download : ''
+			url: luci_info ? luci_info.url.luci : ''
 		}, function(x, json) {
 				btn.disabled = false;
 				btn.value = btn.placeholder;
 				if (x && x.status == 200) {
 					if (json.code == 0) {
-						on_request_success(btn);
+						on_update_success(btn);
 					} else {
 						on_request_error(btn, json);
 					}

@@ -272,7 +272,7 @@ msgid "Update in progress. Are you sure to close window?"
 msgstr ""
 
 msgid ""
-"You need to reload current page after update luci. Note that translation "
+"You may need to reload current page after update luci. Note that translation "
 "will not be updated."
 msgstr ""
 

@@ -98,7 +98,7 @@ o.placeholder = translate("Check Kcptun")
 o.btnclick = "check_update('kcptun', this);"
 
 o = s:option(Button, "_check_luci", translate("Check Luci"),
-	translate("You need to reload current page after update luci. Note that translation will not be updated."))
+	translate("You may need to reload current page after update luci. Note that translation will not be updated."))
 o.template = "kcptun/button"
 o.inputstyle = "apply"
 o.placeholder = translate("Check Luci")
