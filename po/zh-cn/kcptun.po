@@ -26,11 +26,11 @@ msgstr "无法在文件中找到客户端：%s"
 msgid "Can't move new file to path: %s"
 msgstr "无法移动新文件到：%s"
 
-msgid "Check Kcptun"
-msgstr "检查 Kcptun"
+msgid "Check Kcptun Update"
+msgstr "检查 Kcptun 更新"
 
-msgid "Check Luci"
-msgstr "检查 Luci"
+msgid "Check LuCI Update"
+msgstr "检查 LuCI 更新"
 
 msgid "Clear Log File"
 msgstr "清理日志文件"
@@ -274,9 +274,9 @@ msgid "Update in progress. Are you sure to close window?"
 msgstr "正在更新，确定关闭窗口？"
 
 msgid ""
-"You may need to reload current page after update luci. Note that translation "
+"You may need to reload current page after update LuCI. Note that translation "
 "will not be updated."
-msgstr "更新 luci 之后你可能需要手动刷新当前页面。注意：翻译不会被更新"
+msgstr "更新 LuCI 之后你可能需要手动刷新当前页面。注意：翻译不会被更新"
 
 msgid "acknodelay"
 msgstr ""

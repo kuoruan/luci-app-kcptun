@@ -1,7 +1,6 @@
 -- Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
 -- Licensed to the public under the Apache License 2.0.
 
-local uci = require "luci.model.uci".cursor()
 local dsp = require "luci.dispatcher"
 local http = require "luci.http"
 

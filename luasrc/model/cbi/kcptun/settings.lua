@@ -90,18 +90,18 @@ o:value("armv7", "ARMv7+")
 o:value("ar71xx", "MIPS")
 o:value("ramips", "MIPSLE")
 
-o = s:option(Button, "_check_kcptun", translate("Check Kcptun"),
+o = s:option(Button, "_check_kcptun", translate("Check Kcptun Update"),
 	translate("Make sure that the 'Client File' dictionary has enough space."))
 o.template = "kcptun/button"
 o.inputstyle = "apply"
-o.placeholder = translate("Check Kcptun")
+o.placeholder = translate("Check Kcptun Update")
 o.btnclick = "check_update('kcptun', this);"
 
-o = s:option(Button, "_check_luci", translate("Check Luci"),
-	translate("You may need to reload current page after update luci. Note that translation will not be updated."))
+o = s:option(Button, "_check_luci", translate("Check LuCI Update"),
+	translate("You may need to reload current page after update LuCI. Note that translation will not be updated."))
 o.template = "kcptun/button"
 o.inputstyle = "apply"
-o.placeholder = translate("Check Luci")
+o.placeholder = translate("Check LuCI Update")
 o.btnclick = "check_update('luci', this);"
 
 return m

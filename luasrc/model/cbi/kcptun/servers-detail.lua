@@ -1,7 +1,6 @@
 -- Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
 -- Licensed to the public under the Apache License 2.0.
 
-local uci = require "luci.model.uci".cursor()
 local dsp = require "luci.dispatcher"
 
 local m, s, o
@@ -78,6 +77,23 @@ for _, v in ipairs(modes) do
 end
 o.default = "fast"
 
+o = s:option(Flag, "nodelay", translate("nodelay"), translate("Enable nodelay Mode."))
+o:depends("mode", "manual")
+
+o = s:option(Value, "interval", translate("interval"))
+o:depends("mode", "manual")
+o.datatype = "uinteger"
+o.placeholder = "50"
+
+o = s:option(ListValue, "resend", translate("resend"))
+o:depends("mode", "manual")
+o:value("0", translate("Off"))
+o:value("1", translate("On"))
+o:value("2", translate("2nd ACK"))
+
+o = s:option(Flag, "nc", translate("nc"))
+o:depends("mode", "manual")
+
 o = s:option(Value, "mtu", "%s (%s)" % { translate("mtu"), translate("optional") },
 	translate("Maximum transmission unit of UDP packets."))
 o.datatype = "range(64,9200)"
@@ -114,6 +130,10 @@ o.enabled = "true"
 o.disabled = "false"
 o.rmempty = false
 
+o = s:option(Flag, "acknodelay", translate("acknodelay"))
+o.enabled = "true"
+o.disabled = "false"
+
 o = s:option(Value, "conn", "%s (%s)" %{ translate("conn"), translate("optional") },
 	translate("Number of UDP connections to server."))
 o.datatype = "min(1)"
@@ -128,28 +148,6 @@ o = s:option(Value, "scavengettl", "%s (%s)" % { translate("scavengettl"), trans
 	translate("How long an expired connection can live(in sec), -1 to disable."))
 o.datatype = "min(-1)"
 o.placeholder = "600"
-
-o = s:option(Flag, "nodelay", translate("nodelay"), translate("Enable nodelay Mode."))
-o:depends("mode", "manual")
-
-o = s:option(Value, "interval", translate("interval"))
-o:depends("mode", "manual")
-o.datatype = "uinteger"
-o.placeholder = "50"
-
-o = s:option(ListValue, "resend", translate("resend"))
-o:depends("mode", "manual")
-o:value("0", translate("Off"))
-o:value("1", translate("On"))
-o:value("2", translate("2nd ACK"))
-
-o = s:option(Flag, "nc", translate("nc"))
-o:depends("mode", "manual")
-
-o = s:option(Flag, "acknodelay", translate("acknodelay"))
-o:depends("mode", "manual")
-o.enabled = "true"
-o.disabled = "false"
 
 o = s:option(Value, "sockbuf", "%s (%s)" % { translate("sockbuf"), translate("optional") },
 	translate("Send/secv buffer size of udp sockets, default unit is MB."))

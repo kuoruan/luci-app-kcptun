@@ -26,10 +26,10 @@ msgstr ""
 msgid "Can't move new file to path: %s"
 msgstr ""
 
-msgid "Check Kcptun"
+msgid "Check Kcptun Update"
 msgstr ""
 
-msgid "Check Luci"
+msgid "Check LuCI Update"
 msgstr ""
 
 msgid "Clear Log File"

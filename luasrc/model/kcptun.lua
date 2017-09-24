@@ -13,8 +13,8 @@ local kcptun_api = "https://api.github.com/repos/xtaci/kcptun/releases/latest"
 local luci_api = "https://api.github.com/repos/kuoruan/luci-app-kcptun/releases/latest"
 
 local wget = "/usr/bin/wget"
-local wget_args = { "--no-check-certificate", "--quiet" }
-local wget_time_out = 40
+local wget_args = { "--no-check-certificate", "--quiet", "--timeout=10", "--tries=2" }
+local wget_timeout = 40
 
 local function _unpack(t, i)
 	i = i or 1
@@ -152,7 +152,7 @@ end
 
 function get_current_log_file(type)
 	local log_folder = get_config_option("log_folder", "/var/log/kcptun")
-	return "%s/%s.%s.log" % { log_folder, type, 'general' }
+	return "%s/%s.%s.log" % { log_folder, type, "general" }
 end
 
 function is_running(client)
@@ -320,7 +320,7 @@ function download_kcptun(url)
 	local tmp_file = util.trim(util.exec("mktemp -u -t kcptun_download.XXXXXX"))
 
 	local result = exec(wget, {
-		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
+		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_timeout) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
@@ -394,7 +394,7 @@ function move_kcptun(file)
 
 	local version = get_kcptun_version(file)
 	if version == "" then
-		sys.call("/bin/rm -rf /tmp/kcptun.*")
+		sys.call("/bin/rm -rf /tmp/kcptun_extract.*")
 		return {
 			code = 1,
 			error = i18n.translate("The client file is not suitable for current device. Please reselect ARCH.")
@@ -446,7 +446,7 @@ function update_luci(url)
 	local tmp_file = util.trim(util.exec("mktemp -u -t luci_kcptun.XXXXXX")) .. ".ipk"
 
 	local result = exec("/usr/bin/wget", {
-		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_time_out) == 0
+		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_timeout) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
