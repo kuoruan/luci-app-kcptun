@@ -7,7 +7,8 @@
 local kcp = require "luci.model.kcptun"
 local dsp = require "luci.dispatcher"
 
-local client_version = kcp.get_kcptun_version(kcp.get_config_option("client_file"))
+local client_file = kcp.get_config_option("client_file")
+local client_version = kcp.get_kcptun_version(client_file)
 local luci_version = kcp.get_luci_version()
 -%>
 
@@ -32,16 +33,13 @@ local luci_version = kcp.get_luci_version()
 </fieldset>
 
 <script type="text/javascript">//<![CDATA[
-	(function(doc) {
-		var client_status_tb = doc.getElementById('_kcptun-client_status');
-		XHR.poll(5, '<%=dsp.build_url("admin/services/kcptun/status")%>', null,
-			function(x, info) {
-				if (info && client_status_tb) {
-					client_status_tb.innerHTML = info.client ? '<%:Running%>' : '<%:Not Running%>';
-				}
+	var client_status = document.getElementById('_kcptun-client_status');
+	XHR.poll(5, '<%=dsp.build_url("admin/services/kcptun/status")%>', null,
+		function(x, json) {
+			if (x && x.status == 200) {
+				client_status.innerHTML = json.client ? '<%:Running%>' : '<%:Not Running%>';
 			}
-		);
-	})(document);
+		});
 
 	function add_remove_page_notice(isAdd) {
 		if (isAdd) {
@@ -104,14 +102,32 @@ local luci_version = kcp.get_luci_version()
 	var kcptun_info, luci_info;
 
 	var token_str = '<%=token%>';
+	var arch_select;
+
+	function init_arch_select() {
+		if (!arch_select) {
+			arch_select = document.getElementById('cbid.kcptun.general.arch');
+
+			arch_select.addEventListener('change', function() {
+				kcptun_info = null;
+				var check_kcptun_btn = document.getElementById('_kcptun-check_kcptun');
+				var text = '<%:Check Kcptun Update%>';
+				check_kcptun_btn.value = text;
+				check_kcptun_btn.placeholder = text;
+				check_kcptun_btn.setAttribute('onclick', 'check_update(\'kcptun\', this);');
+
+				var detail = document.getElementById('_kcptun-check_kcptun-detail');
+				detail.innerHTML = '';
+			});
+		}
+	}
 
 	function check_update(type, btn) {
 		btn.disabled = true;
 		btn.value = '<%:Processing...%>';
 
+		init_arch_select();
 		add_remove_page_notice(true);
-
-		var arch_select = document.getElementById('cbid.kcptun.general.arch');
 
 		(new XHR()).get('<%=dsp.build_url("admin/services/kcptun/check")%>/' + type, {
 			token: token_str,
@@ -186,7 +202,7 @@ local luci_version = kcp.get_luci_version()
 									token: token_str,
 									task: "move",
 									file: json.file
-								}, function (x, res) {
+								}, function (x, json) {
 									if (x && x.status == 200) {
 										if (json.code == 0) {
 											on_update_success(btn);

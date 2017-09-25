@@ -352,10 +352,12 @@ function extract_kcptun(file, subfix)
 	exec("/bin/tar", { "-C", tmp_dir, "-zxvf", file },
 		function(chunk) output[#output + 1] = chunk end)
 
+	local files = util.split(table.concat(output))
+
 	exec("/bin/rm", { "-f", file })
 
 	local new_file = nil
-	for _, f in pairs(output) do
+	for _, f in pairs(files) do
 		if f:match("client_linux_%s" % subfix) then
 			new_file = tmp_dir .. "/" .. util.trim(f)
 			break
@@ -363,7 +365,7 @@ function extract_kcptun(file, subfix)
 	end
 
 	if not new_file then
-		for _, f in pairs(output) do
+		for _, f in pairs(files) do
 			if f:match("client_") then
 				new_file = tmp_dir .. "/" .. util.trim(f)
 				break
@@ -387,6 +389,7 @@ end
 
 function move_kcptun(file)
 	if not file or file == "" or not fs.access(file) then
+		sys.call("/bin/rm -rf /tmp/kcptun_extract.*")
 		return {
 			code = 1,
 			error = i18n.translate("Client file is required.")
