@@ -14,7 +14,7 @@ local luci_api = "https://api.github.com/repos/kuoruan/luci-app-kcptun/releases/
 
 local wget = "/usr/bin/wget"
 local wget_args = { "--no-check-certificate", "--quiet", "--timeout=10", "--tries=2" }
-local wget_timeout = 40
+local command_timeout = 40
 
 local function _unpack(t, i)
 	i = i or 1
@@ -47,6 +47,7 @@ local function exec(cmd, args, writer, timeout)
 						writer(buffer)
 					end
 				end
+
 				local wpid, stat, code = nixio.waitpid(pid, "nohang")
 
 				if wpid and stat == "exited" then
@@ -320,7 +321,7 @@ function download_kcptun(url)
 	local tmp_file = util.trim(util.exec("mktemp -u -t kcptun_download.XXXXXX"))
 
 	local result = exec(wget, {
-		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_timeout) == 0
+		"-O", tmp_file, url, _unpack(wget_args) }, nil, command_timeout) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
@@ -409,7 +410,7 @@ function move_kcptun(file)
 		exec("/bin/mv", { "-f", client_file, client_file_bak })
 	end
 
-	local result = exec("/bin/mv", { "-f", file, client_file }) == 0
+	local result = exec("/bin/mv", { "-f", file, client_file }, nil, command_timeout) == 0
 
 	if not result or not fs.access(client_file) then
 		sys.call("/bin/rm -rf /tmp/kcptun_extract.*")
@@ -449,7 +450,7 @@ function update_luci(url)
 	local tmp_file = util.trim(util.exec("mktemp -u -t luci_kcptun.XXXXXX")) .. ".ipk"
 
 	local result = exec("/usr/bin/wget", {
-		"-O", tmp_file, url, _unpack(wget_args) }, nil, wget_timeout) == 0
+		"-O", tmp_file, url, _unpack(wget_args) }, nil, command_timeout) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
