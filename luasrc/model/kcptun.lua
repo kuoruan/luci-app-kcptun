@@ -409,7 +409,10 @@ function move_kcptun(file)
 		exec("/bin/mv", { "-f", client_file, client_file_bak })
 	end
 
-	if not fs.move(file, client_file) then
+	local result = exec("/bin/mv", { "-f", file, client_file }) == 0
+
+	if not result or not fs.access(client_file) then
+		sys.call("/bin/rm -rf /tmp/kcptun_extract.*")
 		if client_file_bak then
 			exec("/bin/mv", { "-f", client_file_bak, client_file })
 		end
