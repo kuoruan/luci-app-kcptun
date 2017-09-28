@@ -463,8 +463,8 @@ function update_luci(url)
 		}
 	end
 
-	result = exec("/bin/opkg", {
-		"install", "--force-reinstall", "--force-overwrite", tmp_file }) == 0
+	result = exec("/bin/opkg", { "install",
+		"--force-downgrade", "--force-reinstall", tmp_file }) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })
