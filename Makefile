@@ -16,20 +16,11 @@ LUCI_TITLE:=LuCI support for Kcptun
 LUCI_DEPENDS:=+jshn +wget +luci-lib-jsonc
 LUCI_PKGARCH:=all
 
-include ../../luci.mk
-
-define Package/$(PKG_NAME)/config
-# shown in make menuconfig <Help>
-help
-	$(LUCI_TITLE)
-	.
-	Version: $(PKG_VERSION)-$(PKG_RELEASE)
-	$(PKG_MAINTAINER)
-endef
-
 define Package/$(PKG_NAME)/conffiles
 /etc/config/kcptun
 endef
+
+include ../../luci.mk
 
 define Package/$(PKG_NAME)/postinst
 #!/bin/sh
