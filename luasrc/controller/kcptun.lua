@@ -74,7 +74,7 @@ function action_update(type)
 			json = kcp.download_kcptun(http.formvalue("url"))
 		end
 	elseif type == "luci" then
-		json = kcp.update_luci(http.formvalue("url"))
+		json = kcp.update_luci(http.formvalue("url"), http.formvalue("save"))
 	else
 		http.status(500, "Bad address")
 		return

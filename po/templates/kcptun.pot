@@ -229,6 +229,12 @@ msgstr ""
 msgid "SNMP collect period, in seconds"
 msgstr ""
 
+msgid "Save Config File"
+msgstr ""
+
+msgid "Save config file while upgrade LuCI."
+msgstr ""
+
 msgid "Send Window Size(num of packets)."
 msgstr ""
 
@@ -272,7 +278,7 @@ msgid "Update in progress. Are you sure to close window?"
 msgstr ""
 
 msgid ""
-"You may need to reload current page after update luci. Note that translation "
+"You may need to reload current page after update LuCI. Note that translation "
 "will not be updated."
 msgstr ""
 

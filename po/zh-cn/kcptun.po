@@ -229,6 +229,12 @@ msgstr "运行状态"
 msgid "SNMP collect period, in seconds"
 msgstr "SNMP采集周期(秒)"
 
+msgid "Save Config File"
+msgstr "保留配置文件"
+
+msgid "Save config file while upgrade LuCI."
+msgstr "在更新 LuCI 时保留配置文件"
+
 msgid "Send Window Size(num of packets)."
 msgstr "发送窗口大小 (数据包数量)"
 

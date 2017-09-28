@@ -440,7 +440,7 @@ function move_kcptun(file)
 	return { code = 0 }
 end
 
-function update_luci(url)
+function update_luci(url, save)
 	if not url or url == "" then
 		return {
 			code = 1,
@@ -463,8 +463,13 @@ function update_luci(url)
 		}
 	end
 
-	result = exec("/bin/opkg", { "install",
-		"--force-downgrade", "--force-reinstall", tmp_file }) == 0
+	local opkg_args = { "--force-downgrade", "--force-reinstall" }
+
+	if save ~= "true" then
+		opkg_args[#opkg_args + 1] = "--force-maintainer"
+	end
+
+	result = exec("/bin/opkg", { "install", tmp_file, _unpack(opkg_args) }) == 0
 
 	if not result then
 		exec("/bin/rm", { "-f", tmp_file })

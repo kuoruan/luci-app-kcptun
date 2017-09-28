@@ -235,11 +235,12 @@ local luci_version = kcp.get_luci_version()
 
 		add_remove_page_notice(true);
 
-		var luci_update_url = '<%=dsp.build_url("admin/services/kcptun/update/luci")%>';
+		var save_config = document.getElementById('cbid.kcptun.general.save_config');
 
-		(new XHR()).get(luci_update_url, {
+		(new XHR()).get('<%=dsp.build_url("admin/services/kcptun/update/luci")%>', {
 			token: token_str,
-			url: luci_info ? luci_info.url.luci : ''
+			url: luci_info ? luci_info.url.luci : '',
+			save: save_config ? save_config.checked : false
 		}, function(x, json) {
 				btn.disabled = false;
 				btn.value = btn.placeholder;

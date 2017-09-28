@@ -98,6 +98,9 @@ o.placeholder = translate("Check Kcptun Update")
 o.btnclick = "check_update('kcptun', this);"
 o.id = "_kcptun-check_kcptun"
 
+o = s:option(Flag, "save_config", translate("Save Config File"),
+	translate("Save config file while upgrade LuCI."))
+
 o = s:option(Button, "_check_luci", translate("Check LuCI Update"),
 	translate("You may need to reload current page after update LuCI. Note that translation will not be updated."))
 o.template = "kcptun/button"
