@@ -1,5 +1,5 @@
 <%#
- Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
+ Copyright 2016-2018 Xingwang Liao <kuoruan@gmail.com>
  Licensed to the public under the Apache License 2.0.
 -%>
 
@@ -33,30 +33,51 @@ local luci_version = kcp.get_luci_version()
 </fieldset>
 
 <script type="text/javascript">//<![CDATA[
-	var client_status = document.getElementById('_kcptun-client_status');
-	XHR.poll(5, '<%=dsp.build_url("admin/services/kcptun/status")%>', null,
+  var kcptun_info, luci_info;
+
+  var token_str = '<%=token%>';
+
+  XHR.poll(5, '<%=dsp.build_url("admin/services/kcptun/status")%>', null,
 		function(x, json) {
-			if (x && x.status == 200) {
-				client_status.innerHTML = json.client ? '<%:Running%>' : '<%:Not Running%>';
-			}
+      if (!x || x.status != 200 || !json) return
+
+      var client_status = document.getElementById('_kcptun-client_status');
+      client_status.innerHTML = json.client ? '<%:Running%>' : '<%:Not Running%>';
 		});
 
-	function add_remove_page_notice(isAdd) {
-		if (isAdd) {
-			window.onbeforeunload = function(e) {
-				var dialogText = '<%:Update in progress. Are you sure to close window?%>';
-				e.returnValue = dialogText;
-				return dialogText;
-			};
-		} else {
-			window.onbeforeunload = null;
-		}
+  window.onload = function () {
+    var arch_select = document.getElementById('cbid.kcptun.general.arch');
+    var check_kcptun_btn = document.getElementById('_kcptun-check_kcptun');
+    var detail = document.getElementById('_kcptun-check_kcptun-detail');
+
+    arch_select.addEventListener('change', function() {
+      kcptun_info = undefined;
+      detail.innerHTML = '';
+
+      var text = '<%:Check Kcptun Update%>';
+      check_kcptun_btn.value = text;
+      check_kcptun_btn.placeholder = text;
+      check_kcptun_btn.setAttribute('onclick', 'check_update(\'kcptun\', this);');
+    });
+  }
+
+	function add_page_notice() {
+		window.onbeforeunload = function(e) {
+      var dialogText = '<%:Update in progress. Are you sure to close window?%>';
+      e.returnValue = dialogText;
+      return dialogText;
+    };
 	}
 
+  function remove_page_notice() {
+    window.onbeforeunload = undefined;
+  }
+
 	function on_update_success(btn) {
-		add_remove_page_notice(false);
+		remove_page_notice();
 
 		var success = '<%:Update Success.%>';
+		alert(success);
 
 		if (btn) {
 			btn.value = success;
@@ -64,195 +85,143 @@ local luci_version = kcp.get_luci_version()
 			btn.disabled = true;
 		}
 
-		alert(success);
-
 		window.setTimeout(function () {
 			window.location.reload();
 		}, 500);
 	}
 
-	function on_request_error(btn, json) {
-		add_remove_page_notice(false);
+	function on_request_error(btn, errorMessage) {
+		remove_page_notice();
 
-		if (btn) {
-			btn.disabled = false;
-			btn.value = btn.placeholder;
-		}
+		btn.disabled = false;
+    btn.value = btn.placeholder;
 
-		if (json && json.error) {
-			alert(json.error);
+		if (errorMessage) {
+			alert(errorMessage);
 		}
 	}
 
-	function createVersionUrl(version, url) {
-		var urlNode = '';
-		if (url) {
-			urlNode += '<a href="' + url + '" target="_blank">';
-		}
+	function create_version_url(version, url) {
+		var urlNode = '<em style="color:red;">' + version + '</em>';
 
-		urlNode += '<em style="color:red;">' + version + '</em>';
-
-		if (url) {
-			urlNode += '</a>';
+    if (typeof url === 'string') {
+			urlNode = '<a href="' + url + '" target="_blank">' + urlNode + '</a>';
 		}
 
 		return urlNode;
 	}
 
-	var kcptun_info, luci_info;
-
-	var token_str = '<%=token%>';
-	var arch_select;
-
-	function init_arch_select() {
-		if (!arch_select) {
-			arch_select = document.getElementById('cbid.kcptun.general.arch');
-
-			arch_select.addEventListener('change', function() {
-				kcptun_info = null;
-				var check_kcptun_btn = document.getElementById('_kcptun-check_kcptun');
-				var text = '<%:Check Kcptun Update%>';
-				check_kcptun_btn.value = text;
-				check_kcptun_btn.placeholder = text;
-				check_kcptun_btn.setAttribute('onclick', 'check_update(\'kcptun\', this);');
-
-				var detail = document.getElementById('_kcptun-check_kcptun-detail');
-				detail.innerHTML = '';
-			});
-		}
-	}
+  function do_ajax_get(url, data, onSuccess, onError) {
+    new XHR().get(url, data, function(x, json) {
+      if (!x || x.status != 200 || !json || !json.code) {
+        if (typeof onError === 'function') {
+          onError(json || {})
+        }
+      } else {
+        if (typeof onSuccess === 'function') {
+          onSuccess(json)
+        }
+      }
+    })
+  }
 
 	function check_update(type, btn) {
 		btn.disabled = true;
 		btn.value = '<%:Processing...%>';
 
-		init_arch_select();
-		add_remove_page_notice(true);
+		add_page_notice();
 
-		(new XHR()).get('<%=dsp.build_url("admin/services/kcptun/check")%>/' + type, {
+    var arch_select = document.getElementById('cbid.kcptun.general.arch')
+
+    do_ajax_get('<%=dsp.build_url("admin/services/kcptun/check")%>/' + type, {
 			token: token_str,
 			arch: arch_select ? arch_select.value : ""
-		}, function(x, json) {
-				if (x && x.status == 200) {
-					var detailElm = document.getElementById(btn.id + '-detail');
+		}, function (json) {
+      remove_page_notice();
+      var detailElm = document.getElementById(btn.id + '-detail');
 
-					if (json.code == 0) {
-						add_remove_page_notice(false);
+      if (json.update) {
+        eval(type + '_info = json');
 
-						if (json.update) {
-							eval(type + '_info = json');
+        btn.disabled = false;
+        btn.value = '<%:Click to Update%>';
+        btn.placeholder = '<%:Click to Update%>';
 
-							btn.disabled = false;
-							btn.value = '<%:Click to Update%>';
-							btn.placeholder = '<%:Click to Update%>';
+        btn.setAttribute('onclick', 'do_' + type + '_update(this);');
 
-							btn.setAttribute('onclick', 'do_' + type + '_update(this);');
+        if (detailElm) {
+          detailElm.innerHTML = create_version_url(json.version, json.url.html);
+        }
+      } else {
+        btn.disabled = true;
+        btn.value = '<%:No Update Found%>';
 
-							if (detailElm) {
-								detailElm.innerHTML = createVersionUrl(json.version, json.url.html);
-							}
-						} else {
-							btn.disabled = true;
-							btn.value = '<%:No Update Found%>';
+        if (detailElm) {
+          detailElm.innerHTML = '';
+        }
+      }
+    }, function (json) {
+      if (detailElm && json.html_url) {
+        detailElm.innerHTML = create_version_url(json.version, json.html_url)
+      }
 
-							if (detailElm) {
-								detailElm.innerHTML = '';
-							}
-						}
-					} else {
-						if (detailElm && json.html_url) {
-							detailElm.innerHTML = createVersionUrl(json.version, json.html_url)
-						}
-
-						on_request_error(btn, json);
-					}
-				} else {
-					on_request_error(btn);
-				}
-			});
+      on_request_error(btn, json.error || '<%:Unexpected Error.%>');
+    })
 	}
 
 	function do_kcptun_update(btn) {
 		btn.disabled = true;
 		btn.value = '<%:Downloading...%>';
 
-		add_remove_page_notice(true);
+		add_page_notice();
 
 		var kcptun_update_url = '<%=dsp.build_url("admin/services/kcptun/update/kcptun")%>';
 
-		(new XHR()).get(kcptun_update_url, {
+    function on_update_error(json) {
+      on_request_error(btn, json.error || '<%:Unexpected Error.%>')
+    }
+
+    do_ajax_get(kcptun_update_url, {
 			token: token_str,
 			url: kcptun_info ? kcptun_info.url.download : ''
-		}, function (x, json) {
-			if (x && x.status == 200) {
-				if (json.code == 0) {
-					btn.value = '<%:Extracting...%>';
+		}, function (json) {
+        btn.value = '<%:Extracting...%>';
 
-					(new XHR()).get(kcptun_update_url, {
-						token: token_str,
-						task: "extract",
-						file: json.file,
-						subfix: kcptun_info ? kcptun_info.type : ''
-					}, function (x, json) {
-						if (x && x.status == 200) {
-							if (json.code == 0) {
-								btn.value = '<%:Moving...%>';
+        do_ajax_get(kcptun_update_url, {
+          token: token_str,
+          task: 'extract',
+          file: json.file,
+          subfix: kcptun_info ? kcptun_info.type : ''
+        }, function (json) {
+            btn.value = '<%:Moving...%>';
 
-								(new XHR()).get(kcptun_update_url, {
-									token: token_str,
-									task: "move",
-									file: json.file
-								}, function (x, json) {
-									if (x && x.status == 200) {
-										if (json.code == 0) {
-											on_update_success(btn);
-										} else {
-											on_request_error(btn, json);
-										}
-									} else {
-										on_request_error(btn);
-									}
-								});
-							} else {
-								on_request_error(btn, json);
-							}
-						} else {
-							on_request_error(btn);
-						}
-					});
-				} else {
-					on_request_error(btn, json);
-				}
-			} else {
-				on_request_error(btn);
-			}
-		});
+            do_ajax_get(kcptun_update_url, {
+              token: token_str,
+              task: 'move',
+              file: json.file
+            }, function (json) {
+              on_update_success(btn)
+            }, on_update_error)
+        }, on_update_error)
+    }, on_update_error)
 	}
 
 	function do_luci_update(btn) {
 		btn.disabled = true;
 		btn.value = '<%:Processing...%>';
 
-		add_remove_page_notice(true);
+		add_page_notice();
 
 		var save_config = document.getElementById('cbid.kcptun.general.save_config');
 
-		(new XHR()).get('<%=dsp.build_url("admin/services/kcptun/update/luci")%>', {
+    do_ajax_get('<%=dsp.build_url("admin/services/kcptun/update/luci")%>', {
 			token: token_str,
 			url: luci_info ? luci_info.url.luci : '',
 			save: save_config ? save_config.checked : false
-		}, function(x, json) {
-				btn.disabled = false;
-				btn.value = btn.placeholder;
-				if (x && x.status == 200) {
-					if (json.code == 0) {
-						on_update_success(btn);
-					} else {
-						on_request_error(btn, json);
-					}
-				} else {
-					on_request_error(btn);
-				}
-			});
+		}, function () {
+      on_update_success(btn)
+    }, function (json) {
+      on_request_error(btn, json.error || '<%:Unexpected Error.%>');
+    })
 	}
 //]]></script>
