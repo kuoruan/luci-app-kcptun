@@ -115,11 +115,11 @@ local luci_version = kcp.get_luci_version()
     new XHR().get(url, data, function(x, json) {
       if (!x || x.status != 200 || !json || !json.code) {
         if (typeof onError === 'function') {
-          onError(json || {})
+          onError(json || {});
         }
       } else {
         if (typeof onSuccess === 'function') {
-          onSuccess(json)
+          onSuccess(json);
         }
       }
     })
@@ -178,7 +178,7 @@ local luci_version = kcp.get_luci_version()
     var kcptun_update_url = '<%=dsp.build_url("admin/services/kcptun/update/kcptun")%>';
 
     function on_update_error(json) {
-      on_request_error(btn, json.error || '<%:Unexpected Error.%>')
+      on_request_error(btn, json.error || '<%:Unexpected Error.%>');
     }
 
     do_ajax_get(kcptun_update_url, {
@@ -200,7 +200,7 @@ local luci_version = kcp.get_luci_version()
               task: 'move',
               file: json.file
             }, function (json) {
-              on_update_success(btn)
+              on_update_success(btn);
             }, on_update_error)
         }, on_update_error)
     }, on_update_error)
@@ -219,7 +219,7 @@ local luci_version = kcp.get_luci_version()
       url: luci_info ? luci_info.url.luci : '',
       save: save_config ? save_config.checked : false
     }, function () {
-      on_update_success(btn)
+      on_update_success(btn);
     }, function (json) {
       on_request_error(btn, json.error || '<%:Unexpected Error.%>');
     })
