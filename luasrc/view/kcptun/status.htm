@@ -13,23 +13,23 @@ local luci_version = kcp.get_luci_version()
 -%>
 
 <fieldset class="cbi-section">
-	<legend><%:Running Status%></legend>
-	<table width="100%" cellspacing="10" id="_kcptun-status_table">
-		<tr>
-			<td width="33%"><%:Client Version%></td>
-			<td>
-				<% if client_version == "" then -%>
-				<em><%:Invalid Client File.%></em>
-				<% else -%>
-				<%=pcdata(client_version)%>
-				<%- end %>
-			</td>
-		</tr>
-		<tr><td width="33%"><%:Client Status%></td><td id="_kcptun-client_status"><em><%:Collecting data...%></em></td></tr>
-		<% if luci_version ~= "" then -%>
-		<tr><td width="33%"><%:LuCI Version%></td><td><%=pcdata(luci_version)%></td></tr>
-		<% end -%>
-	</table>
+  <legend><%:Running Status%></legend>
+  <table width="100%" cellspacing="10" id="_kcptun-status_table">
+    <tr>
+      <td width="33%"><%:Client Version%></td>
+      <td>
+        <% if client_version == "" then -%>
+        <em><%:Invalid Client File.%></em>
+        <% else -%>
+        <%=pcdata(client_version)%>
+        <%- end %>
+      </td>
+    </tr>
+    <tr><td width="33%"><%:Client Status%></td><td id="_kcptun-client_status"><em><%:Collecting data...%></em></td></tr>
+    <% if luci_version ~= "" then -%>
+    <tr><td width="33%"><%:LuCI Version%></td><td><%=pcdata(luci_version)%></td></tr>
+    <% end -%>
+  </table>
 </fieldset>
 
 <script type="text/javascript">//<![CDATA[
@@ -38,12 +38,12 @@ local luci_version = kcp.get_luci_version()
   var token_str = '<%=token%>';
 
   XHR.poll(5, '<%=dsp.build_url("admin/services/kcptun/status")%>', null,
-		function(x, json) {
+    function(x, json) {
       if (!x || x.status != 200 || !json) return
 
       var client_status = document.getElementById('_kcptun-client_status');
       client_status.innerHTML = json.client ? '<%:Running%>' : '<%:Not Running%>';
-		});
+    });
 
   window.onload = function () {
     var arch_select = document.getElementById('cbid.kcptun.general.arch');
@@ -61,55 +61,55 @@ local luci_version = kcp.get_luci_version()
     });
   }
 
-	function add_page_notice() {
-		window.onbeforeunload = function(e) {
+  function add_page_notice() {
+    window.onbeforeunload = function(e) {
       var dialogText = '<%:Update in progress. Are you sure to close window?%>';
       e.returnValue = dialogText;
       return dialogText;
     };
-	}
+  }
 
   function remove_page_notice() {
     window.onbeforeunload = undefined;
   }
 
-	function on_update_success(btn) {
-		remove_page_notice();
+  function on_update_success(btn) {
+    remove_page_notice();
 
-		var success = '<%:Update Success.%>';
-		alert(success);
+    var success = '<%:Update Success.%>';
+    alert(success);
 
-		if (btn) {
-			btn.value = success;
-			btn.placeholder = success;
-			btn.disabled = true;
-		}
+    if (btn) {
+      btn.value = success;
+      btn.placeholder = success;
+      btn.disabled = true;
+    }
 
-		window.setTimeout(function () {
-			window.location.reload();
-		}, 500);
-	}
+    window.setTimeout(function () {
+      window.location.reload();
+    }, 500);
+  }
 
-	function on_request_error(btn, errorMessage) {
-		remove_page_notice();
+  function on_request_error(btn, errorMessage) {
+    remove_page_notice();
 
-		btn.disabled = false;
+    btn.disabled = false;
     btn.value = btn.placeholder;
 
-		if (errorMessage) {
-			alert(errorMessage);
-		}
-	}
+    if (errorMessage) {
+      alert(errorMessage);
+    }
+  }
 
-	function create_version_url(version, url) {
-		var urlNode = '<em style="color:red;">' + version + '</em>';
+  function create_version_url(version, url) {
+    var urlNode = '<em style="color:red;">' + version + '</em>';
 
     if (typeof url === 'string') {
-			urlNode = '<a href="' + url + '" target="_blank">' + urlNode + '</a>';
-		}
+      urlNode = '<a href="' + url + '" target="_blank">' + urlNode + '</a>';
+    }
 
-		return urlNode;
-	}
+    return urlNode;
+  }
 
   function do_ajax_get(url, data, onSuccess, onError) {
     new XHR().get(url, data, function(x, json) {
@@ -125,18 +125,18 @@ local luci_version = kcp.get_luci_version()
     })
   }
 
-	function check_update(type, btn) {
-		btn.disabled = true;
-		btn.value = '<%:Processing...%>';
+  function check_update(type, btn) {
+    btn.disabled = true;
+    btn.value = '<%:Processing...%>';
 
-		add_page_notice();
+    add_page_notice();
 
     var arch_select = document.getElementById('cbid.kcptun.general.arch')
 
     do_ajax_get('<%=dsp.build_url("admin/services/kcptun/check")%>/' + type, {
-			token: token_str,
-			arch: arch_select ? arch_select.value : ""
-		}, function (json) {
+      token: token_str,
+      arch: arch_select ? arch_select.value : ""
+    }, function (json) {
       remove_page_notice();
       var detailElm = document.getElementById(btn.id + '-detail');
 
@@ -167,24 +167,24 @@ local luci_version = kcp.get_luci_version()
 
       on_request_error(btn, json.error || '<%:Unexpected Error.%>');
     })
-	}
+  }
 
-	function do_kcptun_update(btn) {
-		btn.disabled = true;
-		btn.value = '<%:Downloading...%>';
+  function do_kcptun_update(btn) {
+    btn.disabled = true;
+    btn.value = '<%:Downloading...%>';
 
-		add_page_notice();
+    add_page_notice();
 
-		var kcptun_update_url = '<%=dsp.build_url("admin/services/kcptun/update/kcptun")%>';
+    var kcptun_update_url = '<%=dsp.build_url("admin/services/kcptun/update/kcptun")%>';
 
     function on_update_error(json) {
       on_request_error(btn, json.error || '<%:Unexpected Error.%>')
     }
 
     do_ajax_get(kcptun_update_url, {
-			token: token_str,
-			url: kcptun_info ? kcptun_info.url.download : ''
-		}, function (json) {
+      token: token_str,
+      url: kcptun_info ? kcptun_info.url.download : ''
+    }, function (json) {
         btn.value = '<%:Extracting...%>';
 
         do_ajax_get(kcptun_update_url, {
@@ -204,24 +204,24 @@ local luci_version = kcp.get_luci_version()
             }, on_update_error)
         }, on_update_error)
     }, on_update_error)
-	}
+  }
 
-	function do_luci_update(btn) {
-		btn.disabled = true;
-		btn.value = '<%:Processing...%>';
+  function do_luci_update(btn) {
+    btn.disabled = true;
+    btn.value = '<%:Processing...%>';
 
-		add_page_notice();
+    add_page_notice();
 
-		var save_config = document.getElementById('cbid.kcptun.general.save_config');
+    var save_config = document.getElementById('cbid.kcptun.general.save_config');
 
     do_ajax_get('<%=dsp.build_url("admin/services/kcptun/update/luci")%>', {
-			token: token_str,
-			url: luci_info ? luci_info.url.luci : '',
-			save: save_config ? save_config.checked : false
-		}, function () {
+      token: token_str,
+      url: luci_info ? luci_info.url.luci : '',
+      save: save_config ? save_config.checked : false
+    }, function () {
       on_update_success(btn)
     }, function (json) {
       on_request_error(btn, json.error || '<%:Unexpected Error.%>');
     })
-	}
+  }
 //]]></script>
