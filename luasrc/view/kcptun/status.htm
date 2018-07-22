@@ -132,13 +132,13 @@ local luci_version = kcp.get_luci_version()
     add_page_notice();
 
     var arch_select = document.getElementById('cbid.kcptun.general.arch')
+    var detailElm = document.getElementById(btn.id + '-detail');
 
     do_ajax_get('<%=dsp.build_url("admin/services/kcptun/check")%>/' + type, {
       token: token_str,
       arch: arch_select ? arch_select.value : ""
     }, function (json) {
       remove_page_notice();
-      var detailElm = document.getElementById(btn.id + '-detail');
 
       if (json.update) {
         eval(type + '_info = json');
