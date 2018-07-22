@@ -170,10 +170,10 @@ local luci_version = kcp.get_luci_version()
         var urlNode = '';
 
         if (json.version) {
-          urlNode = '<em style="color:red;">' + version + '</em>';
+          urlNode = '<em style="color:red;">' + json.version + '</em>';
 
-          if (json.html_url) {
-            urlNode = '<a href="' + url + '" target="_blank">' + urlNode + '</a>';
+          if (json.url && json.url.html) {
+            urlNode = '<a href="' + json.url.html + '" target="_blank">' + urlNode + '</a>';
           }
         }
         ckeckDetailElm.innerHTML = urlNode;
@@ -238,12 +238,12 @@ local luci_version = kcp.get_luci_version()
 
     addPageNotice();
 
-    var save_config = document.getElementById('cbid.kcptun.general.save_config');
+    var saveConfigElm = document.getElementById('cbid.kcptun.general.save_config');
 
     doAjaxGet('<%=dsp.build_url("admin/services/kcptun/update/luci")%>', {
       token: tokenStr,
       url: luciInfo ? luciInfo.url.luci : '',
-      save: save_config ? save_config.checked : false
+      save: saveConfigElm ? saveConfigElm.checked : false
     }, function (json) {
       removePageNotice();
 
