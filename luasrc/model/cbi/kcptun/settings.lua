@@ -95,7 +95,7 @@ o = s:option(Button, "_check_kcptun", translate("Check Kcptun Update"),
 o.template = "kcptun/button"
 o.inputstyle = "apply"
 o.placeholder = translate("Check Kcptun Update")
-o.btnclick = "check_update('kcptun', this);"
+o.btnclick = "onKcptunBtnClick('kcptun', this);"
 o.id = "_kcptun-check_kcptun"
 
 o = s:option(Flag, "save_config", translate("Save Config File"),
@@ -106,7 +106,7 @@ o = s:option(Button, "_check_luci", translate("Check LuCI Update"),
 o.template = "kcptun/button"
 o.inputstyle = "apply"
 o.placeholder = translate("Check LuCI Update")
-o.btnclick = "check_update('luci', this);"
+o.btnclick = "onKcptunBtnClick('luci', this);"
 o.id = "_kcptun-check_luci"
 
 return m
