@@ -17,7 +17,7 @@ LUCI_DEPENDS:=+jshn +wget +luci-lib-jsonc
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/conffiles
-	/etc/config/kcptun
+/etc/config/kcptun
 endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
