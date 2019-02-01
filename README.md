@@ -6,6 +6,8 @@ OpenWrt/LEDE 上的 Kcptun Luci 支持界面
 
 [![Release Version](https://img.shields.io/github/release/kuoruan/luci-app-kcptun.svg)](https://github.com/kuoruan/luci-app-kcptun/releases/latest) [![Latest Release Download](https://img.shields.io/github/downloads/kuoruan/luci-app-kcptun/latest/total.svg)](https://github.com/kuoruan/luci-app-kcptun/releases/latest)
 
+> 获取 Kcptun for OpenWrt, 请访问：[https://github.com/kuoruan/openwrt-kcptun](https://github.com/kuoruan/openwrt-kcptun)
+
 ## 编译说明
 
 编辑 ```feeds.conf.default``` 添加如下内容：
