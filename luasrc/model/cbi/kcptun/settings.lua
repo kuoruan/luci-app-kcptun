@@ -79,8 +79,7 @@ o.validate = function(self, value, section)
 end
 
 o = s:option(ListValue, "arch", translate("CPU Architecture"),
-	translate("The ARCH for checking updates." ..
-	" Note: Make sure OpenWrt/LEDE 'MIPS FPU Emulator' is enabled on MIPS/MIPSLE devices."))
+	translate("The ARCH for checking updates."))
 o:value("", translate("Auto"))
 o:value("i386", "x86")
 o:value("x86_64", "x86_64")

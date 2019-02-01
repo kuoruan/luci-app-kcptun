@@ -49,8 +49,6 @@ opkg install luci-i18n-kcptun-zh-cn_*.ipk
 
 下载地址: https://github.com/xtaci/kcptun/releases
 
-注：Golang 的 MIPS/MIPSLE 版本暂时不支持 Soft Float，需要在编译 OpenWrt/LEDE 时打开 ```MIPS FPU Emulator```，其他版本不受影响。
-
 ## 卸载说明
 
 卸载时需要先卸载 luci-i18n-kcptun-zh-cn, 再卸载 luci-app-kcptun
