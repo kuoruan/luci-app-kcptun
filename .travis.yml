@@ -19,8 +19,8 @@ env:
   - REPO=luci-app-kcptun
   - CCACHE_VERSION=3.6
   - DOWNLOAD_DIR=${HOME}/files
-  - SDK_PATH=https://downloads.openwrt.org/snapshots/targets/ar71xx/generic
-  - SDK=-sdk-ar71xx-generic_
+  - SDK_PATH=https://downloads.openwrt.org/releases/18.06.2/targets/x86/generic
+  - SDK=-sdk-18.06.2-x86-generic_
 install:
 - mkdir -p "$DOWNLOAD_DIR" && cd "$DOWNLOAD_DIR"
 - wget -c "http://us.archive.ubuntu.com/ubuntu/pool/main/c/ccache/ccache_${CCACHE_VERSION}-1_amd64.deb"
@@ -62,7 +62,7 @@ script:
 - "./scripts/feeds update -a >/dev/null"
 - "./scripts/feeds install -a >/dev/null"
 - make defconfig
-- make package/${PACKAGE}/compile V=s
+- make package/${PACKAGE}/compile -j2 || make package/${PACKAGE}/{clean,compile} V=s
 - find "${SDK_HOME}/bin/"
 - find "${SDK_HOME}/bin/" -name luci-*-kcptun*.ipk -exec cp {} "$TRAVIS_BUILD_DIR"
   \;
