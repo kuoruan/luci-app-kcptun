@@ -1,19 +1,19 @@
 #
-# Copyright 2016-2017 Xingwang Liao <kuoruan@gmail.com>
+# Copyright 2016-2019 Xingwang Liao <kuoruan@gmail.com>
 # Licensed to the public under the Apache License 2.0.
 #
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-kcptun
-PKG_VERSION:=1.4.5
+PKG_VERSION:=1.5.0
 PKG_RELEASE:=1
 
 PKG_LICENSE:=Apache-2.0
 PKG_MAINTAINER:=Xingwang Liao <kuoruan@gmail.com>
 
 LUCI_TITLE:=LuCI support for Kcptun
-LUCI_DEPENDS:=+jshn +wget +luci-lib-jsonc
+LUCI_DEPENDS:=+jshn
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/conffiles
