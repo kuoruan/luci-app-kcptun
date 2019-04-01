@@ -23,16 +23,16 @@ msgstr ""
 msgid "Client File"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:28
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:48
 msgid "Client Status"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:19
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:54
 msgid "Client Version"
 msgstr ""
 
 #: ../luci-app-kcptun/luasrc/view/kcptun/log_view.htm:32
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:28
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:50
 msgid "Collecting data..."
 msgstr ""
 
@@ -86,11 +86,17 @@ msgstr ""
 msgid "General Settings"
 msgstr ""
 
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:61
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:62
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:70
+msgid "Get latest"
+msgstr ""
+
 #: ../luci-app-kcptun/luasrc/model/cbi/kcptun/servers-detail.lua:148
 msgid "How long an expired connection can live(in sec), -1 to disable."
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:22
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:57
 msgid "Invalid Client File."
 msgstr ""
 
@@ -101,7 +107,7 @@ msgstr ""
 msgid "Kcptun"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:16
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:15
 msgid "Kcptun Client"
 msgstr ""
 
@@ -141,7 +147,7 @@ msgstr ""
 msgid "Local listen host."
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:26
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:25
 msgid "Log"
 msgstr ""
 
@@ -153,7 +159,7 @@ msgstr ""
 msgid "Log Folder"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:30
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:67
 msgid "LuCI Version"
 msgstr ""
 
@@ -176,7 +182,7 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:41
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:83
 msgid "Not Running"
 msgstr ""
 
@@ -220,11 +226,11 @@ msgstr ""
 msgid "Run Daemon as User"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:41
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:83
 msgid "Running"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:16
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:45
 msgid "Running Status"
 msgstr ""
 
@@ -253,7 +259,7 @@ msgstr ""
 msgid "Server List"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:23
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:22
 msgid "Server Manage"
 msgstr ""
 
@@ -261,7 +267,7 @@ msgstr ""
 msgid "Server Port"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:19
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:18
 #: ../luci-app-kcptun/luasrc/model/cbi/kcptun/settings.lua:28
 msgid "Settings"
 msgstr ""

@@ -3,12 +3,11 @@
 
 module("luci.controller.kcptun", package.seeall)
 
-local fs = require "nixio.fs"
 local http = require "luci.http"
 local kcp = require "luci.model.kcptun"
 
 function index()
-	if not fs.access("/etc/config/kcptun") then
+	if not nixio.fs.access("/etc/config/kcptun") then
 		return
 	end
 
@@ -64,6 +63,8 @@ end
 
 function action_log_clear(type)
 	if type and type ~= "" then
+		local fs = require "nixio.fs"
+
 		local log_file = kcp.get_current_log_file(type)
 
 		if fs.access(log_file) then

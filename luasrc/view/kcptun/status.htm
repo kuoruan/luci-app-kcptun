@@ -12,24 +12,66 @@ local client_version = kcp.get_kcptun_version(client_file)
 local luci_version = kcp.get_luci_version()
 -%>
 
+<style type="text/css">
+  .kcptun-status-node {
+    margin-bottom: -18px;
+  }
+  .kcptun-status-item {
+    margin-bottom: 18px;
+    zoom: 1;
+    line-height: 20px;
+    font-size: 13px;
+  }
+  .kcptun-status-item:before, .kcptun-status-item:after {
+    display: table;
+    content: "";
+    zoom: 1;
+  }
+  .kcptun-status-item-title {
+    width: 180px;
+    float: left;
+    text-align: right;
+    color: #404040;
+  }
+  .kcptun-status-item-value {
+    margin-left: 200px;
+  }
+  .kcptun-status-item-value a {
+    margin-left: 10px;
+  }
+</style>
+
 <fieldset class="cbi-section">
   <legend><%:Running Status%></legend>
-  <table width="100%" cellspacing="10" id="_kcptun-status_table">
-    <tr>
-      <td width="33%"><%:Client Version%></td>
-      <td>
-        <% if client_version == "" then -%>
+  <div class="cbi-section-node kcptun-status-node">
+    <div class="kcptun-status-item">
+      <div class="kcptun-status-item-title"><%:Client Status%></div>
+      <div class="kcptun-status-item-value" id="_kcptun-client_status">
+        <em><%:Collecting data...%></em>
+      </div>
+    </div>
+    <div class="kcptun-status-item">
+      <div class="kcptun-status-item-title"><%:Client Version%></div>
+      <div class="kcptun-status-item-value">
+        <%- if client_version == "" then -%>
         <em><%:Invalid Client File.%></em>
         <% else -%>
         <%=pcdata(client_version)%>
         <%- end %>
-      </td>
-    </tr>
-    <tr><td width="33%"><%:Client Status%></td><td id="_kcptun-client_status"><em><%:Collecting data...%></em></td></tr>
+        <a href="https://github.com/xtaci/kcptun/releases/latest" target="_blank"><%:Get latest%></a>
+        <a href="https://github.com/kuoruan/openwrt-kcptun/releases/latest" target="_blank"><%:Get latest%> (ipk)</a>
+      </div>
+    </div>
     <% if luci_version ~= "" then -%>
-    <tr><td width="33%"><%:LuCI Version%></td><td><%=pcdata(luci_version)%></td></tr>
+    <div class="kcptun-status-item">
+      <div class="kcptun-status-item-title"><%:LuCI Version%></div>
+      <div class="kcptun-status-item-value">
+        <%=pcdata(luci_version)%>
+        <a href="https://github.com/kuoruan/luci-app-kcptun/releases/latest" target="_blank"><%:Get latest%></a>
+      </div>
+    </div>
     <% end -%>
-  </table>
+  </div>
 </fieldset>
 
 <script type="text/javascript">//<![CDATA[
@@ -43,24 +85,3 @@ local luci_version = kcp.get_luci_version()
     }
   );
 //]]></script>
-
-<style type="text/css">
-  table#_kcptun-status_table {
-    display: table;
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-    height: auto;
-    margin-bottom: 0;
-    padding: 0;
-    font-size: 13px;
-  }
-
-  table#_kcptun-status_table td {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 10px 0;
-    line-height: 18px;
-    text-align: left;
-  }
-</style>

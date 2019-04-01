@@ -23,16 +23,16 @@ msgstr "清理日志文件"
 msgid "Client File"
 msgstr "客户端文件"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:28
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:48
 msgid "Client Status"
 msgstr "客户端状态"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:19
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:54
 msgid "Client Version"
 msgstr "客户端版本"
 
 #: ../luci-app-kcptun/luasrc/view/kcptun/log_view.htm:32
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:28
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:50
 msgid "Collecting data..."
 msgstr "正在收集数据..."
 
@@ -86,11 +86,17 @@ msgstr "否"
 msgid "General Settings"
 msgstr "基本设置"
 
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:61
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:62
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:70
+msgid "Get latest"
+msgstr "获取最新版"
+
 #: ../luci-app-kcptun/luasrc/model/cbi/kcptun/servers-detail.lua:148
 msgid "How long an expired connection can live(in sec), -1 to disable."
 msgstr "过期连接保留多长时间(秒)，设置 -1 来禁用"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:22
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:57
 msgid "Invalid Client File."
 msgstr "客户端文件配置有误"
 
@@ -101,7 +107,7 @@ msgstr "客户端文件配置有误"
 msgid "Kcptun"
 msgstr ""
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:16
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:15
 msgid "Kcptun Client"
 msgstr "Kcptun 客户端"
 
@@ -141,7 +147,7 @@ msgstr "本地端口"
 msgid "Local listen host."
 msgstr "本地监听主机"
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:26
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:25
 msgid "Log"
 msgstr "日志"
 
@@ -153,7 +159,7 @@ msgstr "日志数据"
 msgid "Log Folder"
 msgstr "日志文件夹"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:30
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:67
 msgid "LuCI Version"
 msgstr "LuCI 版本"
 
@@ -176,7 +182,7 @@ msgstr "无日志数据。"
 msgid "None"
 msgstr "无"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:41
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:83
 msgid "Not Running"
 msgstr "未运行"
 
@@ -220,11 +226,11 @@ msgstr "每 5 秒刷新。"
 msgid "Run Daemon as User"
 msgstr "以该用户启动"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:41
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:83
 msgid "Running"
 msgstr "运行中"
 
-#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:16
+#: ../luci-app-kcptun/luasrc/view/kcptun/status.htm:45
 msgid "Running Status"
 msgstr "运行状态"
 
@@ -253,7 +259,7 @@ msgstr "服务端地址"
 msgid "Server List"
 msgstr "服务端列表"
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:23
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:22
 msgid "Server Manage"
 msgstr "服务端管理"
 
@@ -261,7 +267,7 @@ msgstr "服务端管理"
 msgid "Server Port"
 msgstr "服务端端口"
 
-#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:19
+#: ../luci-app-kcptun/luasrc/controller/kcptun.lua:18
 #: ../luci-app-kcptun/luasrc/model/cbi/kcptun/settings.lua:28
 msgid "Settings"
 msgstr "设置"
