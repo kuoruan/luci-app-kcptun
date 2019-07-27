@@ -374,6 +374,12 @@ msgstr ""
 msgid "sockbuf"
 msgstr ""
 
+msgid "Suppress the 'stream open/close' messages"
+msgstr "不打印 'stream open/close' 信息"
+
+msgid "TCP transmission"
+msgstr "TCP 传输"
+
 #~ msgid "Auto"
 #~ msgstr "自动"
 

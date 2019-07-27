@@ -71,7 +71,7 @@ gen_client_config_file() {
 	add_configs "string" key crypt mode
 	add_configs "int" conn autoexpire mtu sndwnd rcvwnd datashard parityshard dscp \
 		nodelay interval resend nc sockbuf keepalive scavengettl snmpperiod
-	add_configs "boolean" nocomp acknodelay
+	add_configs "boolean" nocomp acknodelay quiet tcp
 
 	if [ -n "$log_file" ]; then
 		json_add_string "log" "$log_file"
@@ -101,19 +101,11 @@ add_iptables_rule() {
 	local port="$1"
 	local type="$2"
 
-	if [ "$type" = "client" ]; then
-		( iptables -C "$KCPTUN" -p tcp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
+	iptables -C "$KCPTUN" -p tcp --dport "$port" -m comment \
+		--comment "client" -j ACCEPT 2>/dev/null && return 0
 
-		iptables -A "$KCPTUN" -p tcp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null
-	elif [ "$type" = "server" ]; then
-		( iptables -C "$KCPTUN" -p udp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null ) && return 0
-
-		iptables -A "$KCPTUN" -p udp --dport "$port" -m comment \
-			--comment "$type" -j ACCEPT 2>/dev/null
-	fi
+	iptables -A "$KCPTUN" -p tcp --dport "$port" -m comment \
+		--comment "client" -j ACCEPT 2>/dev/null
 }
 
 validate_config_section() {
@@ -144,6 +136,8 @@ validate_server_section() {
 		'parityshard:uinteger' \
 		'dscp:uinteger' \
 		'nocomp:or("true", "false")' \
+		'quiet:or("true", "false")' \
+		'tcp:or("true", "false")' \
 		'nodelay:bool' \
 		'interval:uinteger' \
 		'resend:range(0,2)' \
@@ -216,7 +210,7 @@ start_kcptun_instance() {
 		return 1
 	fi
 
-	add_iptables_rule "$listen_port" "client"
+	add_iptables_rule "$listen_port"
 
 	procd_open_instance
 	procd_set_param command "$client_file"
