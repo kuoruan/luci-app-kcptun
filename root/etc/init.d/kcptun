@@ -82,30 +82,19 @@ gen_client_config_file() {
 	json_dump -i >"$config_file"
 }
 
-setup_iptables_chain() {
-	if ! ( iptables -nL "$KCPTUN" >/dev/null 2>&1 ); then
-		iptables -N "$KCPTUN" 2>/dev/null
-	fi
-
-	iptables -C OUTPUT -j "$KCPTUN" 2>/dev/null || \
-		iptables -A OUTPUT -j "$KCPTUN" 2>/dev/null
-	iptables -C INPUT -j "$KCPTUN" 2>/dev/null || \
-		iptables -A INPUT -j "$KCPTUN" 2>/dev/null
-}
-
-clear_iptables_chain() {
-	iptables -F "$KCPTUN" >/dev/null 2>&1
-}
-
 add_iptables_rule() {
 	local port="$1"
-	local type="$2"
 
-	iptables -C "$KCPTUN" -p tcp --dport "$port" -m comment \
-		--comment "client" -j ACCEPT 2>/dev/null && return 0
+	iptables-restore --noflush <<-EOF 2>/dev/null
+		*nat
+		:KCPTUN -
+		-A KCPTUN -p tcp --dport $port -j ACCEPT
+		-A INPUT -p tcp -j KCPTUN
+	EOF
+}
 
-	iptables -A "$KCPTUN" -p tcp --dport "$port" -m comment \
-		--comment "client" -j ACCEPT 2>/dev/null
+clear_iptables_rule() {
+	iptables-save --counters | grep -vi "KCPTUN" | iptables-restore --counters
 }
 
 validate_config_section() {
@@ -155,7 +144,7 @@ validate_client_file() {
 		return 1
 	fi
 
-	[ -x "$file" ] || chmod 755 "$file"
+	test -x "$file" || chmod 755 "$file"
 
 	( $file -v 2>/dev/null | grep -q "$KCPTUN" )
 }
@@ -194,16 +183,16 @@ start_kcptun_instance() {
 	is_ipv6_address "$server_addr" && server_addr="[${server_addr}]"
 	is_ipv6_address "$listen_addr" && listen_addr="[${listen_addr}]"
 
-	[ -d "$CONFIG_FOLDER" ] || mkdir -p "$CONFIG_FOLDER"
+	test -d "$CONFIG_FOLDER" || mkdir -p "$CONFIG_FOLDER"
 
 	log_file=""
-	if [ "$enable_logging" = "1" ]; then
+	if [ "x$enable_logging" = "x1" ]; then
 		mkdir -p "$log_folder"
 		chown -R "$daemon_user" "$log_folder"
 		log_file="${log_folder}/client.${section}.log"
 	fi
 
-	local config_file=${CONFIG_FOLDER}/client.${section}.json
+	local config_file="${CONFIG_FOLDER}/client.${section}.json"
 
 	if ! ( gen_client_config_file "$config_file" ); then
 		_log "err" "Can't create config file".
@@ -226,13 +215,12 @@ service_triggers() {
 }
 
 start_service() {
-	clear_iptables_chain
-	setup_iptables_chain
+	clear_iptables_rule
 
 	config_load "$KCPTUN"
 	config_foreach start_kcptun_instance "general"
 }
 
 stop_service() {
-	clear_iptables_chain
+	clear_iptables_rule
 }
