@@ -90,6 +90,7 @@ add_iptables_rule() {
 		:KCPTUN -
 		-A KCPTUN -p tcp --dport $port -j ACCEPT
 		-A INPUT -p tcp -j KCPTUN
+		COMMIT
 	EOF
 }
 
