@@ -26,9 +26,11 @@ define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	( . /etc/uci-defaults/40_luci-kcptun ) && rm -f /etc/uci-defaults/40_luci-kcptun
-	chmod 755 /etc/init.d/kcptun >/dev/null 2>&1
-	/etc/init.d/kcptun enable >/dev/null 2>&1
 fi
+
+chmod 755 $${IPKG_INSTROOT}/etc/init.d/kcptun >/dev/null 2>&1
+ln -sf $${IPKG_INSTROOT}/etc/init.d/kcptun \
+	$${IPKG_INSTROOT}/etc/rc.d/S99kcptun >/dev/null 2>&1
 exit 0
 endef
 
