@@ -29,7 +29,7 @@ if [ -z "$${IPKG_INSTROOT}" ]; then
 fi
 
 chmod 755 $${IPKG_INSTROOT}/etc/init.d/kcptun >/dev/null 2>&1
-ln -sf $${IPKG_INSTROOT}/etc/init.d/kcptun \
+ln -sf /etc/init.d/kcptun \
 	$${IPKG_INSTROOT}/etc/rc.d/S99kcptun >/dev/null 2>&1
 exit 0
 endef
