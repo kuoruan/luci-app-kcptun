@@ -205,6 +205,26 @@ o.write = function(self, section, value)
 	end
 end
 
+o = s:option(Value, "streambuf", "%s (%s)" % { translate("streambuf"), translate("optional") },
+	translate("Per stream receive buffer, default unit is MB."))
+o.datatype = "uinteger"
+o.placeholder = "2"
+o.cfgvalue = function(...)
+	local value = Value.cfgvalue(...)
+
+	if value then
+		return tonumber(value) / 1024 / 1024
+	end
+end
+o.write = function(self, section, value)
+	local number = tonumber(value)
+	if number then
+		Value.write(self, section, number * 1024 * 1024)
+	else
+		Value.remove(self, section)
+	end
+end
+
 o = s:option(Value, "keepalive", "%s (%s)" % { translate("keepalive"), translate("optional") },
 	translate("NAT keepalive interval to prevent your router from removing port mapping, default unit is seconds."))
 o.datatype = "uinteger"
