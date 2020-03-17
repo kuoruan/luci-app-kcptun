@@ -104,7 +104,8 @@ validate_config_section() {
 		'client_file:string' \
 		'daemon_user:string:root' \
 		'enable_logging:bool:0' \
-		'log_folder:directory:/var/log/kcptun'
+		'log_folder:directory:/var/log/kcptun' \
+		'mem_percentage:range(1,100):50'
 }
 
 validate_server_section() {
@@ -203,11 +204,23 @@ start_kcptun_instance() {
 		return 1
 	fi
 
+	local MEM=$(sed -ne 's!^MemTotal:[[:space:]]*\([0-9]*\) kB$!\1!p' /proc/meminfo)
+	local USE_MEM=""	
+	if [ "$MEM" -gt 0 ] 2>/dev/null; then
+		USE_MEM=$(expr $MEM \* $mem_percentage \* 10)
+	fi
+
 	add_iptables_rule "$listen_port"
 
 	procd_open_instance
 	procd_set_param command "$client_file"
 	procd_append_param command -c "$config_file"
+
+	if [ $USE_MEM -gt 0 ]  2>/dev/null; then
+		procd_set_param limits as="$USE_MEM $USE_MEM"
+		_log "info" "Starting kcptun with $USE_MEM virt mem"
+	fi
+
 	procd_set_param respawn
 	procd_set_param user "$daemon_user"
 	procd_set_param file "$config_file"
