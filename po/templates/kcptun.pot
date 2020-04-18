@@ -164,6 +164,10 @@ msgstr ""
 msgid "Maximum transmission unit of UDP packets."
 msgstr ""
 
+#: luasrc/model/cbi/kcptun/settings.lua:82
+msgid "Memory percentage"
+msgstr ""
+
 #: luasrc/model/cbi/kcptun/servers-detail.lua:229
 msgid ""
 "NAT keepalive interval to prevent your router from removing port mapping, "
@@ -281,6 +285,10 @@ msgstr ""
 
 #: luasrc/model/cbi/kcptun/servers-detail.lua:138
 msgid "TCP transmission"
+msgstr ""
+
+#: luasrc/model/cbi/kcptun/settings.lua:83
+msgid "The maximum percentage of memory used by Kcptun."
 msgstr ""
 
 #: luasrc/model/cbi/kcptun/servers-detail.lua:189

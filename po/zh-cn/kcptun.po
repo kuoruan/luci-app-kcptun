@@ -164,6 +164,10 @@ msgstr "LuCI 版本"
 msgid "Maximum transmission unit of UDP packets."
 msgstr "UDP 数据包的最大传输单元"
 
+#: luasrc/model/cbi/kcptun/settings.lua:82
+msgid "Memory percentage"
+msgstr "内存百分比"
+
 #: luasrc/model/cbi/kcptun/servers-detail.lua:229
 msgid ""
 "NAT keepalive interval to prevent your router from removing port mapping, "
@@ -282,6 +286,10 @@ msgstr "不打印 'stream open/close' 信息"
 #: luasrc/model/cbi/kcptun/servers-detail.lua:138
 msgid "TCP transmission"
 msgstr "TCP 传输"
+
+#: luasrc/model/cbi/kcptun/settings.lua:83
+msgid "The maximum percentage of memory used by Kcptun."
+msgstr "Kcptun 可使用的最大内存百分比"
 
 #: luasrc/model/cbi/kcptun/servers-detail.lua:189
 msgid "The overall de-mux buffer, default unit is MB."

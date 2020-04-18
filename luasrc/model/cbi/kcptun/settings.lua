@@ -79,4 +79,9 @@ o.validate = function(self, value, section)
 	return Value.validate(self, value, section)
 end
 
+o = s:option(Value, "mem_percentage", translate("Memory percentage"),
+	translate("The maximum percentage of memory used by Kcptun."))
+o.datatype = "range(0, 100)"
+o.placeholder = "80"
+
 return m
