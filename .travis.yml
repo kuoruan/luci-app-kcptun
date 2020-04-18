@@ -1,5 +1,5 @@
 dist: trusty
-sudo: false
+os: linux
 notifications:
   email: false
 language: c
@@ -13,25 +13,13 @@ cache:
 git:
   depth: 3
   submodules: false
-addons:
-  apt:
-    packages:
-      - subversion
-      - build-essential
-      - libncurses5-dev
-      - zlib1g-dev
-      - gettext
-      - libssl-dev
-      - xsltproc
-      - zip
 env:
   global:
     - PACKAGE=luci-app-kcptun
-    - GITHUB_USER=kuoruan
-    - GITHUB_REPO=luci-app-kcptun
     - DOWNLOAD_DIR=${HOME}/files
-    - SDK_PATH=https://downloads.openwrt.org/releases/18.06.4/targets/x86/64
-    - SDK=-sdk-18.06.4-x86-64_
+    - SDK_PATH=https://downloads.openwrt.org/releases/18.06.8/targets/x86/64
+    - SDK=-sdk-18.06.8-x86-64_
+    - CONFIG_CCACHE=y
 install:
   - mkdir -p "$HOME/files" && cd "$HOME/files"
   - wget "$SDK_PATH/sha256sums" -O sha256sums
@@ -78,9 +66,9 @@ deploy:
   provider: releases
   file_glob: true
   file: "$TRAVIS_BUILD_DIR/*.ipk"
-  skip_cleanup: true
+  cleanup: false
+  edge: true
+  token: $GITHUB_TOKEN
   on:
     tags: true
     all_branches: true
-  api_key:
-    secure: Ym3qbc1AX2x6V+cRzzmvHHuX8WbqQT+Pdo2Gk8E4PqU84gVgPsMA8EEu72NYKowihrnH+0gKw5oAhHMR+kn6AZzzHkKKh0nv0lBxM37AWDW+Zm060yd1+MrbvBmwDqLhEBOjZZ4e7KHUQgukI5Uc0XyRGonnypoGRI4YNbgUeqMfs1Q1vdNB9bICaUwmYKpWGzo4R3mWw6acV2NhT78eNQgVBTWuawFBi70xe6nkM/iEvTLLvNcXKp/inQ/mdiXJ9/Qek0+ZcST6ZjsgDWNjrE8MlP/1ZPMVULd0ncMphX6oaxWXRqM2GQJEpawLJChkUZ1H0vf+1GiD4g+L/qxuBzK33+G4rOZCsIYvx/9cd6m/jFPt/401/0MGs2w10oDUDLbp7Tsa4VA+wrgYWlqj4E+hKUXhB5pGoROPZJXIopY3kRkU4sPUdvxh7o7u9hprRUqwT9Yrhruz0oPYikTjGgtYxRfvFt+X1qwjEXqYsz8zPZ2K1WFlMjps1Jd8Ly04jcuRbwdHg+fWiPbKWbpeJimY8LvrvyCAG4Q7tX31CDQg2f/zDL5YPKKMOfBvAq318XQ/kxVUn09fEwiaHakeV+/fIDV87HGsRfooyHIz2nNA3WlC8vKwbToOQu7KA3H5ZvAM1I4MmztMzFRBxB3Vf92P3FZV5SvHInlz8wK11PM=
