@@ -210,6 +210,11 @@ start_kcptun_instance() {
 	procd_set_param command "$client_file"
 	procd_append_param command -c "$config_file"
 
+	procd_set_param limits nofile="65535 65535"
+	if [ -e /proc/sys/kernel/core_pattern ] ; then
+		procd_append_param limits core="unlimited"
+	fi
+
 	if [ "$mem_percentage" -gt "0" ] ; then
 		local mem_total="$(awk '/MemTotal/ {print $2}' /proc/meminfo)"
 		if [ -n "$mem_total" ] ; then
