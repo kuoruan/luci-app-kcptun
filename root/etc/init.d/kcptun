@@ -20,6 +20,7 @@ USE_PROCD=1
 
 KCPTUN=kcptun
 CONFIG_FOLDER=/var/etc/$KCPTUN
+KCPTUN_NFT_RULES=/etc/nftables.d/S99kcptun.nft
 
 if [ -r /usr/share/libubox/jshn.sh ]; then
 	. /usr/share/libubox/jshn.sh
@@ -82,20 +83,25 @@ gen_client_config_file() {
 	json_dump -i >"$config_file"
 }
 
-add_iptables_rule() {
+add_nftables_rule() {
 	local port="$1"
-
-	iptables-restore --noflush <<-EOF 2>/dev/null
-		*nat
-		:KCPTUN -
-		-A KCPTUN -p tcp --dport $port -j ACCEPT
-		-A INPUT -p tcp -j KCPTUN
-		COMMIT
-	EOF
+	cat > "$KCPTUN_NFT_RULES" <<-EOF
+	chain INPUT {
+	                type nat hook input priority 100; policy accept;
+	                ip protocol tcp counter packets 0 bytes 0 jump KCPTUN
+	        }
+	chain KCPTUN {
+	                tcp dport "$port" counter packets 0 bytes 0 accept
+	        }
+EOF
+	fw4 reload
 }
 
-clear_iptables_rule() {
-	iptables-save --counters | grep -vi "KCPTUN" | iptables-restore --counters
+clear_nftables_rule() {
+	if [ -f "$KCPTUN_NFT_RULES" ]; then
+		rm -f "$KCPTUN_NFT_RULES"
+		fw4 reload
+	fi
 }
 
 validate_config_section() {
@@ -204,7 +210,7 @@ start_kcptun_instance() {
 		return 1
 	fi
 
-	add_iptables_rule "$listen_port"
+	add_nftables_rule "$listen_port"
 
 	procd_open_instance
 	procd_set_param command "$client_file"
@@ -236,12 +242,12 @@ service_triggers() {
 }
 
 start_service() {
-	clear_iptables_rule
+	clear_nftables_rule
 
 	config_load "$KCPTUN"
 	config_foreach start_kcptun_instance "general"
 }
 
 stop_service() {
-	clear_iptables_rule
+	clear_nftables_rule
 }
