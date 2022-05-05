@@ -2,13 +2,14 @@
 
 Luci support for kcptun
 
+该项目 fork☞ https://github.com/kuoruan/luci-app-kcptun
 OpenWrt/LEDE 上的 Kcptun Luci 支持界面
 
-[![Release Version](https://img.shields.io/github/release/kuoruan/luci-app-kcptun.svg)](https://github.com/kuoruan/luci-app-kcptun/releases/latest) [![Latest Release Download](https://img.shields.io/github/downloads/kuoruan/luci-app-kcptun/latest/total.svg)](https://github.com/kuoruan/luci-app-kcptun/releases/latest)
+[![Release Version](https://img.shields.io/github/release/nautiluschan/luci-app-kcptun.svg)](https://github.com/nautiluschan/luci-app-kcptun/releases/latest) [![Latest Release Download](https://img.shields.io/github/downloads/nautiluschan/luci-app-kcptun/latest/total.svg)](https://github.com/nautiluschan/luci-app-kcptun/releases/latest)
 
 ## 安装说明
 
-1. 到 [release](https://github.com/kuoruan/luci-app-kcptun/releases) 页面下载最新版 luci-app-kcptun 和 luci-i18n-kcptun-zh-cn (简体中文翻译文件)
+1. 到 [release](https://github.com/nautiluschan/luci-app-kcptun/releases) 页面下载最新版 luci-app-kcptun 和 luci-i18n-kcptun-zh-cn (简体中文翻译文件)
 2. 将下载好的 ipk 文件上传到路由器任意目录下, 如 /tmp
 3. 先安装 luci-app-kcptun 再安装 luci-i18n-kcptun-zh-cn
 
