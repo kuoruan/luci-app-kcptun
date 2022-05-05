@@ -2,7 +2,8 @@
 
 Luci support for kcptun
 
-该项目 fork☞ https://github.com/kuoruan/luci-app-kcptun
+该项目 fork自 https://github.com/kuoruan/luci-app-kcptun
+
 OpenWrt/LEDE 上的 Kcptun Luci 支持界面
 
 [![Release Version](https://img.shields.io/github/release/nautiluschan/luci-app-kcptun.svg)](https://github.com/nautiluschan/luci-app-kcptun/releases/latest) [![Latest Release Download](https://img.shields.io/github/downloads/nautiluschan/luci-app-kcptun/latest/total.svg)](https://github.com/nautiluschan/luci-app-kcptun/releases/latest)
