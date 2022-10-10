@@ -48,7 +48,7 @@ o.datatype = "host"
 o.rmempty = false
 
 o = s:option(Value, "server_port", translate("Server Port"))
-o.datatype = "port"
+o.datatype = "or(port,portrange)"
 o.placeholder = "29900"
 
 o = s:option(Value, "listen_addr", "%s (%s)" % { translate("Local Listen Host"), translate("optional") },
